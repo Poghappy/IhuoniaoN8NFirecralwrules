@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>更改节点</title>
+    <link rel="stylesheet" href="{#$cfg_staticPath#}css/admin/bootstrap.css?v=1531357464">
+</head>
+<style>
+
+</style>
+<script>var staticPath = '{#$cfg_staticPath#}';</script>
+
+<body style="margin-left: 22px;margin-top: 5px;">
+
+{#if isset($errmsg) && $errmsg !== ''#}
+<div class="err">
+    <h4>{#$errmsg#}</h4>
+</div>
+{#/if#}
+<div>
+    <div style="float: left">
+        <form class="form" action="./insertNode.php" method="post" name="form1" id="form1">
+            <input type="hidden" name="node_id" value="{#$nodes['id']#}">
+            <div class="form-group">
+                <label>节点名称</label>
+                <input type="text" name="nodename" class="form-control" value="{#$nodes['nodename']#}">
+            </div>
+            <div class="form-group">
+                <label>针对类型</label>
+                <select name="type" id="">
+                    <option value="1" {#if $nodes['type'] eq 1#} selected {#/if#}>采集多个页面</option>
+                    <option value="2" {#if $nodes['type'] eq 2#} selected {#/if#}>采集接口</option>
+                    <option value="3" {#if $nodes['type'] eq 3#} selected {#/if#}>采集单个页面</option>
+                </select>
+            </div>
+            {#if $nodes['type'] eq 3#}
+            <div class="form-group">
+                <label>列表页url</label>
+
+                <textarea rows="3" cols="15" name="list_page_url[]"  id="list_page_url" style="width: 250px;">{#$nodes['list_page_url'][0]#}</textarea>
+
+            </div>
+            {#/if#}
+
+            {#if $nodes['type'] neq 3#}
+            <div class="form-group">
+                <label>列表页url匹配规则</label>
+                <textarea rows="3" cols="15" name="list_page_url_rule" style="width: 250px;">{#$nodes['list_page_url_rule']#}</textarea>
+            </div>
+            {#/if#}
+            <div class="form-group">
+                <label>开始标记</label>
+                <textarea rows="3" cols="15" name="list_start_sign" style="width: 250px;">{#$nodes['list_start_sign']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>结束标记</label>
+                <textarea rows="3" cols="15" name="list_end_sign" style="width: 250px;">{#$nodes['list_end_sign']#}</textarea>
+
+            </div>
+
+            <div class="form-group">
+                <label>必须包含</label>
+                <textarea rows="3" cols="15" name="must_include" style="width: 250px;">{#$nodes['must_include']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>必须不包含</label>
+                <textarea rows="3" cols="15" name="not_include" style="width: 250px;">{#$nodes['not_include']#}</textarea>
+
+            </div>
+            <div class="form-group" style="margin-top: 10px;">
+                <button type="submit" class="btn btn-small btn-primary">提交更改</button>
+            </div>
+        </form>
+    </div>
+
+    <div style="float: left; margin-left: 150px;">
+        <form class="form" action="./insertBodyRules.php" method="post" name="form2" id="form2">
+            <input type="hidden" value="{#$node_rules['node_id']#}" name="node">
+            <input type="hidden" value="{#$node_rules['id']#}" name="update_id">
+            <div class="form-group">
+                <label>文章正文开始标记</label>
+                <textarea rows="3" cols="15" name="body_start" style="width: 250px;">{#$node_rules['body_start']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>文章正文结束标记</label>
+                <textarea rows="3" cols="15" name="body_end" style="width: 250px;">{#$node_rules['body_end']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>文章标题开始标记</label>
+                <textarea rows="3" cols="15" name="title_start" style="width: 250px;">{#$node_rules['title_start']#}</textarea>
+
+            </div>
+
+            <div class="form-group">
+                <label>文章标题结束标记</label>
+                <textarea rows="3" cols="15" name="title_end" style="width: 250px;">{#$node_rules['title_end']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>发布时间开始标记</label>
+                <textarea rows="3" cols="15" name="time_start" style="width: 250px;">{#$node_rules['time_start']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>发布时间结束标记</label>
+                <textarea rows="3" cols="15" name="time_end" style="width: 250px;">{#$node_rules['time_end']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>文章来源开始标记</label>
+                <textarea rows="3" cols="15" name="source_start" style="width: 250px;">{#$node_rules['source_start']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>文章来源结束标记</label>
+                <textarea rows="3" cols="15" name="source_end" style="width: 250px;">{#$node_rules['source_end']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>文章作者开始标记</label>
+                <textarea rows="3" cols="15" name="author_start" style="width: 250px;">{#$node_rules['author_start']#}</textarea>
+
+            </div>
+            <div class="form-group">
+                <label>文章作者结束标记</label>
+                <textarea rows="3" cols="15" name="author_end" style="width: 250px;">{#$node_rules['author_end']#}</textarea>
+
+            </div>
+            <div class="form-group"  style="margin-top: 10px;">
+                <button type="submit" class="btn btn-small btn-primary">提交更改</button>
+            </div>
+        </form>
+    
+    </div>
+
+    <div style="float:left;margin-left: 50px;margin-top: 29px;">
+        <a href="./index.php" class="btn btn-small btn-primary">返回主页</a>
+    </div>
+</div>
+<div class="caozuo">
+    <div></div>
+</div>
+<script>
+    
+
+    
+</script>
+</body>
+<script src="{#$cfg_staticPath#}js/core/jquery-1.8.3.min.js?v=1531357464"></script>
+<script src="{#$cfg_staticPath#}js/ui/jquery.dialog-4.2.0.js?v=1531357464"></script>
+</html>

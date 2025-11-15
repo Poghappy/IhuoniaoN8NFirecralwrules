@@ -1,0 +1,71 @@
+---
+description: 新闻采集项目规则 - Firecrawl新闻采集器特定规范
+alwaysApply: false
+globs:
+  - "news-collector/**"
+  - "Firecrawl数据采集器/**"
+---
+
+# 新闻采集项目规则
+
+## 项目概述
+
+本项目包含两个新闻采集模块：
+1. **news-collector** - 轻量级新闻采集器
+2. **Firecrawl数据采集器** - 高级数据采集系统（含Docker、监控等）
+
+## 代码规范
+
+### Python代码规范
+- 遵循PEP8规范
+- 使用类型注解（Python 3.9+）
+- 所有函数必须包含文档字符串
+- 使用f-string进行字符串格式化
+
+### 配置管理
+- 敏感信息使用环境变量（.env文件）
+- 配置文件使用JSON格式
+- 提供config_example.json示例文件
+
+### API调用规范
+- 所有Firecrawl API调用必须包含错误处理
+- 使用重试机制处理网络错误
+- 记录API调用日志
+
+### 数据库操作
+- 使用SQLAlchemy ORM
+- 所有数据库操作必须包含事务处理
+- 数据库迁移使用Alembic
+
+## 文件命名规范
+
+- Python文件：使用snake_case（如：news_collector.py）
+- 配置文件：使用kebab-case（如：config-example.json）
+- 文档文件：使用中文描述（如：新闻采集用户指南.md）
+
+## 文档要求
+
+- 每个模块必须有README.md
+- API接口必须有接口文档
+- 配置项必须有说明文档
+- 更新代码时同步更新文档
+
+## 测试要求
+
+- 关键功能必须有单元测试
+- 测试覆盖率要求≥80%
+- 集成测试覆盖主要流程
+- 使用pytest框架
+
+## 日志规范
+
+- 使用logging模块
+- 日志级别：DEBUG、INFO、WARNING、ERROR、CRITICAL
+- 日志格式统一，包含时间戳、级别、模块名、消息
+
+## 错误处理
+
+- 自定义异常类继承Exception
+- 错误信息必须清晰明确
+- 关键错误必须记录日志
+- 用户友好的错误提示

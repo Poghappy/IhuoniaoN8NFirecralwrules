@@ -1,0 +1,140 @@
+{
+  "version": "1.0.0",
+  "description": "Docker Hub MCP Server Cursor Configuration",
+  "project": {
+    "name": "docker-hub-mcp-server",
+    "type": "mcp-server",
+    "language": "typescript",
+    "framework": "node"
+  },
+  "rules": {
+    "enabled": true,
+    "autoApply": true,
+    "files": [".cursor/rules/docker-mcp-rules.mdc"]
+  },
+  "prompts": {
+    "enabled": true,
+    "directory": ".cursor/prompts",
+    "autoSuggest": true
+  },
+  "mcp": {
+    "configFile": ".cursor/mcp.json",
+    "autoReload": true,
+    "servers": {
+      "docker-hub": {
+        "enabled": true,
+        "priority": 1,
+        "description": "Docker Hub MCP Server"
+      },
+      "filesystem": {
+        "enabled": true,
+        "priority": 2,
+        "description": "Filesystem operations"
+      },
+      "firecrawl": {
+        "enabled": false,
+        "priority": 3,
+        "description": "Web scraping (requires API key)"
+      },
+      "github": {
+        "enabled": false,
+        "priority": 4,
+        "description": "GitHub operations (requires token)"
+      }
+    }
+  },
+  "editor": {
+    "formatOnSave": true,
+    "codeActions": {
+      "source.organizeImports": true,
+      "source.fixAll": true
+    },
+    "rulers": [80, 120],
+    "tabSize": 2,
+    "insertSpaces": true
+  },
+  "typescript": {
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  },
+  "linting": {
+    "enabled": true,
+    "tools": ["eslint", "prettier"],
+    "autoFix": true
+  },
+  "testing": {
+    "framework": "jest",
+    "coverage": {
+      "enabled": true,
+      "threshold": 80
+    }
+  },
+  "git": {
+    "commitMessageFormat": "conventional",
+    "requireCommitMessage": true,
+    "hooks": {
+      "pre-commit": ["lint", "test"],
+      "commit-msg": ["validate-commit-msg"]
+    }
+  },
+  "security": {
+    "scanOnSave": true,
+    "checkDependencies": true,
+    "warnOnSensitiveData": true
+  },
+  "performance": {
+    "cache": {
+      "enabled": true,
+      "ttl": 300
+    },
+    "monitoring": {
+      "enabled": true,
+      "metrics": ["api-calls", "response-time", "cache-hits"]
+    }
+  },
+  "documentation": {
+    "autoGenerate": false,
+    "format": "markdown",
+    "includeExamples": true
+  },
+  "markdown": {
+    "enabled": true,
+    "formatOnSave": true,
+    "defaultFormatter": "prettier",
+    "linting": {
+      "enabled": true,
+      "tool": "markdownlint",
+      "autoFix": true,
+      "runOnSave": true
+    },
+    "rules": {
+      "MD013": false,
+      "MD029": false,
+      "MD033": false,
+      "MD034": false,
+      "MD036": false,
+      "MD040": false,
+      "MD041": false,
+      "MD051": false
+    },
+    "prettier": {
+      "printWidth": 100,
+      "proseWrap": "preserve",
+      "tabWidth": 2,
+      "useTabs": false
+    },
+    "linkValidation": {
+      "enabled": true,
+      "checkAnchors": true,
+      "emojiInAnchors": true
+    },
+    "codeBlocks": {
+      "requireLanguage": false,
+      "syntaxHighlighting": true
+    }
+  }
+}

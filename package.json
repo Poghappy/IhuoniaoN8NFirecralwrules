@@ -1,0 +1,15 @@
+{
+  "name": "hawaiihub.net123",
+  "version": "1.0.0",
+  "description": "## 📋 项目简介",
+  "main": "火鸟门户_API集成模块.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^24.16.2"
+  }
+}

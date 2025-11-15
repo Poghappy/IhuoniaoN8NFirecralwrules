@@ -1,0 +1,1339 @@
+---
+alwaysApply: true
+description: 项目命名规范、文件夹规范和文件管理规范
+---
+
+# Firecrawl 数据采集器 - 命名与文件管理规范
+
+## 📋 目录
+
+1. [命名规范](#命名规范)
+2. [文件夹规范](#文件夹规范)
+3. [文件管理规范](#文件管理规范)
+4. [代码组织规范](#代码组织规范)
+5. [文档规范](#文档规范)
+6. [版本控制规范](#版本控制规范)
+
+---
+
+## 🏷️ 命名规范
+
+### 1. 项目命名规范
+
+#### 项目根目录
+
+```bash
+# 项目名称格式：{功能描述}-{技术栈/类型}
+Firecrawl数据采集器          # 中文项目名
+firecrawl-data-collector     # 英文项目名（用于技术文档）
+```
+
+#### 子项目命名
+
+```bash
+# 子项目命名格式：{功能}-{类型}
+firecrawl-collector          # 数据采集器
+firecrawl-processor          # 数据处理器
+firecrawl-api                # API服务
+firecrawl-web                # Web界面
+firecrawl-cli                # 命令行工具
+```
+
+### 2. 目录命名规范
+
+#### 核心目录结构
+
+```bash
+# 使用小写字母和连字符
+src/                        # 源代码目录
+├── core/                   # 核心模块
+├── api/                    # API相关
+├── models/                 # 数据模型
+├── services/               # 业务服务
+├── utils/                  # 工具函数
+├── config/                 # 配置模块
+├── collectors/             # 数据采集器
+├── processors/             # 数据处理器
+└── integrations/           # 第三方集成
+
+config/                     # 配置文件目录
+├── development/            # 开发环境配置
+├── production/             # 生产环境配置
+├── deployment/             # 部署配置
+├── monitoring/             # 监控配置
+└── security/               # 安全配置
+
+tests/                      # 测试目录
+├── unit/                   # 单元测试
+├── integration/            # 集成测试
+├── e2e/                    # 端到端测试
+├── fixtures/               # 测试数据
+└── mocks/                  # 模拟对象
+
+docs/                       # 文档目录
+├── api/                    # API文档
+├── guides/                 # 使用指南
+├── architecture/           # 架构文档
+├── deployment/             # 部署文档
+└── troubleshooting/        # 故障排除
+
+scripts/                    # 脚本目录
+├── deployment/             # 部署脚本
+├── maintenance/            # 维护脚本
+├── backup/                 # 备份脚本
+└── monitoring/             # 监控脚本
+```
+
+#### 特殊目录命名
+
+```bash
+# 数据目录
+data/                       # 数据存储
+├── raw/                    # 原始数据
+├── processed/              # 处理后数据
+├── cache/                  # 缓存数据
+└── backup/                 # 备份数据
+
+# 日志目录
+logs/                       # 日志文件
+├── app/                    # 应用日志
+├── nginx/                  # Web服务器日志
+├── database/               # 数据库日志
+└── monitoring/             # 监控日志
+
+# 临时目录
+temp/                       # 临时文件
+tmp/                        # 临时目录（系统级）
+```
+
+### 3. 文件命名规范
+
+#### Python 文件命名
+
+```python
+# 模块文件：小写字母+下划线
+firecrawl_collector.py      # 数据采集器
+data_processor.py           # 数据处理器
+api_client.py               # API客户端
+config_manager.py           # 配置管理器
+logger_utils.py             # 日志工具
+
+# 测试文件：test_前缀
+test_collector.py           # 采集器测试
+test_processor.py           # 处理器测试
+test_api_client.py          # API客户端测试
+test_config_manager.py      # 配置管理器测试
+
+# 配置文件：config_前缀
+config_development.py       # 开发环境配置
+config_production.py        # 生产环境配置
+config_database.py          # 数据库配置
+config_api.py               # API配置
+
+# 工具文件：utils_前缀
+utils_logging.py            # 日志工具
+utils_validation.py         # 验证工具
+utils_helpers.py            # 辅助工具
+utils_encryption.py         # 加密工具
+
+# 服务文件：service_前缀
+service_collector.py        # 采集服务
+service_processor.py        # 处理服务
+service_notification.py     # 通知服务
+service_monitoring.py       # 监控服务
+```
+
+#### 配置文件命名
+
+```bash
+# JSON配置文件
+config.json                 # 主配置文件
+config.development.json     # 开发环境配置
+config.production.json      # 生产环境配置
+config.test.json            # 测试环境配置
+
+# YAML配置文件
+docker-compose.yml          # Docker编排
+docker-compose.dev.yml      # 开发环境编排
+docker-compose.prod.yml     # 生产环境编排
+docker-compose.test.yml     # 测试环境编排
+
+# 环境变量文件
+.env                        # 环境变量文件
+.env.development            # 开发环境变量
+.env.production             # 生产环境变量
+.env.test                   # 测试环境变量
+.env.example                # 环境变量示例
+
+# 其他配置文件
+nginx.conf                  # Nginx配置
+prometheus.yml              # Prometheus配置
+grafana.ini                 # Grafana配置
+```
+
+#### 文档文件命名
+
+```bash
+# 主要文档
+README.md                   # 项目说明
+CHANGELOG.md                # 变更日志
+CONTRIBUTING.md             # 贡献指南
+LICENSE                     # 许可证
+CODE_OF_CONDUCT.md          # 行为准则
+
+# 技术文档
+API.md                      # API文档
+ARCHITECTURE.md             # 架构设计
+DEPLOYMENT.md               # 部署指南
+TROUBLESHOOTING.md          # 故障排除
+SECURITY.md                 # 安全说明
+PERFORMANCE.md              # 性能优化
+
+# 项目文档
+PROJECT_BRIEF.md            # 项目简介
+PROJECT_STATUS.md           # 项目状态
+PROJECT_RULES.md            # 项目规则
+USER_STORIES.md             # 用户故事
+REQUIREMENTS.md             # 需求文档
+
+# 开发文档
+DEVELOPMENT_GUIDE.md        # 开发指南
+TESTING_GUIDE.md            # 测试指南
+CODE_REVIEW_GUIDE.md        # 代码审查指南
+RELEASE_GUIDE.md            # 发布指南
+```
+
+#### 脚本文件命名
+
+```bash
+# Shell脚本
+setup.sh                    # 安装脚本
+start.sh                    # 启动脚本
+stop.sh                     # 停止脚本
+restart.sh                  # 重启脚本
+backup.sh                   # 备份脚本
+deploy.sh                   # 部署脚本
+test.sh                     # 测试脚本
+clean.sh                    # 清理脚本
+
+# Python脚本
+setup.py                    # 安装脚本
+main.py                     # 主程序
+cli.py                      # 命令行工具
+migrate.py                  # 数据迁移
+seed.py                     # 数据填充
+```
+
+### 4. 变量和函数命名规范
+
+#### Python 命名规范
+
+```python
+# 变量命名：小写字母+下划线
+user_name = "张三"
+api_key = "your-api-key"
+max_retry_count = 3
+is_connected = True
+data_list = []
+
+# 常量命名：大写字母+下划线
+DEFAULT_TIMEOUT = 30
+MAX_RETRY_COUNT = 3
+API_BASE_URL = "https://api.firecrawl.dev"
+DATABASE_NAME = "firecrawl_db"
+
+# 函数命名：小写字母+下划线
+def collect_data():
+    """采集数据"""
+    pass
+
+def process_data():
+    """处理数据"""
+    pass
+
+def validate_config():
+    """验证配置"""
+    pass
+
+def send_notification():
+    """发送通知"""
+    pass
+
+# 类命名：大驼峰命名法
+class DataCollector:
+    """数据采集器"""
+    pass
+
+class ConfigManager:
+    """配置管理器"""
+    pass
+
+class ApiClient:
+    """API客户端"""
+    pass
+
+# 私有方法：单下划线前缀
+def _internal_method():
+    """内部方法"""
+    pass
+
+# 特殊方法：双下划线前缀和后缀
+def __init__(self):
+    """初始化方法"""
+    pass
+
+def __str__(self):
+    """字符串表示"""
+    pass
+```
+
+#### 数据库命名规范
+
+```sql
+-- 表名：小写字母+下划线
+users                       -- 用户表
+data_collections            -- 数据采集表
+api_requests                -- API请求表
+error_logs                  -- 错误日志表
+
+-- 字段名：小写字母+下划线
+user_id                     -- 用户ID
+created_at                  -- 创建时间
+updated_at                  -- 更新时间
+is_active                   -- 是否激活
+api_key_hash                -- API密钥哈希
+
+-- 索引名：idx_前缀+表名+字段名
+idx_users_email             -- 用户邮箱索引
+idx_collections_status      -- 采集状态索引
+idx_requests_timestamp      -- 请求时间戳索引
+
+-- 外键名：fk_前缀+表名+字段名
+fk_collections_user_id      -- 采集表用户ID外键
+fk_requests_collection_id   -- 请求表采集ID外键
+```
+
+---
+
+## 📁 文件夹规范
+
+### 1. 项目根目录结构
+
+```bash
+Firecrawl数据采集器/
+├── README.md                    # 项目说明
+├── LICENSE                      # 许可证
+├── .gitignore                   # Git忽略规则
+├── requirements.txt             # Python依赖
+├── requirements-dev.txt         # 开发依赖
+├── requirements-minimal.txt     # 最小依赖
+├── Makefile                     # 构建脚本
+├── docker-compose.yml           # Docker编排
+├── Dockerfile                   # Docker镜像
+├── .env.example                 # 环境变量示例
+│
+├── src/                         # 源代码目录
+├── tests/                       # 测试目录
+├── docs/                        # 文档目录
+├── config/                      # 配置文件目录
+├── scripts/                     # 脚本目录
+├── data/                        # 数据目录
+├── logs/                        # 日志目录
+├── temp/                        # 临时目录
+├── backups/                     # 备份目录
+├── results/                     # 结果目录
+├── examples/                    # 示例目录
+├── templates/                   # 模板目录
+├── components/                  # 组件目录
+├── personal-templates/          # 个人模板
+├── cursor/                      # Cursor配置
+├── prompts/                     # 提示词目录
+└── firecrawl_env/               # Python虚拟环境
+```
+
+### 2. 源代码目录结构
+
+```bash
+src/
+├── __init__.py                  # 包初始化文件
+├── main.py                      # 主程序入口
+├── cli.py                       # 命令行接口
+├── api.py                       # API接口
+│
+├── core/                        # 核心模块
+│   ├── __init__.py
+│   ├── collector.py             # 数据采集器
+│   ├── processor.py             # 数据处理器
+│   ├── validator.py             # 数据验证器
+│   └── scheduler.py             # 任务调度器
+│
+├── api/                         # API相关
+│   ├── __init__.py
+│   ├── client.py                # API客户端
+│   ├── endpoints.py             # API端点
+│   ├── middleware.py            # 中间件
+│   └── authentication.py        # 认证模块
+│
+├── models/                      # 数据模型
+│   ├── __init__.py
+│   ├── base.py                  # 基础模型
+│   ├── collection.py            # 采集模型
+│   ├── result.py                # 结果模型
+│   └── user.py                  # 用户模型
+│
+├── services/                    # 业务服务
+│   ├── __init__.py
+│   ├── collection_service.py    # 采集服务
+│   ├── processing_service.py    # 处理服务
+│   ├── notification_service.py  # 通知服务
+│   └── monitoring_service.py    # 监控服务
+│
+├── utils/                       # 工具函数
+│   ├── __init__.py
+│   ├── logging.py               # 日志工具
+│   ├── validation.py            # 验证工具
+│   ├── encryption.py            # 加密工具
+│   ├── helpers.py               # 辅助工具
+│   └── decorators.py            # 装饰器
+│
+├── config/                      # 配置模块
+│   ├── __init__.py
+│   ├── settings.py              # 设置管理
+│   ├── database.py              # 数据库配置
+│   ├── api.py                   # API配置
+│   └── logging.py               # 日志配置
+│
+├── collectors/                  # 数据采集器
+│   ├── __init__.py
+│   ├── base_collector.py        # 基础采集器
+│   ├── web_collector.py         # 网页采集器
+│   ├── api_collector.py         # API采集器
+│   └── file_collector.py        # 文件采集器
+│
+├── processors/                  # 数据处理器
+│   ├── __init__.py
+│   ├── base_processor.py        # 基础处理器
+│   ├── text_processor.py        # 文本处理器
+│   ├── image_processor.py       # 图像处理器
+│   └── data_processor.py        # 数据处理器
+│
+└── integrations/                # 第三方集成
+    ├── __init__.py
+    ├── firecrawl.py             # Firecrawl集成
+    ├── database.py              # 数据库集成
+    ├── redis.py                 # Redis集成
+    └── monitoring.py            # 监控集成
+```
+
+### 3. 测试目录结构
+
+```bash
+tests/
+├── __init__.py                  # 测试包初始化
+├── conftest.py                  # pytest配置
+├── pytest.ini                  # pytest设置
+│
+├── unit/                        # 单元测试
+│   ├── __init__.py
+│   ├── test_collector.py        # 采集器测试
+│   ├── test_processor.py        # 处理器测试
+│   ├── test_api_client.py       # API客户端测试
+│   └── test_utils.py            # 工具函数测试
+│
+├── integration/                 # 集成测试
+│   ├── __init__.py
+│   ├── test_api_integration.py  # API集成测试
+│   ├── test_database_integration.py # 数据库集成测试
+│   └── test_end_to_end.py       # 端到端测试
+│
+├── fixtures/                    # 测试数据
+│   ├── sample_data.json         # 示例数据
+│   ├── test_config.json         # 测试配置
+│   └── mock_responses.json      # 模拟响应
+│
+├── mocks/                       # 模拟对象
+│   ├── __init__.py
+│   ├── mock_api.py              # API模拟
+│   ├── mock_database.py         # 数据库模拟
+│   └── mock_services.py         # 服务模拟
+│
+└── archive/                     # 归档测试
+    ├── old_tests.py             # 旧测试文件
+    └── deprecated_tests.py      # 废弃测试
+```
+
+### 4. 配置目录结构
+
+```bash
+config/
+├── development/                 # 开发环境配置
+│   ├── config.json              # 开发配置
+│   ├── database.json            # 数据库配置
+│   ├── api.json                 # API配置
+│   └── logging.json             # 日志配置
+│
+├── production/                  # 生产环境配置
+│   ├── config.json              # 生产配置
+│   ├── database.json            # 数据库配置
+│   ├── api.json                 # API配置
+│   └── logging.json             # 日志配置
+│
+├── deployment/                  # 部署配置
+│   ├── docker-compose.yml       # Docker编排
+│   ├── nginx.conf               # Nginx配置
+│   ├── supervisor.conf          # Supervisor配置
+│   └── systemd/                 # Systemd服务
+│
+├── monitoring/                  # 监控配置
+│   ├── prometheus.yml           # Prometheus配置
+│   ├── grafana/                 # Grafana配置
+│   └── alertmanager.yml         # 告警管理配置
+│
+└── security/                    # 安全配置
+    ├── ssl/                     # SSL证书
+    ├── firewall/                # 防火墙配置
+    └── access_control/          # 访问控制
+```
+
+---
+
+## 📄 文件管理规范
+
+### 1. 文件创建规范
+
+#### 新文件创建流程
+
+```bash
+# 1. 检查文件是否已存在
+if [ -f "new_file.py" ]; then
+    echo "文件已存在，请检查是否需要覆盖"
+    exit 1
+fi
+
+# 2. 创建文件并添加标准头部
+cat > new_file.py << 'EOF'
+"""
+new_file.py
+
+文件描述和用途说明
+
+Author: 作者姓名
+Date: $(date +%Y-%m-%d)
+Version: 1.0.0
+"""
+
+# 标准库导入
+import os
+import sys
+from typing import Dict, List, Optional
+
+# 第三方库导入
+import requests
+
+# 本地模块导入
+from src.core.collector import Collector
+
+# 模块级变量
+DEFAULT_TIMEOUT = 30
+
+# 类和函数定义
+class NewClass:
+    """新类描述"""
+    pass
+
+def new_function() -> None:
+    """新函数描述"""
+    pass
+
+# 模块执行代码
+if __name__ == "__main__":
+    # 模块执行逻辑
+    pass
+EOF
+
+# 3. 设置文件权限
+chmod 644 new_file.py
+
+# 4. 添加到版本控制
+git add new_file.py
+```
+
+#### 文件命名检查
+
+```bash
+# 检查文件名是否符合规范
+check_filename() {
+    local filename="$1"
+
+    # 检查是否包含空格或特殊字符
+    if [[ "$filename" =~ [[:space:]] ]]; then
+        echo "错误：文件名不能包含空格"
+        return 1
+    fi
+
+    # 检查是否包含中文字符
+    if [[ "$filename" =~ [^\x00-\x7F] ]]; then
+        echo "警告：文件名包含非ASCII字符"
+    fi
+
+    # 检查是否以点开头
+    if [[ "$filename" =~ ^\. ]]; then
+        echo "警告：文件名以点开头，可能是隐藏文件"
+    fi
+
+    return 0
+}
+```
+
+### 2. 文件修改规范
+
+#### 文件修改流程
+
+```bash
+# 1. 创建备份
+cp original_file.py original_file.py.backup.$(date +%Y%m%d_%H%M%S)
+
+# 2. 修改文件
+# 使用编辑器修改文件内容
+
+# 3. 验证修改
+python -m py_compile modified_file.py
+
+# 4. 运行测试
+python -m pytest tests/test_modified_file.py
+
+# 5. 提交修改
+git add modified_file.py
+git commit -m "feat: 修改文件功能描述"
+```
+
+#### 文件版本控制
+
+```bash
+# 文件版本标记
+# 在文件头部添加版本信息
+"""
+文件版本历史：
+v1.0.0 - 2024-01-01 - 初始版本
+v1.1.0 - 2024-01-15 - 添加新功能
+v1.1.1 - 2024-01-20 - 修复bug
+v1.2.0 - 2024-02-01 - 重构代码
+"""
+```
+
+### 3. 文件删除规范
+
+#### 文件删除流程
+
+```bash
+# 1. 检查文件依赖
+grep -r "deleted_file.py" src/ tests/ docs/
+
+# 2. 创建备份
+cp deleted_file.py backups/deleted_file.py.$(date +%Y%m%d_%H%M%S)
+
+# 3. 更新相关文档
+# 更新README.md、API.md等文档
+
+# 4. 删除文件
+rm deleted_file.py
+
+# 5. 提交删除
+git add -A
+git commit -m "remove: 删除废弃文件 deleted_file.py"
+```
+
+#### 文件归档规范
+
+```bash
+# 创建归档目录
+mkdir -p archive/$(date +%Y%m)
+
+# 移动文件到归档目录
+mv old_file.py archive/$(date +%Y%m)/old_file.py.$(date +%Y%m%d)
+
+# 更新归档索引
+echo "$(date +%Y-%m-%d) - old_file.py - 归档原因" >> archive/index.txt
+```
+
+### 4. 文件权限管理
+
+#### 文件权限设置
+
+```bash
+# 可执行文件
+chmod 755 script.sh
+
+# 配置文件
+chmod 644 config.json
+
+# 敏感文件
+chmod 600 .env
+chmod 600 api_keys.txt
+
+# 日志文件
+chmod 644 logs/app.log
+
+# 临时文件
+chmod 666 temp/temp_file.txt
+```
+
+#### 文件所有权管理
+
+```bash
+# 设置文件所有者
+chown user:group filename
+
+# 设置目录所有者
+chown -R user:group directory/
+
+# 检查文件权限
+ls -la filename
+```
+
+### 5. 文件大小管理
+
+#### 文件大小限制
+
+```bash
+# 代码文件大小限制
+MAX_CODE_SIZE=1000  # 行数
+MAX_CONFIG_SIZE=500  # 行数
+MAX_DOC_SIZE=2000    # 行数
+
+# 数据文件大小限制
+MAX_JSON_SIZE=10M    # 10MB
+MAX_LOG_SIZE=100M    # 100MB
+MAX_DB_SIZE=1G       # 1GB
+
+# 检查文件大小
+check_file_size() {
+    local file="$1"
+    local max_size="$2"
+
+    if [ -f "$file" ]; then
+        local size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null)
+        if [ "$size" -gt "$max_size" ]; then
+            echo "警告：文件 $file 超过大小限制 ($size > $max_size)"
+            return 1
+        fi
+    fi
+    return 0
+}
+```
+
+#### 文件压缩和归档
+
+```bash
+# 压缩大文件
+gzip large_file.log
+
+# 创建归档
+tar -czf archive_$(date +%Y%m%d).tar.gz old_files/
+
+# 清理临时文件
+find temp/ -name "*.tmp" -mtime +7 -delete
+```
+
+### 6. 文件编码管理
+
+#### 文件编码规范
+
+```bash
+# 设置文件编码为UTF-8
+export LANG=en_US.UTF-8
+export LC_ALL=en_US.UTF-8
+
+# 检查文件编码
+file -bi filename
+
+# 转换文件编码
+iconv -f GBK -t UTF-8 input.txt > output.txt
+
+# 设置行尾符
+dos2unix filename  # 转换为Unix格式
+unix2dos filename  # 转换为Windows格式
+```
+
+#### 文件编码检查脚本
+
+```bash
+#!/bin/bash
+# 检查项目文件编码
+
+check_encoding() {
+    local file="$1"
+    local encoding=$(file -bi "$file" | cut -d= -f2)
+
+    if [ "$encoding" != "utf-8" ]; then
+        echo "警告：文件 $file 编码不是UTF-8 ($encoding)"
+        return 1
+    fi
+    return 0
+}
+
+# 检查所有Python文件
+find src/ -name "*.py" -exec bash -c 'check_encoding "$0"' {} \;
+```
+
+---
+
+## 🏗️ 代码组织规范
+
+### 1. 模块组织规范
+
+#### 模块导入顺序
+
+```python
+# 1. 标准库导入
+import os
+import sys
+from typing import Dict, List, Optional
+
+# 2. 第三方库导入
+import requests
+import pandas as pd
+from flask import Flask
+
+# 3. 本地模块导入
+from src.core.collector import Collector
+from src.config.settings import Settings
+from src.utils.logging import get_logger
+
+# 4. 模块级变量
+DEFAULT_TIMEOUT = 30
+MAX_RETRIES = 3
+```
+
+#### 模块结构规范
+
+```python
+"""
+模块文档字符串
+描述模块功能、用法和注意事项
+"""
+
+# 导入语句
+# ...
+
+# 模块级变量
+# ...
+
+# 类和函数定义
+# ...
+
+# 模块执行代码
+if __name__ == "__main__":
+    # 模块执行逻辑
+    pass
+```
+
+### 2. 类组织规范
+
+#### 类结构规范
+
+```python
+class ExampleClass:
+    """类文档字符串"""
+
+    # 类变量
+    class_variable = "value"
+
+    def __init__(self, param1: str, param2: int = 0):
+        """初始化方法"""
+        self.param1 = param1
+        self.param2 = param2
+
+    # 公共方法
+    def public_method(self) -> str:
+        """公共方法"""
+        return self._private_method()
+
+    # 私有方法
+    def _private_method(self) -> str:
+        """私有方法"""
+        return "private"
+
+    # 特殊方法
+    def __str__(self) -> str:
+        """字符串表示"""
+        return f"ExampleClass({self.param1})"
+```
+
+### 3. 函数组织规范
+
+#### 函数结构规范
+
+```python
+def example_function(param1: str, param2: int = 0) -> Optional[str]:
+    """函数文档字符串
+
+    Args:
+        param1: 参数1描述
+        param2: 参数2描述，默认为0
+
+    Returns:
+        返回值描述，可能为None
+
+    Raises:
+        ValueError: 当参数无效时抛出
+        ConnectionError: 当连接失败时抛出
+
+    Example:
+        >>> example_function("test", 10)
+        "result"
+    """
+    # 参数验证
+    if not param1:
+        raise ValueError("param1不能为空")
+
+    # 函数逻辑
+    try:
+        result = process_data(param1, param2)
+        return result
+    except Exception as e:
+        logger.error(f"处理失败: {e}")
+        raise
+```
+
+---
+
+## 📚 文档规范
+
+### 1. 文档结构规范
+
+#### README.md 结构
+
+````markdown
+# 项目名称
+
+## 项目简介
+
+简要描述项目的目的和功能
+
+## 功能特性
+
+- 特性 1
+- 特性 2
+- 特性 3
+
+## 快速开始
+
+### 安装要求
+
+- Python 3.8+
+- 其他依赖
+
+### 安装步骤
+
+1. 克隆项目
+2. 安装依赖
+3. 配置环境
+4. 运行项目
+
+## 使用方法
+
+### 基本用法
+
+```python
+# 代码示例
+```
+````
+
+### 高级用法
+
+```python
+# 高级代码示例
+```
+
+## 配置说明
+
+配置参数详细说明
+
+## API 文档
+
+API 接口说明
+
+## 开发指南
+
+开发环境搭建和贡献指南
+
+## 许可证
+
+许可证信息
+
+````
+
+#### API文档结构
+```markdown
+# API文档
+
+## 概述
+API功能概述
+
+## 认证
+认证方式说明
+
+## 端点列表
+### GET /api/v1/collections
+获取采集列表
+
+**参数：**
+- page: 页码
+- limit: 每页数量
+
+**响应：**
+```json
+{
+  "data": [],
+  "total": 0,
+  "page": 1
+}
+````
+
+## 错误码
+
+错误码说明
+
+## 示例
+
+使用示例
+
+````
+
+### 2. 代码注释规范
+
+#### 函数注释规范
+```python
+def collect_data(url: str, timeout: int = 30) -> Dict[str, Any]:
+    """采集指定URL的数据
+
+    Args:
+        url: 要采集的URL地址
+        timeout: 超时时间，默认30秒
+
+    Returns:
+        包含采集结果的字典，格式为：
+        {
+            'status': 'success'|'error',
+            'data': {...},
+            'error': '错误信息'
+        }
+
+    Raises:
+        ValueError: 当URL格式无效时
+        TimeoutError: 当请求超时时
+        ConnectionError: 当连接失败时
+
+    Example:
+        >>> result = collect_data("https://example.com")
+        >>> print(result['status'])
+        'success'
+    """
+    pass
+````
+
+#### 类注释规范
+
+```python
+class DataCollector:
+    """数据采集器类
+
+    负责从各种数据源采集数据，支持网页、API、文件等多种数据源。
+
+    Attributes:
+        config: 采集器配置
+        logger: 日志记录器
+        session: HTTP会话对象
+
+    Example:
+        >>> collector = DataCollector(config)
+        >>> data = collector.collect("https://example.com")
+    """
+
+    def __init__(self, config: Dict[str, Any]):
+        """初始化数据采集器
+
+        Args:
+            config: 采集器配置字典，必须包含以下键：
+                - base_url: 基础URL
+                - timeout: 超时时间
+                - retries: 重试次数
+        """
+        pass
+```
+
+### 3. 变更日志规范
+
+#### CHANGELOG.md 结构
+
+```markdown
+# 变更日志
+
+所有重要的项目变更都会记录在此文件中。
+
+格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
+项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+
+## [未发布]
+
+### 新增
+
+- 新功能描述
+
+### 变更
+
+- 功能变更描述
+
+### 修复
+
+- Bug 修复描述
+
+### 移除
+
+- 移除功能描述
+
+## [1.0.0] - 2024-01-01
+
+### 新增
+
+- 初始版本发布
+- 数据采集功能
+- API 接口
+- Web 界面
+
+## [0.9.0] - 2023-12-15
+
+### 新增
+
+- Beta 版本发布
+- 基础采集功能
+```
+
+---
+
+## 🔄 版本控制规范
+
+### 1. Git 提交规范
+
+#### 提交信息格式
+
+```bash
+<类型>(<范围>): <描述>
+
+[可选的正文]
+
+[可选的脚注]
+```
+
+#### 提交类型
+
+```bash
+feat:     新功能
+fix:      Bug修复
+docs:     文档更新
+style:    代码格式调整
+refactor: 代码重构
+test:     测试相关
+chore:    构建过程或辅助工具的变动
+perf:     性能优化
+ci:       CI/CD相关
+build:    构建系统相关
+revert:   回滚提交
+```
+
+#### 提交示例
+
+```bash
+# 新功能
+git commit -m "feat(collector): 添加网页数据采集功能"
+
+# Bug修复
+git commit -m "fix(api): 修复API超时问题"
+
+# 文档更新
+git commit -m "docs: 更新API文档"
+
+# 代码重构
+git commit -m "refactor(processor): 重构数据处理逻辑"
+
+# 测试相关
+git commit -m "test: 添加单元测试用例"
+```
+
+### 2. 分支管理规范
+
+#### 分支命名规范
+
+```bash
+# 功能分支
+feature/功能名称
+feature/user-authentication
+feature/data-collection
+
+# 修复分支
+fix/问题描述
+fix/api-timeout-issue
+fix/memory-leak
+
+# 发布分支
+release/版本号
+release/v1.0.0
+release/v1.1.0
+
+# 热修复分支
+hotfix/问题描述
+hotfix/critical-security-fix
+hotfix/urgent-bug-fix
+
+# 开发分支
+develop
+main
+```
+
+#### 分支管理流程
+
+```bash
+# 1. 创建功能分支
+git checkout -b feature/new-feature
+
+# 2. 开发功能
+# ... 开发代码 ...
+
+# 3. 提交代码
+git add .
+git commit -m "feat: 实现新功能"
+
+# 4. 推送分支
+git push origin feature/new-feature
+
+# 5. 创建Pull Request
+# 通过GitHub/GitLab界面创建PR
+
+# 6. 代码审查
+# 团队成员审查代码
+
+# 7. 合并分支
+# 审查通过后合并到主分支
+
+# 8. 删除分支
+git branch -d feature/new-feature
+git push origin --delete feature/new-feature
+```
+
+### 3. 标签管理规范
+
+#### 版本标签格式
+
+```bash
+# 语义化版本标签
+v1.0.0                    # 主版本
+v1.1.0                    # 次版本
+v1.1.1                    # 补丁版本
+
+# 预发布版本标签
+v1.0.0-alpha.1            # Alpha版本
+v1.0.0-beta.1             # Beta版本
+v1.0.0-rc.1               # 候选版本
+
+# 创建标签
+git tag -a v1.0.0 -m "版本1.0.0发布"
+git push origin v1.0.0
+
+# 查看标签
+git tag -l
+git show v1.0.0
+```
+
+#### 发布流程
+
+```bash
+# 1. 更新版本号
+# 更新setup.py、package.json等文件中的版本号
+
+# 2. 更新CHANGELOG.md
+# 记录新版本的变更
+
+# 3. 创建发布分支
+git checkout -b release/v1.0.0
+
+# 4. 最终测试
+# 运行完整的测试套件
+
+# 5. 创建标签
+git tag -a v1.0.0 -m "版本1.0.0发布"
+
+# 6. 推送标签
+git push origin v1.0.0
+
+# 7. 合并到主分支
+git checkout main
+git merge release/v1.0.0
+
+# 8. 推送主分支
+git push origin main
+
+# 9. 删除发布分支
+git branch -d release/v1.0.0
+```
+
+---
+
+## 📋 检查清单
+
+### 文件创建检查清单
+
+- [ ] 文件名符合命名规范
+- [ ] 文件编码为 UTF-8
+- [ ] 文件包含标准头部注释
+- [ ] 文件权限设置正确
+- [ ] 文件已添加到版本控制
+
+### 代码提交检查清单
+
+- [ ] 代码通过所有测试
+- [ ] 代码符合风格规范
+- [ ] 提交信息格式正确
+- [ ] 相关文档已更新
+- [ ] 无敏感信息泄露
+
+### 发布检查清单
+
+- [ ] 版本号已更新
+- [ ] CHANGELOG.md 已更新
+- [ ] 所有测试通过
+- [ ] 文档已更新
+- [ ] 标签已创建
+- [ ] 发布说明已准备
+
+---
+
+## 🚨 注意事项
+
+### 禁止事项
+
+1. **禁止使用中文文件名**（除文档外）
+2. **禁止在文件名中使用空格**
+3. **禁止硬编码敏感信息**
+4. **禁止提交临时文件**
+5. **禁止使用过长的文件名**
+
+### 推荐事项
+
+1. **使用有意义的文件名**
+2. **保持文件结构清晰**
+3. **定期清理无用文件**
+4. **及时更新文档**
+5. **遵循版本控制规范**
+
+### 最佳实践
+
+1. **文件命名要见名知意**
+2. **目录结构要层次分明**
+3. **代码组织要模块化**
+4. **文档要实时更新**
+5. **版本控制要规范**
+
+---
+
+_本规范文档将根据项目发展需要持续更新和完善。_

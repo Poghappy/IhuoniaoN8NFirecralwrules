@@ -1,0 +1,86 @@
+# Cancel Batch Scrape
+
+## OpenAPI
+
+````yaml v2-openapi DELETE /batch/scrape/{id}
+paths:
+  path: /batch/scrape/{id}
+  method: delete
+  servers:
+    - url: https://api.firecrawl.dev/v2
+  request:
+    security:
+      - title: bearerAuth
+        parameters:
+          query: {}
+          header:
+            Authorization:
+              type: http
+              scheme: bearer
+          cookie: {}
+    parameters:
+      path:
+        id:
+          schema:
+            - type: string
+              required: true
+              description: The ID of the batch scrape job
+              format: uuid
+      query: {}
+      header: {}
+      cookie: {}
+    body: {}
+  response:
+    '200':
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              success:
+                allOf:
+                  - type: boolean
+                    example: true
+              message:
+                allOf:
+                  - type: string
+                    example: Batch scrape job successfully cancelled.
+        examples:
+          example:
+            value:
+              success: true
+              message: Batch scrape job successfully cancelled.
+        description: Successful cancellation
+    '404':
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              error:
+                allOf:
+                  - type: string
+                    example: Batch scrape job not found.
+        examples:
+          example:
+            value:
+              error: Batch scrape job not found.
+        description: Batch scrape job not found
+    '500':
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              error:
+                allOf:
+                  - type: string
+                    example: An unexpected error occurred on the server.
+        examples:
+          example:
+            value:
+              error: An unexpected error occurred on the server.
+        description: Server error
+  deprecated: false
+  type: path
+components:
+  schemas: {}
+
+````

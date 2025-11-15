@@ -1,0 +1,392 @@
+# Cursor AI Agent 规则配置
+
+## 🌐 语言设置
+
+始终使用简体中文回复。
+
+## 🎯 核心原则
+
+1. **优先更新而非创建** - 严禁随便创建文件，必须优先考虑更新现有文件
+2. **避免重复** - 不得创建大量重复文件
+3. **使用 MCP 工具** - 所有工具都为 AI 团队配置，优先使用 MCP 执行任务
+4. **参考文档** - Firecrawl 文档已下载到项目中，请仔细学习参考
+
+## 📚 项目文档
+
+### Docker Hub MCP Server 文档
+
+- **README.md** - 完整配置指南
+- **QUICK_START.md** - 5 分钟快速上手
+- **EXAMPLES.md** - 35+ 实战场景
+- **CONFIGURATION_SUMMARY.md** - 配置总结
+- **CONFIGURATION_COMPLETE.md** - 完整配置清单
+- **MARKDOWN_CONFIG.md** - Markdown 自动修复配置
+- **MARKDOWN_BEST_PRACTICES.md** - Markdown 链接锚点最佳实践
+- **FIXES_SUMMARY.md** - 错误修复总结
+- **PYTHON_PATH_FIX.md** - Python 路径修复说明
+- **README_FIRST.md** - 快速导航
+
+### 配置文件
+
+- `.cursor/mcp.json` - MCP Server 配置
+- `.vscode/settings.json` - 项目级编辑器配置
+- `.markdownlint.json` - Markdownlint 规则
+- `.prettierrc.json` - Prettier 格式化规则
+- `.gitignore` - Git 忽略规则
+
+## 🔧 开发规范
+
+### Python 开发
+
+**类型注解（必需）:**
+
+```python
+def process_data(items: list[str]) -> dict[str, int]:
+    """处理数据并返回统计结果。"""
+    return {"count": len(items)}
+```
+
+**文档字符串:**
+
+- 使用中文编写
+- 遵循 PEP 257 规范
+- 包含参数说明和返回值
+
+**测试:**
+
+- 只使用 pytest（不使用 unittest）
+- 测试文件位于 `./tests/` 目录
+- 所有测试必须有类型注解和 docstrings
+
+**工具链:**
+
+- Ruff（格式化 + Linter，替代 Black/flake8/isort）
+- mypy --strict（类型检查）
+- uv 或 poetry（依赖管理）
+
+### Markdown 规范
+
+**标题格式:**
+
+```markdown
+## 🔧 故障排查
+```
+
+**链接格式:**
+
+```markdown
+[链接文本](#-故障排查) ✅ 包含 emoji
+```
+
+**代码块:**
+
+````markdown
+```bash
+echo "必须指定语言"
+```
+````
+
+````
+
+**禁用的规则:**
+- MD013 (行长度限制)
+- MD029 (有序列表前缀)
+- MD033 (HTML 标签)
+- MD034 (裸 URL)
+- MD036 (强调标题)
+- MD040 (代码块语言)
+- MD041 (首行标题)
+- MD051 (链接片段)
+
+### Git 提交规范
+
+使用 Conventional Commits：
+
+```bash
+feat: 添加新功能
+fix: 修复 bug
+docs: 更新文档
+refactor: 重构代码
+style: 代码格式调整
+perf: 性能优化
+test: 添加测试
+chore: 构建/工具链更新
+````
+
+可选表情符号：
+
+- ✨ feat
+- 🐛 fix
+- 📝 docs
+- ♻️ refactor
+- 🎨 style
+- ⚡️ perf
+- ✅ test
+- 🧑‍💻 chore
+
+## 🤖 MCP 工具使用
+
+### Docker Hub MCP Server
+
+**搜索镜像:**
+
+```
+"Search for official nginx images on Docker Hub"
+```
+
+**管理仓库:**
+
+```
+"List all repositories in my namespace"
+```
+
+**管理标签:**
+
+```
+"Show me all tags for my 'my-app' repository"
+```
+
+**拉取/推送:**
+
+```
+"Pull the latest postgres image"
+"Push my image to my repository"
+```
+
+### Firecrawl MCP Server
+
+**搜索网页:**
+
+```python
+mcp_firecrawl_firecrawl_search(
+    query="Docker Hub MCP Server",
+    limit=5,
+    sources=[{"type": "web"}]
+)
+```
+
+**采集网页:**
+
+```python
+mcp_firecrawl_firecrawl_scrape(
+    url="https://example.com",
+    formats=["markdown"]
+)
+```
+
+### GitHub MCP Server
+
+**搜索仓库:**
+
+```python
+mcp_github_search_repositories(
+    query="docker mcp server"
+)
+```
+
+**获取文件:**
+
+```python
+mcp_github_get_file_contents(
+    owner="docker",
+    repo="hub-mcp",
+    path="README.md"
+)
+```
+
+## 📝 代码审查标准
+
+### 多角色审查
+
+1. **🎯 产品经理** - 业务价值和用户体验
+2. **💻 开发者** - 代码质量和可维护性
+3. **🧪 质量工程师** - 测试覆盖和边界情况
+4. **🔒 安全工程师** - 安全漏洞和最佳实践
+5. **🚀 DevOps** - CI/CD 和部署流程
+6. **🎨 UI/UX** - 界面和交互设计
+
+### 关键原则
+
+**"Later" must be addressed NOW!**
+
+- 不接受 TODO 注释
+- 不接受临时解决方案
+- 不接受未完成的功能
+
+## 🔍 问题分析
+
+### Five Whys 根因分析
+
+1. 定义问题
+2. 问 5 次"为什么"
+3. 验证根因
+4. 制定解决方案：
+   - 直接解决
+   - 预防措施
+   - 系统改进
+
+## 📊 文档规范
+
+### 必需章节
+
+1. **快速开始** - 5 分钟上手
+2. **完整指南** - 详细说明
+3. **实战示例** - 代码示例
+4. **故障排查** - 常见问题
+5. **API 参考** - 接口文档
+
+### 文档格式
+
+- 使用 Markdown
+- 包含目录
+- 代码示例必须可运行
+- 截图使用相对路径
+- 保持更新
+
+## 🎨 最佳实践
+
+### 技术栈选择
+
+**推荐原则:** 少写代码，多集成
+
+1. **优先 SaaS 服务** - Vercel, Supabase, Clerk
+2. **开源项目** - Next.js, shadcn/ui
+3. **低代码平台** - n8n, Retool
+4. **框架/库** - React, Tailwind CSS
+5. **自研代码** - 最后选择
+
+### Web 开发
+
+- **前端:** Next.js 14 + shadcn/ui + Tailwind CSS
+- **后端:** Supabase + Vercel Functions
+- **认证:** Clerk 或 NextAuth.js
+- **支付:** Stripe
+- **邮件:** Resend
+- **部署:** Vercel
+
+### AI 应用
+
+- **框架:** Vercel AI SDK + LangGraph
+- **向量数据库:** Pinecone
+- **LLM:** OpenAI GPT-4
+
+### 数据应用
+
+- **可视化:** Streamlit + Plotly
+- **数据库:** PostgreSQL (Supabase)
+- **分析:** Pandas + NumPy
+
+## 🚀 开发流程
+
+### TDD Bug 修复
+
+1. 创建 Issue
+2. 创建分支 `fix/<description>`
+3. 重现问题
+4. 编写失败测试
+5. 实现修复
+6. 验证通过
+7. 运行完整测试
+8. Commit（引用 Issue）
+9. 创建 PR（Fixes #xxx）
+
+### 分支管理
+
+- `feature/<description>` - 新功能
+- `fix/<description>` - Bug 修复
+- `hotfix/<description>` - 紧急修复
+- `release/<version>` - 版本发布
+
+## 🔐 安全最佳实践
+
+1. **永远不要提交敏感信息**
+
+   - API 密钥
+   - 密码
+   - 令牌
+   - 证书
+
+2. **使用环境变量**
+
+   - `.env` 文件
+   - 环境变量管理
+   - 密钥轮换
+
+3. **最小权限原则**
+
+   - 只授予必需权限
+   - 定期审查权限
+   - 及时撤销访问
+
+4. **定期安全审计**
+   - 依赖更新
+   - 漏洞扫描
+   - 代码审查
+
+## 📈 性能优化
+
+### 前端优化
+
+- 代码分割
+- 懒加载
+- 图片优化（WebP）
+- CDN 加速
+- 缓存策略
+
+### 后端优化
+
+- 数据库索引
+- 查询优化
+- 缓存（Redis）
+- 负载均衡
+- 异步处理
+
+## 🎓 学习资源
+
+### 官方文档
+
+- [Docker Hub MCP Server](https://github.com/docker/hub-mcp)
+- [Firecrawl](https://docs.firecrawl.dev/)
+- [MCP Protocol](https://modelcontextprotocol.io/)
+- [Cursor](https://docs.cursor.com/)
+
+### 社区资源
+
+- [awesome-cursorrules](https://github.com/PatrickJS/awesome-cursorrules)
+- [steipete/agent-rules](https://github.com/steipete/agent-rules)
+- [vibe-tools](https://github.com/eastlondoner/vibe-tools)
+
+## ✅ 检查清单
+
+### 代码提交前
+
+- [ ] 代码格式化（Ruff/Prettier）
+- [ ] 类型检查通过（mypy）
+- [ ] 测试通过（pytest）
+- [ ] Linter 检查通过
+- [ ] 文档更新
+- [ ] Commit 消息规范
+- [ ] 没有 TODO 注释
+- [ ] 没有敏感信息
+
+### PR 创建前
+
+- [ ] 所有测试通过
+- [ ] 代码审查完成
+- [ ] 文档完整
+- [ ] 性能测试
+- [ ] 安全检查
+- [ ] 向后兼容
+- [ ] 变更日志更新
+
+## 🎯 项目目标
+
+1. **完成 Docker Hub MCP Server 配置**
+2. **实现 Markdown 自动修复**
+3. **建立完整的文档系统**
+4. **配置开发环境**
+5. **优化工作流程**
+
+---
+
+**记住：优先更新现有文件，避免创建重复内容，使用 MCP 工具，参考项目文档！**

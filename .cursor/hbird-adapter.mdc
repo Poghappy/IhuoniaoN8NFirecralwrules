@@ -1,0 +1,384 @@
+---
+description: 火鸟门户系统 v8.6 数据格式适配规则
+globs:
+  - "**/adapters/**"
+  - "**/models/**"
+alwaysApply: false
+---
+
+# 火鸟门户系统 v8.6 适配规则
+
+## 标准数据模型
+
+所有内容必须转换为火鸟系统标准格式：
+
+```python
+from pydantic import BaseModel, Field, validator
+from typing import List, Optional, Dict, Any
+from datetime import datetime
+from enum import Enum
+
+class ContentCategory(str, Enum):
+    NEWS = "news"
+    EVENT = "event"
+    TOURISM = "tourism"
+    BUSINESS = "business"
+    COMMUNITY = "community"
+
+class ImageData(BaseModel):
+    """图片数据模型"""
+    url: str = Field(..., description="图片URL")
+    alt: Optional[str] = Field(None, description="替代文本")
+    title: Optional[str] = Field(None, description="图片标题")
+    width: Optional[int] = Field(None, description="宽度")
+    height: Optional[int] = Field(None, description="高度")
+    is_cover: bool = Field(False, description="是否封面图")
+
+    @validator('url')
+    def validate_url(cls, v):
+        if not v.startswith(('http://', 'https://')):
+            raise ValueError('Invalid image URL')
+        return v
+
+class LocationData(BaseModel):
+    """位置信息模型"""
+    address: Optional[str] = Field(None, description="详细地址")
+    city: str = Field(default="Honolulu", description="城市")
+    state: str = Field(default="Hawaii", description="州")
+    zipcode: Optional[str] = Field(None, description="邮编")
+    latitude: Optional[float] = Field(None, description="纬度")
+    longitude: Optional[float] = Field(None, description="经度")
+
+    @validator('latitude')
+    def validate_latitude(cls, v):
+        if v is not None and not (-90 <= v <= 90):
+            raise ValueError('Latitude must be between -90 and 90')
+        return v
+
+    @validator('longitude')
+    def validate_longitude(cls, v):
+        if v is not None and not (-180 <= v <= 180):
+            raise ValueError('Longitude must be between -180 and 180')
+        return v
+
+class HBirdContent(BaseModel):
+    """火鸟系统内容模型 v8.6"""
+
+    # 必填字段
+    title: str = Field(..., max_length=255, description="标题")
+    content: str = Field(..., description="正文（富文本HTML）")
+    category_id: int = Field(..., description="分类ID")
+    publish_time: datetime = Field(..., description="发布时间")
+
+    # 可选字段
+    summary: Optional[str] = Field(None, max_length=500, description="摘要")
+    author: Optional[str] = Field(None, max_length=100, description="作者")
+    source: Optional[str] = Field(None, max_length=100, description="来源")
+    source_url: Optional[str] = Field(None, description="原文链接")
+
+    # 媒体和元数据
+    images: List[ImageData] = Field(default_factory=list, description="图片列表")
+    tags: List[str] = Field(default_factory=list, description="标签列表")
+    location: Optional[LocationData] = Field(None, description="位置信息")
+    meta_data: Dict[str, Any] = Field(default_factory=dict, description="额外元数据")
+
+    # 系统字段
+    status: int = Field(default=1, description="状态：0=草稿，1=已发布")
+    view_count: int = Field(default=0, description="浏览次数")
+
+    @validator('title')
+    def validate_title(cls, v):
+        if len(v.strip()) == 0:
+            raise ValueError('Title cannot be empty')
+        return v.strip()
+
+    @validator('content')
+    def validate_content(cls, v):
+        if len(v.strip()) < 50:
+            raise ValueError('Content must be at least 50 characters')
+        return v
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "title": "Honolulu Beach Festival This Weekend",
+                "content": "<p>Join us for the annual beach festival...</p>",
+                "category_id": 2,
+                "publish_time": "2025-10-30T10:00:00",
+                "summary": "Annual beach festival featuring local music and food",
+                "author": "HawaiiHub Staff",
+                "source": "Hawaii Tourism Authority",
+                "source_url": "https://example.com/beach-festival",
+                "images": [
+                    {
+                        "url": "https://example.com/images/festival.jpg",
+                        "alt": "Beach festival crowd",
+                        "is_cover": True
+                    }
+                ],
+                "tags": ["event", "beach", "festival", "honolulu"],
+                "location": {
+                    "address": "Waikiki Beach, Honolulu, HI",
+                    "city": "Honolulu",
+                    "state": "Hawaii",
+                    "latitude": 21.2793,
+                    "longitude": -157.8294
+                }
+            }
+        }
+```
+
+## 适配器基类
+
+所有适配器必须继承此基类：
+
+```python
+from abc import ABC, abstractmethod
+from typing import Dict, Any
+
+class BaseAdapter(ABC):
+    """适配器基类"""
+
+    def __init__(self, category_mapping: Dict[str, int]):
+        """
+        Args:
+            category_mapping: 分类名称到ID的映射
+        """
+        self.category_mapping = category_mapping
+
+    @abstractmethod
+    def adapt(self, raw_data: Dict[str, Any]) -> HBirdContent:
+        """
+        将原始数据转换为火鸟格式
+
+        Args:
+            raw_data: Firecrawl API 返回的原始数据
+
+        Returns:
+            HBirdContent: 火鸟系统格式的内容
+        """
+        pass
+
+    def extract_images(self, data: Dict[str, Any]) -> List[ImageData]:
+        """从原始数据中提取图片"""
+        images = []
+
+        # 从 metadata 中提取
+        metadata = data.get("metadata", {})
+        if og_image := metadata.get("ogImage"):
+            images.append(ImageData(
+                url=og_image,
+                alt=metadata.get("ogTitle", ""),
+                is_cover=True
+            ))
+
+        # 从 markdown 中提取图片链接
+        markdown = data.get("markdown", "")
+        import re
+        img_pattern = r'!\[([^\]]*)\]\(([^\)]+)\)'
+        for alt, url in re.findall(img_pattern, markdown):
+            images.append(ImageData(url=url, alt=alt))
+
+        return images
+
+    def markdown_to_html(self, markdown: str) -> str:
+        """将 Markdown 转换为 HTML"""
+        import markdown
+        return markdown.markdown(
+            markdown,
+            extensions=['extra', 'codehilite', 'tables']
+        )
+
+    def extract_tags(self, data: Dict[str, Any]) -> List[str]:
+        """提取标签"""
+        tags = set()
+
+        # 从 metadata 提取关键词
+        metadata = data.get("metadata", {})
+        if keywords := metadata.get("keywords"):
+            tags.update(k.strip() for k in keywords.split(','))
+
+        # 添加默认标签
+        tags.add("Honolulu")
+        tags.add("Hawaii")
+
+        return list(tags)[:10]  # 最多10个标签
+```
+
+## 新闻内容适配器
+
+```python
+class NewsAdapter(BaseAdapter):
+    """新闻内容适配器"""
+
+    def adapt(self, raw_data: Dict[str, Any]) -> HBirdContent:
+        metadata = raw_data.get("metadata", {})
+
+        # 提取发布时间
+        publish_time = self._extract_publish_time(raw_data)
+
+        # 构建内容
+        content_html = self.markdown_to_html(raw_data.get("markdown", ""))
+
+        return HBirdContent(
+            title=metadata.get("title", "Untitled"),
+            content=content_html,
+            summary=metadata.get("description", "")[:500],
+            category_id=self.category_mapping.get("news", 1),
+            publish_time=publish_time,
+            author=self._extract_author(metadata),
+            source=self._extract_source(metadata),
+            source_url=metadata.get("sourceURL"),
+            images=self.extract_images(raw_data),
+            tags=self.extract_tags(raw_data),
+            meta_data={
+                "scrape_id": raw_data.get("metadata", {}).get("scrapeId"),
+                "language": metadata.get("language", "en")
+            }
+        )
+
+    def _extract_publish_time(self, data: Dict[str, Any]) -> datetime:
+        """提取发布时间"""
+        # 尝试从多个来源提取时间
+        # 1. metadata 中的 publishedTime
+        # 2. 文章内容中的时间
+        # 3. 当前时间作为默认值
+        return datetime.now()
+
+    def _extract_author(self, metadata: Dict[str, Any]) -> Optional[str]:
+        """提取作者"""
+        return metadata.get("author") or metadata.get("og:author")
+
+    def _extract_source(self, metadata: Dict[str, Any]) -> Optional[str]:
+        """提取来源"""
+        return metadata.get("ogSiteName") or metadata.get("siteName")
+```
+
+## 活动内容适配器
+
+```python
+class EventAdapter(BaseAdapter):
+    """活动内容适配器"""
+
+    def adapt(self, raw_data: Dict[str, Any]) -> HBirdContent:
+        json_data = raw_data.get("json", {})
+        metadata = raw_data.get("metadata", {})
+
+        # 从结构化数据中提取
+        event_name = json_data.get("name") or metadata.get("title")
+        event_time = self._parse_event_time(json_data)
+        location = self._extract_location(json_data)
+
+        content_html = self._build_event_html(json_data, raw_data.get("markdown", ""))
+
+        return HBirdContent(
+            title=event_name,
+            content=content_html,
+            summary=json_data.get("description", "")[:500],
+            category_id=self.category_mapping.get("event", 2),
+            publish_time=datetime.now(),
+            source=json_data.get("organizer", {}).get("name"),
+            source_url=metadata.get("sourceURL"),
+            images=self.extract_images(raw_data),
+            tags=self.extract_tags(raw_data) + ["event"],
+            location=location,
+            meta_data={
+                "event_start": event_time.get("start"),
+                "event_end": event_time.get("end"),
+                "event_url": json_data.get("url")
+            }
+        )
+
+    def _parse_event_time(self, json_data: Dict) -> Dict[str, Optional[datetime]]:
+        """解析活动时间"""
+        return {
+            "start": json_data.get("startDate"),
+            "end": json_data.get("endDate")
+        }
+
+    def _extract_location(self, json_data: Dict) -> Optional[LocationData]:
+        """提取活动地点"""
+        location_data = json_data.get("location", {})
+        if not location_data:
+            return None
+
+        return LocationData(
+            address=location_data.get("address"),
+            city=location_data.get("city", "Honolulu"),
+            state=location_data.get("state", "Hawaii"),
+            latitude=location_data.get("latitude"),
+            longitude=location_data.get("longitude")
+        )
+
+    def _build_event_html(self, json_data: Dict, markdown: str) -> str:
+        """构建活动详情 HTML"""
+        html_parts = []
+
+        # 活动时间
+        if start_date := json_data.get("startDate"):
+            html_parts.append(f"<p><strong>Time:</strong> {start_date}</p>")
+
+        # 活动地点
+        if location := json_data.get("location"):
+            html_parts.append(f"<p><strong>Location:</strong> {location.get('name')}</p>")
+
+        # 主要内容
+        html_parts.append(self.markdown_to_html(markdown))
+
+        return "\n".join(html_parts)
+```
+
+## 适配器工厂
+
+```python
+class AdapterFactory:
+    """适配器工厂"""
+
+    # 分类映射
+    CATEGORY_MAPPING = {
+        "news": 1,
+        "event": 2,
+        "tourism": 3,
+        "business": 4,
+        "community": 5
+    }
+
+    @classmethod
+    def create_adapter(cls, content_type: str) -> BaseAdapter:
+        """
+        创建对应类型的适配器
+
+        Args:
+            content_type: 内容类型 (news, event, tourism, business)
+
+        Returns:
+            BaseAdapter: 适配器实例
+        """
+        adapters = {
+            "news": NewsAdapter,
+            "event": EventAdapter,
+            # 可以继续添加其他适配器
+        }
+
+        adapter_class = adapters.get(content_type)
+        if not adapter_class:
+            raise ValueError(f"Unknown content type: {content_type}")
+
+        return adapter_class(cls.CATEGORY_MAPPING)
+```
+
+## 使用示例
+
+```python
+# 创建适配器
+adapter = AdapterFactory.create_adapter("news")
+
+# 转换数据
+hbird_content = adapter.adapt(firecrawl_raw_data)
+
+# 验证数据
+validated_content = HBirdContent(**hbird_content.dict())
+
+# 保存到数据库或发送到火鸟系统 API
+save_to_hbird_system(validated_content)
+```

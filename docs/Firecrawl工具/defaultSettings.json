@@ -1,0 +1,111 @@
+{
+  "firecrawl": {
+    "api_key": "your_firecrawl_api_key_here",
+    "base_url": "https://api.firecrawl.dev",
+    "timeout": 30,
+    "max_retries": 3,
+    "retry_delay": 1.0
+  },
+  "processing": {
+    "enable_content_cleaning": true,
+    "enable_keyword_extraction": true,
+    "enable_auto_categorization": true,
+    "enable_summary_generation": true,
+    "min_content_length": 100,
+    "max_content_length": 50000,
+    "quality_threshold": 0.6,
+    "language_detection": true,
+    "duplicate_detection": true
+  },
+  "api_integration": {
+    "base_url": "https://your-huoniao-portal.com/api/",
+    "api_key": "your_huoniao_api_key_here",
+    "timeout": 30,
+    "max_retries": 3,
+    "retry_delay": 2.0,
+    "default_category_id": 1,
+    "default_author_id": 1,
+    "auto_publish": false,
+    "rate_limit": {
+      "requests_per_minute": 60,
+      "requests_per_hour": 1000
+    }
+  },
+  "task_scheduler": {
+    "max_concurrent_tasks": 5,
+    "task_timeout": 300,
+    "cleanup_interval": 3600,
+    "max_task_history": 1000,
+    "enable_persistence": true,
+    "storage_backend": "file",
+    "redis_config": {
+      "host": "localhost",
+      "port": 6379,
+      "db": 0,
+      "password": null
+    }
+  },
+  "caching": {
+    "enable_cache": true,
+    "cache_ttl": 3600,
+    "max_cache_size": 1000,
+    "cache_backend": "memory"
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file_path": "logs/firecrawl_collector.log",
+    "max_file_size": "10MB",
+    "backup_count": 5,
+    "enable_console": true
+  },
+  "storage": {
+    "output_directory": "data/collected",
+    "backup_directory": "data/backup",
+    "temp_directory": "data/temp",
+    "enable_compression": true,
+    "auto_cleanup": true,
+    "cleanup_days": 30
+  },
+  "sources": [],
+  "notifications": {
+    "enable_email": false,
+    "email_config": {
+      "smtp_server": "smtp.gmail.com",
+      "smtp_port": 587,
+      "username": "your_email@gmail.com",
+      "password": "your_app_password",
+      "from_email": "your_email@gmail.com",
+      "to_emails": ["admin@yourcompany.com"]
+    },
+    "enable_webhook": false,
+    "webhook_config": {
+      "url": "https://your-webhook-endpoint.com/notifications",
+      "secret": "your_webhook_secret",
+      "events": ["task_completed", "task_failed", "system_error"]
+    }
+  },
+  "monitoring": {
+    "enable_metrics": true,
+    "metrics_port": 8080,
+    "health_check_interval": 60,
+    "performance_tracking": true,
+    "error_tracking": true
+  },
+  "security": {
+    "enable_ssl_verification": true,
+    "user_agent": "FirecrawlCollector/1.0",
+    "request_headers": {
+      "Accept": "application/json",
+      "Accept-Language": "zh-CN,zh;q=0.9,en;q=0.8"
+    },
+    "proxy_config": {
+      "enable_proxy": false,
+      "http_proxy": null,
+      "https_proxy": null,
+      "no_proxy": ["localhost", "127.0.0.1"]
+    }
+  }
+}
+
+

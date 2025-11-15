@@ -1,0 +1,228 @@
+---
+description: HawaiiHub Firecrawl API integration guidelines
+globs:
+  - "**/*.py"
+  - "**/scrapers/**"
+  - "**/sdk/**"
+alwaysApply: true
+---
+
+# Firecrawl API Integration Rules
+
+## Always use the Firecrawl Python SDK
+
+```python
+from firecrawl import Firecrawl
+
+# Initialize with API key from environment
+firecrawl = Firecrawl(api_key=os.getenv("FIRECRAWL_API_KEY"))
+```
+
+## Scraping Single Pages
+
+For individual articles, event pages, or business listings:
+
+```python
+doc = firecrawl.scrape(
+    url="https://example.com/article",
+    formats=["markdown", "html"],
+    only_main_content=True,
+    timeout=30000
+)
+```
+
+## Crawling Multiple Pages
+
+For news archives, event calendars, or business directories:
+
+```python
+response = firecrawl.crawl(
+    url="https://example.com/news",
+    limit=50,
+    scrape_options={
+        "formats": ["markdown", "json"],
+        "only_main_content": True
+    },
+    max_depth=3
+)
+```
+
+## Extracting Structured Data
+
+Always define Pydantic schemas for structured extraction:
+
+```python
+from pydantic import BaseModel, Field
+from typing import List, Optional
+from datetime import datetime
+
+class Article(BaseModel):
+    title: str = Field(..., description="Article title")
+    content: str = Field(..., description="Main article content")
+    author: Optional[str] = Field(None, description="Article author")
+    publish_date: Optional[datetime] = Field(None, description="Publication date")
+    images: List[str] = Field(default_factory=list, description="Image URLs")
+    tags: List[str] = Field(default_factory=list, description="Article tags")
+
+result = firecrawl.scrape(
+    url="https://example.com/article",
+    formats=[{
+        "type": "json",
+        "schema": Article.model_json_schema()
+    }]
+)
+```
+
+## Error Handling Pattern
+
+Always implement retry logic with exponential backoff:
+
+```python
+from tenacity import retry, stop_after_attempt, wait_exponential
+import logging
+
+logger = logging.getLogger(__name__)
+
+@retry(
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=4, max=10)
+)
+def scrape_with_retry(url: str) -> dict:
+    try:
+        result = firecrawl.scrape(url, formats=["markdown", "json"])
+        logger.info(f"Successfully scraped {url}")
+        return result
+    except Exception as e:
+        logger.error(f"Failed to scrape {url}: {str(e)}")
+        raise
+```
+
+## Using Search API
+
+For discovering Honolulu-specific content:
+
+```python
+results = firecrawl.search(
+    query="Honolulu local news OR Hawaii events",
+    limit=10,
+    scrape_options={
+        "formats": ["markdown"],
+        "only_main_content": True
+    }
+)
+```
+
+## Performance Optimization
+
+### Use caching with maxAge parameter
+
+```python
+doc = firecrawl.scrape(
+    url="https://example.com",
+    formats=["markdown"],
+    max_age=172800000  # 2 days cache
+)
+```
+
+### Batch processing for multiple URLs
+
+```python
+urls = ["url1", "url2", "url3"]
+results = []
+
+for url in urls:
+    try:
+        result = scrape_with_retry(url)
+        results.append(result)
+    except Exception as e:
+        logger.warning(f"Skipping {url} due to error: {e}")
+        continue
+```
+
+## Content Quality Validation
+
+Always validate scraped content:
+
+```python
+def validate_content(data: dict) -> bool:
+    """Validate scraped content meets quality standards."""
+    if not data.get("markdown"):
+        logger.warning("No markdown content found")
+        return False
+
+    content_length = len(data["markdown"])
+    if content_length < 100:
+        logger.warning(f"Content too short: {content_length} chars")
+        return False
+
+    metadata = data.get("metadata", {})
+    if not metadata.get("title"):
+        logger.warning("No title found in metadata")
+        return False
+
+    return True
+```
+
+## Rate Limiting
+
+Respect API rate limits:
+
+```python
+import time
+from collections import deque
+
+class RateLimiter:
+    def __init__(self, max_calls: int, time_window: int):
+        self.max_calls = max_calls
+        self.time_window = time_window
+        self.calls = deque()
+
+    def wait_if_needed(self):
+        now = time.time()
+        while len(self.calls) >= self.max_calls:
+            if now - self.calls[0] > self.time_window:
+                self.calls.popleft()
+            else:
+                sleep_time = self.time_window - (now - self.calls[0])
+                time.sleep(sleep_time)
+                now = time.time()
+        self.calls.append(now)
+
+# Usage
+rate_limiter = RateLimiter(max_calls=10, time_window=60)
+
+for url in urls:
+    rate_limiter.wait_if_needed()
+    result = firecrawl.scrape(url)
+```
+
+## Logging Standards
+
+Use structured logging:
+
+```python
+import logging
+import json
+
+class StructuredLogger:
+    def __init__(self, name: str):
+        self.logger = logging.getLogger(name)
+
+    def log_scrape(self, url: str, status: str, **kwargs):
+        log_data = {
+            "event": "scrape",
+            "url": url,
+            "status": status,
+            **kwargs
+        }
+        self.logger.info(json.dumps(log_data))
+
+# Usage
+logger = StructuredLogger(__name__)
+logger.log_scrape(
+    url="https://example.com",
+    status="success",
+    credits_used=1,
+    content_length=5000
+)
+```

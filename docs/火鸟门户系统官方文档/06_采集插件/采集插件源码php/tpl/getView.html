@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>开始采集任务</title>
+    <link rel="stylesheet" href="{#$cfg_staticPath#}css/admin/bootstrap.css">
+</head>
+<style>
+    .caozuo div{
+        float: left;
+        margin-left: 20px;
+    }
+    .form{
+        margin-left: 20px;
+    }
+    .err{
+        color: #f62c3c;
+        margin-left: 20px;
+    }
+</style><script>var staticPath = '{#$cfg_staticPath#}';</script>
+
+
+<body style="margin-top: 20px;margin-left: 5px;">
+
+{#if isset($errmsg) && $errmsg !== ''#}
+<div class="err">
+    <h4>{#$errmsg#}</h4>
+</div>
+{#/if#}
+<div>
+    <div style="float: left">
+        <form class="form" action="./getUrl.php?node={#$node_id#}&type={#$type#}" method="post" name="form1" id="form1" onsubmit="return checkInput()">
+          <table class="table table-bordered">
+              <tr>
+                  <td>采集节点</td>
+                  <td class="node_id">{#$nodes['nodename']#}</td>
+              </tr>
+              <input type="hidden" value="{#$nodes['id']#}" name="node_id">
+              {#if $type eq 3#}
+              <tr>
+                  <td>采集列表页</td>
+                  <td class="rules">{#$nodes['list_page_url'][0]#}</td>
+              </tr>
+
+              {#else#}
+              <tr>
+                  <td>列表页匹配规则</td>
+                  <td class="rules">{#$nodes['list_page_url_rule']#}</td>
+              </tr>
+
+              <tr>
+                  <td>采集页数</td>
+                  <td>第 <input type="text" value="1" name="page_start" style="width:40px; height: 20px;">
+                      页&nbsp;~&nbsp;第 <input type="text" value="5" name="page_end" style="width:40px; height: 20px;"> 页
+                      <span style="margin-left: 20px;"><a class="btn btn-small btn-default" onclick="testPiPei()">测试匹配</a></span>
+                  </td>
+
+              </tr>
+              {#/if#}
+
+
+
+          </table>
+            <div>
+                <button type="submit" class="btn btn-small btn-primary">下一步</button>&nbsp;&nbsp;
+                <a class="btn btn-small btn-primary" href="./index.php">返回</a>
+
+            </div>
+        </form>
+    </div>
+
+
+</div>
+<div class="caozuo">
+    <div></div>
+</div>
+{#if $type neq 3#}
+<script>
+
+    function checkInput(){
+        var start = $("input[name=page_start]").val();
+        var end = $("input[name=page_end]").val();
+
+        var is = checkPageIs(start, end);
+        if(!is) return false;
+    }
+
+
+    function testPiPei() {
+        var start = $("input[name=page_start]").val();
+        var end = $("input[name=page_end]").val();
+        var node_id = $("input[name=node_id]").val();
+
+        var is = checkPageIs(start, end);
+        if(is === false){
+            return;
+        } else{
+            $.ajax({
+                type: "GET",
+                url: "./index.php?start=" + start + "&end=" + end + "&node=" + node_id,
+                data: {
+
+                },
+                async:false,
+                dataType: "json",
+                success: function(res){
+                    if(res.code == 200){
+                        alert(res.data);
+                    }
+                }
+            })
+        }
+
+    }
+
+    function checkPageIs(start, end) {
+
+        if(start == 0 || end == 0){
+            alert("开始页数必须大于等于1，结束页数必须大于0");
+            return false;
+        }
+        if(end < start){
+            alert("尾页必须大于或者等于首页");
+            return false;
+        }
+        return true;
+    }
+</script>
+{#/if#}
+</body>
+<script src="{#$cfg_staticPath#}js/core/jquery-1.8.3.min.js?v=1531357464"></script>
+</html>

@@ -1,0 +1,110 @@
+{
+  // ========================================
+  // 📝 Markdown 配置
+  // ========================================
+  "[markdown]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.wordWrap": "on",
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    },
+    "editor.codeActionsOnSave": {
+      "source.fixAll.markdownlint": "explicit"
+    }
+  },
+
+  // ========================================
+  // 🔗 Markdown 链接验证配置
+  // ========================================
+  "markdown.validate.enabled": false,
+  "markdown.validate.fileLinks.enabled": false,
+  "markdown.validate.fragmentLinks.enabled": false,
+  "markdown.validate.referenceLinks.enabled": false,
+  "markdown.validate.ignoredLinks": ["#*"],
+
+  // ========================================
+  // 🔧 Markdownlint 配置
+  // ========================================
+  "markdownlint.config": {
+    "default": true,
+    "MD013": false,
+    "MD029": false,
+    "MD033": false,
+    "MD034": false,
+    "MD036": false,
+    "MD040": false,
+    "MD041": false,
+    "MD051": false
+  },
+
+  // ========================================
+  // 💅 Prettier 配置
+  // ========================================
+  "prettier.enable": true,
+  "prettier.requireConfig": false,
+  "prettier.proseWrap": "preserve",
+  "prettier.printWidth": 100,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false,
+  "prettier.singleQuote": false,
+  "prettier.trailingComma": "es5",
+
+  // ========================================
+  // 📁 文件配置
+  // ========================================
+  "files.associations": {
+    "*.md": "markdown",
+    "*.mdc": "markdown",
+    ".markdownlint.json": "jsonc"
+  },
+
+  "files.exclude": {
+    "**/.DS_Store": true,
+    "**/node_modules": true
+  },
+
+  // ========================================
+  // 🔍 搜索配置
+  // ========================================
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.git": true
+  },
+
+  // ========================================
+  // 🎨 编辑器配置
+  // ========================================
+  "editor.formatOnSave": true,
+  "editor.formatOnPaste": false,
+  "editor.formatOnType": false,
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.detectIndentation": true,
+  "editor.trimAutoWhitespace": true,
+  "editor.renderWhitespace": "selection",
+
+  // ========================================
+  // 🔀 Git 配置
+  // ========================================
+  "git.enabled": true,
+  "git.autofetch": true,
+  "git.confirmSync": false,
+  "git.enableSmartCommit": true,
+
+  // ========================================
+  // 🤖 AI 工具自动授权
+  // ========================================
+  "ai.autoApproveToolCalls": true,
+  "ai.autoApproveReadOperations": true,
+  "ai.toolCallApproval": {
+    "read_file": "auto",
+    "list_dir": "auto",
+    "grep": "auto",
+    "codebase_search": "auto",
+    "glob_file_search": "auto",
+    "web_search": "auto"
+  }
+}

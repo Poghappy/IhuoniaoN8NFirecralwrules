@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>已抓取新闻列表</title>
+    <link rel="stylesheet" href="{#$cfg_staticPath#}css/admin/bootstrap.css">
+</head>
+<style>
+
+
+</style>
+<body style="margin-left: 20px; margin-right: 20px;">
+<div>
+<div><h4>已抓取新闻列表</h4></div>
+<div style="float: left;"><h5><a class="btn btn-small btn-primary" href="./index.php">返回主页</a></h5></div>
+<div style="float: left; margin-left: 30px;"><h5><a class="btn btn-small btn-primary" href="./index.php?export={#$node_id#}">发布内容</a></h5></div>
+</div>
+<script>var staticPath = '{#$cfg_staticPath#}';</script>
+
+<table class="table table-bordered">
+
+    <th>新闻正文</th>
+    <th>新闻标题</th>
+    <th>来源</th>
+    <th>作者</th>
+    <th>发布时间</th>
+    <th>操作</th>
+    {#foreach from=$list item=news#}
+
+    <tr class="trss">
+        <!--<td>-->
+            <!--{#$news['node_id']#}-->
+            <!---->
+        <!--</td>-->
+        <td><input type="text" value="{#$news['content']#}" disabled></td>
+        <td><input type="text" value="{#$news['title']#}" disabled></td>
+        <td><input type="text" value="{#$news['source']#}" disabled></td>
+        <td><input type="text" value="{#$news['author']#}" disabled></td>
+        <td><input type="text" value="{#$news['times']#}" disabled></td>
+        <td><a href="#"  onclick="deleteNews({#$news['id']#})">删除</a></td>
+    </tr>
+    {#/foreach#}
+</table>
+
+
+</body>
+<script src="{#$cfg_staticPath#}js/core/jquery-1.8.3.min.js?v=1531357464"></script>
+<script src="{#$cfg_staticPath#}js/ui/jquery.dialog-4.2.0.js?v=1531357464"></script>
+<script>
+function deleteNews(id) {
+    if(confirm("确定删除该条新闻？")){
+        $.get("./index.php?getNewsList=del&del=" + id, function(result){
+            if(result.code == 200){
+                window.location.reload();
+            }else{
+                alert(result.msg);
+            }
+        });
+    }
+}
+</script>
+
+
+</html>

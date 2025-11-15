@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <title>发布信息</title>
+    <link rel='stylesheet' type='text/css' href='{#$cfg_staticPath#}css/admin/datetimepicker.css?v=1531357464' />
+    <link rel='stylesheet' type='text/css' href='{#$cfg_staticPath#}css/admin/common.css?v=1531357464' />
+    <link rel='stylesheet' type='text/css' href='{#$cfg_staticPath#}css/admin/bootstrap.css?v=1531357464' />
+    <link rel='stylesheet' type='text/css' href='{#$cfg_staticPath#}css/ui/jquery.chosen.css?v=1531357464'/>
+    <link rel='stylesheet' type='text/css' href='{#$cfg_staticPath#}css/admin/chosen.min.css?v=1531357464'/>
+
+
+
+    <script>
+
+        var
+            typeListArr = {#$typeListArr#}, action = 'article', modelType = 'article',
+            cfg_term = "pc", adminPath = "../", staticPath = '';
+        var cityid = 0, cityList = {#$cityList#};
+        var id = 0;
+        var mold = 0;
+        var detail = {
+          videotype: 0,
+          media: 0,
+          media_arctype: 0
+        };
+    </script>
+    <script>var staticPath = '{#$cfg_staticPath#}';</script>
+
+<body style="margin-left: 22px;margin-right: 22px; margin-top: 10px;">
+<h4>发布新闻</h4>
+{#if isset($errmsg) && $errmsg !== ''#}
+<div class="err">
+    <h4>{#$errmsg#}</h4>
+</div>
+{#/if#}
+
+<div class="item">
+    <form action="" method="post" id="exportForm">
+            <table class="table table-bordered" style="width: 600px;">
+                <input type="hidden" value="{#$node_id#}" name="node_id">
+                <tr>
+                    <td>当前可导出条数：</td>
+                    <td>{#$count#}</td>
+                </tr>
+                <tr>
+                    <td>选择模块：</td>
+                    <td>
+                        <dd style="margin-left: 0; overflow: visible;">
+                            <select class="chosen-select" id="mod" name="mod" style="width: auto; min-width: 150px;">
+                                <option value="article"{#if $mod == 'article'#} selected{#/if#}>新闻资讯</option>
+                                <option value="house"{#if $mod == 'house'#} selected{#/if#}>房产门户</option>
+                            </select>
+                        </dd>
+                    </td>
+                </tr>
+                <tr>
+                    <td>选择城市：</td>
+                    <td>
+                        <dd style="margin-left: 0; overflow: visible;">
+                            <div class="choseCity">
+                    			<input type="hidden" id="cityid" name="cityid" placeholder="请选择城市分站" value="{#$cityid#}">
+                    		</div>
+                        </dd>
+
+                    </td>
+                </tr>
+                <tr>
+                    <td>导出分类：</td>
+                    <td>
+                        <dd style="margin-left: 0; overflow:visible;">
+                            <div class="btn-group" id="typeBtn">
+                                <button class="btn dropdown-toggle" type="button" data-toggle="dropdown">选择分类<span class="caret"></span></button>
+                                <ul class="dropdown-menu"></ul></div>
+                            <input type="hidden" name="typeid" id="typeid" value="0">
+                            <span class="input-tips"><s></s>请选择信息分类</span>
+                        </dd>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>每批导出数量</td>
+                    <td><input type="text" name="totle" value="20"> 条</td>
+                </tr>
+                <tr>
+                    <td>每批导出间隔</td>
+                    <td><input type="text" name="times" value="1"> 秒</td>
+                </tr>
+            </table>
+
+
+
+        </form>
+
+
+<div style="display: none;">
+    <div id="body"></div>
+    <div id="mbody"></div>
+    <div class="form_datetime"><span class="add-on"></span></div>
+</div>
+
+
+    <button class="btn btn-small btn-primary" style="margin-left: 0px;" onclick="startExports()">开始导出</button>
+    <a class="btn btn-small btn-primary" type="submit" style="margin-left: 20px;" href="./index.php">返回主界面</a>
+
+</div>
+
+<script type='text/javascript' src='{#$domain#}/include/lang/zh-CN.js?v=1588216826'></script>
+<script type='text/javascript' src='{#$domain#}/include/ueditor/ueditor.config.js?v=14'></script>
+<script type='text/javascript' src='{#$domain#}/include/ueditor/ueditor.all.js?v=14'></script>
+<script type='text/javascript' src='{#$cfg_staticPath#}js/core/jquery-1.8.3.min.js?v=1531357464'></script>
+<script type='text/javascript' src='{#$cfg_staticPath#}js/admin/common.js?v=1531357464'></script>
+<script type='text/javascript' src='{#$cfg_staticPath#}js/ui/bootstrap.min.js?v=1531357464'></script>
+<script type='text/javascript' src='{#$cfg_staticPath#}js/ui/chosen.jquery.min.js?v=1531357464'></script>
+<script type='text/javascript' src='{#$cfg_staticPath#}js/ui/bootstrap-datetimepicker.min.js?v=1531357464'></script>
+<script type='text/javascript' src='{#$cfg_staticPath#}js/ui/jquery.colorPicker.js?v=1531357464'></script>
+<script type='text/javascript' src='{#$cfg_staticPath#}js/admin/article/articleAdd.js?v=1531357464'></script>
+
+<script>
+    function startExports() {
+        var totle  = $("input[name=node_id]").val();
+        var time  = $("input[name=times]").val();
+        if(!totle || !time){
+            alert("请填写每批导出数量和导出间隔");return;
+        }
+        var ndoeID = $("input[name=node_id]").val();
+        var url = './index.php?export=' + ndoeID + '&';
+        var datas = $('#exportForm').serialize();
+        var  urls = url+datas;
+
+        var times = $("input[name=times]").val();
+        timeOutStart(urls, times);
+    }
+
+    function timeOutStart(urls, times) {
+        $.ajax({
+            type: "get",
+            dataType: "json",
+            url: urls,
+            data: '',
+            async:false,
+            success: function (res) {
+                console.log(res);
+                if(res.code !== 201){
+
+                    setTimeout(function(){
+                        timeOutStart(urls, times);
+                    }, times*1000);
+
+                }else{
+                    alert(res.msg);
+                }
+            }
+        });
+
+    }
+
+    $(function(){
+        $('#mod').change(function(){
+            location.href = '?export={#$node_id#}&mod=' + $(this).val();
+        });
+    });
+
+</script>

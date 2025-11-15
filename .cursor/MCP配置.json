@@ -1,0 +1,53 @@
+{
+  "mcpServers": {
+    "context7": {
+      "command": "uvx",
+      "args": [
+        "context-mcp"
+      ],
+      "env": {
+        "PROJECT_ROOT": "/Users/zhiledeng/Desktop/未命名文件夹 2"
+      }
+    },
+    "filesystem-project": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-v",
+        "/Users/zhiledeng/Desktop/未命名文件夹 2:/workspace",
+        "mcp/filesystem",
+        "/workspace"
+      ]
+    },
+    "firecrawl-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "firecrawl-mcp"
+      ],
+      "env": {
+        "FIRECRAWL_API_KEY": "fc-00857d82ec534e8598df1bae9af9fb28"
+      }
+    },
+    "chrome-devtools": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "chrome-devtools-mcp@latest"
+      ]
+    },
+    "apify-mcp": {
+      "command": "docker",
+      "args": [
+        "run",
+        "-i",
+        "--rm",
+        "-e",
+        "APIFY_TOKEN=${env:APIFY_TOKEN}",
+        "mcp/apify-mcp-server"
+      ]
+    }
+  }
+}

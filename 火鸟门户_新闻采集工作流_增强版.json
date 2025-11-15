@@ -1,0 +1,724 @@
+{
+  "name": "火鸟门户新闻采集工作流 - 增强版",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "webhook",
+        "options": {}
+      },
+      "id": "webhook-trigger",
+      "name": "新闻数据接收",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [240, 300],
+      "webhookId": "huoniao-news-webhook"
+    },
+    {
+      "parameters": {
+        "functionCode": "// 火鸟门户内容处理核心模块集成\nconst { HuoNiaoContentProcessor } = require('./火鸟门户_内容处理核心模块.js');\n\n// 初始化内容处理器\nconst processor = new HuoNiaoContentProcessor({\n  aiApiKey: process.env.OPENAI_API_KEY,\n  enableCache: true,\n  enableLogging: true,\n  similarityThreshold: 0.8,\n  minContentLength: 100,\n  maxContentLength: 5000,\n  minTitleLength: 5,\n  maxTitleLength: 60\n});\n\n// 获取输入数据\nconst inputData = $input.first().json;\n\n// 数据预处理\nconst preprocessedData = {\n  title: inputData.title || '',\n  content: inputData.content || inputData.description || '',\n  category: inputData.category || '',\n  author: inputData.author || 'AI采集',\n  source: inputData.source || 'API采集',\n  source_url: inputData.url || inputData.source_url || '',\n  image_url: inputData.urlToImage || inputData.image_url || '',\n  keywords: inputData.keywords || '',\n  summary: inputData.summary || inputData.description || '',\n  publishedAt: inputData.publishedAt || new Date().toISOString(),\n  images: inputData.images || (inputData.urlToImage ? [inputData.urlToImage] : [])\n};\n\ntry {\n  // 处理内容\n  const result = await processor.processContent(preprocessedData, {\n    enableAI: true,\n    optimizeTitle: true,\n    optimizeContent: true,\n    generateKeywords: true,\n    generateSummary: true,\n    strictMode: false\n  });\n\n  if (!result.success) {\n    if (result.isDuplicate) {\n      return {\n        json: {\n          status: 'skipped',\n          reason: 'duplicate_content',\n          message: '检测到重复内容，跳过处理',\n          duplicateInfo: result.duplicateInfo\n        }\n      };\n    }\n    throw new Error(result.error || '内容处理失败');\n  }\n\n  // 返回处理后的数据\n  return {\n    json: {\n      status: 'processed',\n      data: result.data,\n      metadata: result.metadata,\n      originalData: inputData\n    }\n  };\n\n} catch (error) {\n  console.error('内容处理失败:', error);\n  return {\n    json: {\n      status: 'error',\n      error: error.message,\n      originalData: inputData\n    }\n  };\n}"
+      },
+      "id": "content-processor",
+      "name": "智能内容处理",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [460, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.status}}",
+              "operation": "equal",
+              "value2": "processed"
+            }
+          ]
+        }
+      },
+      "id": "content-filter",
+      "name": "内容状态检查",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [680, 300]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 数据预处理和验证\nconst inputData = $input.all();\nconst processedItems = [];\n\nfor (const item of inputData) {\n  const data = item.json.data;\n  \n  // 基础数据验证\n  if (!data.title || !data.content) {\n    throw new Error('缺少必要字段: title 或 content');\n  }\n  \n  // 数据清洗和标准化\n  const processedData = {\n    title: data.title.trim().substring(0, 60),\n    content: data.content,\n    category: data.category || '新闻',\n    author: data.author || 'AI采集',\n    source: data.source || 'API采集',\n    image_url: data.image_url || '',\n    publish_date: data.publish_date || new Date().toISOString(),\n    tags: data.keywords || '',\n    description: data.summary || '',\n    source_url: data.source_url || '',\n    priority: data.priority || 0,\n    status: data.status || 0,\n    custom_fields: data.custom_fields || {}\n  };\n  \n  // 生成去重键\n  processedData.dedupe_key = `${processedData.title}_${processedData.source}`;\n  \n  // 添加时间戳和请求ID\n  processedData.timestamp = Date.now();\n  processedData.request_id = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;\n  \n  processedItems.push({ json: processedData });\n}\n\nreturn processedItems;"
+      },
+      "id": "data-preprocessing",
+      "name": "数据预处理",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "jsCode": "// 生成HMAC-SHA256签名\nconst crypto = require('crypto');\nconst secretKey = 'huoniao_gateway_secret_2025'; // 应该从环境变量获取\n\nconst inputData = $input.all();\nconst results = [];\n\nfor (const item of inputData) {\n  const data = item.json;\n  const timestamp = Math.floor(Date.now() / 1000);\n  \n  // 构建签名字符串\n  const signatureString = `POST|/v1/articles|${timestamp}|${JSON.stringify(data)}`;\n  \n  // 生成签名\n  const signature = crypto\n    .createHmac('sha256', secretKey)\n    .update(signatureString)\n    .digest('hex');\n  \n  results.push({\n    json: {\n      ...data,\n      signature: signature,\n      timestamp: timestamp\n    }\n  });\n}\n\nreturn results;"
+      },
+      "id": "generate-signature",
+      "name": "生成签名",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/v1/articles",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "httpMethod": "POST",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            },
+            {
+              "name": "x-timestamp",
+              "value": "={{ Math.floor(Date.now() / 1000) }}"
+            },
+            {
+              "name": "x-signature",
+              "value": "={{ $node['生成签名'].json.signature }}"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": []
+        },
+        "jsonBody": "={{ JSON.stringify($json) }}",
+        "options": {
+          "timeout": 30000,
+          "retry": {
+            "enabled": true,
+            "maxTries": 3
+          }
+        }
+      },
+      "id": "api-gateway-call",
+      "name": "调用API网关",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.1,
+      "position": [1340, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict"
+          },
+          "conditions": [
+            {
+              "id": "success-condition",
+              "leftValue": "={{ $json.success }}",
+              "rightValue": true,
+              "operator": {
+                "type": "boolean",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "response-check",
+       "name": "响应检查",
+       "type": "n8n-nodes-base.if",
+       "typeVersion": 2,
+       "position": [1560, 200]
+     },
+     {
+       "parameters": {
+         "jsCode": "// 成功处理\nconst inputData = $input.all();\nconst results = [];\n\nfor (const item of inputData) {\n  const data = item.json;\n  \n  results.push({\n    json: {\n      status: 'success',\n      article_id: data.data?.id || data.id,\n      title: data.data?.title || data.title,\n      message: data.message || '文章发布成功',\n      request_id: data.request_id,\n      timestamp: new Date().toISOString(),\n      processing_time: Date.now() - data.timestamp\n    }\n  });\n}\n\nreturn results;"
+       },
+       "id": "success-handler",
+       "name": "成功处理",
+       "type": "n8n-nodes-base.code",
+       "typeVersion": 2,
+       "position": [1780, 100]
+     },
+     {
+       "parameters": {
+         "jsCode": "// 错误处理\nconst inputData = $input.all();\nconst results = [];\n\nfor (const item of inputData) {\n  const data = item.json;\n  const error = data.error || {};\n  \n  // 判断错误类型\n  let shouldRetry = false;\n  let retryDelay = 0;\n  \n  if (error.code === 'RATE_LIMIT_ERROR') {\n    shouldRetry = true;\n    retryDelay = 30000; // 30秒后重试\n  } else if (error.code === 'SESSION_ERROR') {\n    shouldRetry = true;\n    retryDelay = 5000; // 5秒后重试\n  } else if (error.code === 'NETWORK_ERROR') {\n    shouldRetry = true;\n    retryDelay = 10000; // 10秒后重试\n  }\n  \n  results.push({\n    json: {\n      status: 'error',\n      error_code: error.code || 'UNKNOWN_ERROR',\n      error_message: error.message || data.message || '未知错误',\n      error_type: error.type || 'system',\n      request_id: data.request_id,\n      timestamp: new Date().toISOString(),\n      processing_time: Date.now() - data.timestamp,\n      should_retry: shouldRetry,\n      retry_delay: retryDelay,\n      original_data: data\n    }\n  });\n}\n\nreturn results;"
+       },
+       "id": "error-handler",
+       "name": "错误处理",
+       "type": "n8n-nodes-base.code",
+       "typeVersion": 2,
+       "position": [1780, 300]
+     },
+     {
+       "parameters": {
+         "operation": "insert",
+         "table": "article_logs",
+         "columns": "request_id, status, article_id, title, error_code, error_message, processing_time, created_at",
+         "additionalFields": {
+           "mode": "independently"
+         }
+       },
+       "id": "log-to-database",
+       "name": "记录到数据库",
+       "type": "n8n-nodes-base.postgres",
+       "typeVersion": 2.4,
+       "position": [2000, 200],
+       "credentials": {
+         "postgres": {
+           "id": "postgres-credentials",
+           "name": "PostgreSQL Credentials"
+         }
+       }
+     },
+     {
+       "parameters": {
+         "conditions": {
+           "options": {
+             "caseSensitive": true,
+             "leftValue": "",
+             "typeValidation": "strict"
+           },
+           "conditions": [
+             {
+               "id": "retry-condition",
+               "leftValue": "={{ $json.should_retry }}",
+               "rightValue": true,
+               "operator": {
+                 "type": "boolean",
+                 "operation": "equals"
+               }
+             }
+           ],
+           "combinator": "and"
+         },
+         "options": {}
+       },
+       "id": "retry-check",
+       "name": "重试检查",
+       "type": "n8n-nodes-base.if",
+       "typeVersion": 2,
+       "position": [2220, 300]
+     },
+     {
+       "parameters": {
+         "amount": "={{ $json.retry_delay }}",
+         "unit": "ms"
+       },
+       "id": "retry-delay",
+       "name": "重试延迟",
+       "type": "n8n-nodes-base.wait",
+       "typeVersion": 1.1,
+       "position": [2440, 300]
+     },
+     {
+       "parameters": {
+         "url": "http://localhost:3000/v1/articles/batch",
+         "authentication": "genericCredentialType",
+         "genericAuthType": "httpHeaderAuth",
+         "httpMethod": "POST",
+         "sendHeaders": true,
+         "headerParameters": {
+           "parameters": [
+             {
+               "name": "Content-Type",
+               "value": "application/json"
+             },
+             {
+               "name": "x-timestamp",
+               "value": "={{ Math.floor(Date.now() / 1000) }}"
+             },
+             {
+               "name": "x-signature",
+               "value": "={{ $node['生成签名'].json.signature }}"
+             }
+           ]
+         },
+         "sendBody": true,
+         "bodyParameters": {
+           "parameters": []
+         },
+         "jsonBody": "={{ JSON.stringify({ articles: $input.all().map(item => item.json) }) }}",
+         "options": {
+           "timeout": 60000,
+           "retry": {
+             "enabled": true,
+             "maxTries": 2
+           }
+         }
+       },
+       "id": "batch-api-call",
+       "name": "批量API调用",
+       "type": "n8n-nodes-base.httpRequest",
+       "typeVersion": 4.1,
+       "position": [2660, 200]
+     },
+     {
+       "parameters": {
+         "rule": {
+           "interval": [
+             {
+               "field": "minute",
+               "minuteInterval": 5
+             }
+           ]
+         }
+       },
+       "id": "health-check-trigger",
+       "name": "健康检查触发器",
+       "type": "n8n-nodes-base.cron",
+       "typeVersion": 1,
+       "position": [200, 500]
+     },
+     {
+       "parameters": {
+         "url": "http://localhost:3000/health",
+         "httpMethod": "GET",
+         "options": {
+           "timeout": 10000
+         }
+       },
+       "id": "health-check",
+       "name": "健康检查",
+       "type": "n8n-nodes-base.httpRequest",
+       "typeVersion": 4.1,
+       "position": [420, 500]
+     },
+     {
+       "parameters": {
+         "conditions": {
+           "options": {
+             "caseSensitive": true,
+             "leftValue": "",
+             "typeValidation": "strict"
+           },
+           "conditions": [
+             {
+               "id": "health-condition",
+               "leftValue": "={{ $json.status }}",
+               "rightValue": "healthy",
+               "operator": {
+                 "type": "string",
+                 "operation": "notEquals"
+               }
+             }
+           ],
+           "combinator": "and"
+         },
+         "options": {}
+       },
+       "id": "health-status-check",
+       "name": "健康状态检查",
+       "type": "n8n-nodes-base.if",
+       "typeVersion": 2,
+       "position": [640, 500]
+     },
+     {
+       "parameters": {
+         "channel": "#alerts",
+         "text": "🚨 API网关健康检查失败\n\n状态: {{ $json.status }}\n时间: {{ new Date().toISOString() }}\n错误: {{ $json.error || '未知错误' }}",
+         "otherOptions": {
+           "username": "n8n-monitor",
+           "icon_emoji": ":warning:"
+         }
+       },
+       "id": "slack-alert",
+       "name": "Slack告警",
+       "type": "n8n-nodes-base.slack",
+       "typeVersion": 2.1,
+       "position": [860, 500],
+       "credentials": {
+         "slackApi": {
+           "id": "slack-credentials",
+           "name": "Slack API Credentials"
+         }
+       }
+     },
+     {
+       "id": "api-gateway",
+      "name": "火鸟API网关",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.status}}",
+              "operation": "equal",
+              "value2": "published"
+            }
+          ]
+        }
+      },
+      "id": "publish-filter",
+      "name": "发布状态检查",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1120, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// 成功处理日志记录\nconst result = $input.first().json;\n\nconst logEntry = {\n  timestamp: new Date().toISOString(),\n  status: 'success',\n  articleId: result.articleId,\n  title: result.originalData.title,\n  category: result.originalData.category,\n  qualityScore: result.originalData.qualityScore,\n  dedupeKey: result.dedupeKey,\n  processingTime: Date.now() - new Date(result.originalData.processedAt).getTime(),\n  workflow: 'huoniao-news-collection'\n};\n\nconsole.log('文章发布成功:', JSON.stringify(logEntry));\n\nreturn {\n  json: {\n    ...logEntry,\n    message: '文章发布成功',\n    data: result\n  }\n};"
+      },
+      "id": "success-logger",
+      "name": "成功日志记录",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1340, 120]
+    },
+    {
+      "parameters": {
+        "functionCode": "// 失败处理日志记录\nconst result = $input.first().json;\n\nconst logEntry = {\n  timestamp: new Date().toISOString(),\n  status: 'failed',\n  error: result.error,\n  title: result.originalData?.title || 'Unknown',\n  dedupeKey: result.dedupeKey,\n  workflow: 'huoniao-news-collection'\n};\n\nconsole.error('文章发布失败:', JSON.stringify(logEntry));\n\n// 可以在这里添加错误通知逻辑\n// 例如发送邮件、Slack通知等\n\nreturn {\n  json: {\n    ...logEntry,\n    message: '文章发布失败',\n    data: result\n  }\n};"
+      },
+      "id": "error-logger",
+      "name": "错误日志记录",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1340, 280]
+    },
+    {
+      "parameters": {
+        "functionCode": "// 重复内容处理\nconst result = $input.first().json;\n\nconst logEntry = {\n  timestamp: new Date().toISOString(),\n  status: 'duplicate',\n  title: result.originalData?.title || 'Unknown',\n  reason: result.reason || 'duplicate_content',\n  dedupeKey: result.dedupeKey,\n  workflow: 'huoniao-news-collection'\n};\n\nconsole.log('重复内容跳过:', JSON.stringify(logEntry));\n\nreturn {\n  json: {\n    ...logEntry,\n    message: '重复内容已跳过',\n    data: result\n  }\n};"
+      },
+      "id": "duplicate-logger",
+      "name": "重复内容处理",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [900, 400]
+    },
+    {
+      "parameters": {
+        "functionCode": "// 内容处理失败处理\nconst result = $input.first().json;\n\nconst logEntry = {\n  timestamp: new Date().toISOString(),\n  status: 'processing_failed',\n  error: result.error,\n  title: result.originalData?.title || 'Unknown',\n  workflow: 'huoniao-news-collection'\n};\n\nconsole.error('内容处理失败:', JSON.stringify(logEntry));\n\nreturn {\n  json: {\n    ...logEntry,\n    message: '内容处理失败',\n    data: result\n  }\n};"
+      },
+      "id": "processing-error-logger",
+      "name": "处理失败记录",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [900, 500]
+    },
+    {
+      "parameters": {
+        "functionCode": "// 批量处理节点\nconst { HuoNiaoContentProcessor } = require('./火鸟门户_内容处理核心模块.js');\nconst { HuoNiaoAPIGateway } = require('./火鸟门户_API集成模块.js');\n\n// 初始化处理器和网关\nconst processor = new HuoNiaoContentProcessor({\n  aiApiKey: process.env.OPENAI_API_KEY,\n  enableCache: true,\n  enableLogging: true,\n  similarityThreshold: 0.8\n});\n\nconst gateway = new HuoNiaoAPIGateway({\n  baseUrl: process.env.HUONIAO_BASE_URL || 'https://hawaiihub.net',\n  adminPath: process.env.HUONIAO_ADMIN_PATH || '/admin',\n  username: process.env.HUONIAO_USERNAME,\n  password: process.env.HUONIAO_PASSWORD,\n  enableRateLimit: true,\n  enableRetry: true\n});\n\n// 获取批量数据\nconst batchData = $input.all().map(item => item.json);\n\ntry {\n  // 批量处理内容\n  const processingResult = await processor.batchProcessContent(batchData, {\n    batchSize: 5,\n    delayBetweenBatches: 2000,\n    enableAI: true,\n    optimizeTitle: true,\n    optimizeContent: true,\n    generateKeywords: true,\n    generateSummary: true\n  });\n\n  // 提取成功处理的内容\n  const successfulContent = processingResult.results\n    .filter(result => result.success && !result.isDuplicate)\n    .map(result => result.data);\n\n  if (successfulContent.length === 0) {\n    return {\n      json: {\n        status: 'no_content',\n        message: '没有可发布的内容',\n        summary: processingResult.summary\n      }\n    };\n  }\n\n  // 批量发布到火鸟\n  const publishResults = [];\n  \n  for (const content of successfulContent) {\n    try {\n      // 转换为火鸟格式\n      const articleData = {\n        title: content.title,\n        typeid: content.categoryId || 1,\n        body: content.content,\n        writer: content.author,\n        source: content.source,\n        keywords: content.keywords,\n        description: content.summary,\n        litpic: content.image_url || ''\n      };\n\n      // 发布文章\n      const publishResult = await gateway.publishArticle(articleData, {\n        enableDedupe: true,\n        validateData: true\n      });\n\n      publishResults.push({\n        success: true,\n        articleId: publishResult.articleId,\n        title: content.title\n      });\n\n      // 批次间延迟\n      await new Promise(resolve => setTimeout(resolve, 1000));\n\n    } catch (error) {\n      publishResults.push({\n        success: false,\n        error: error.message,\n        title: content.title\n      });\n    }\n  }\n\n  const summary = {\n    totalProcessed: batchData.length,\n    contentProcessed: processingResult.summary.success,\n    contentFailed: processingResult.summary.failed,\n    contentDuplicates: processingResult.summary.duplicates,\n    articlesPublished: publishResults.filter(r => r.success).length,\n    articlesFailed: publishResults.filter(r => !r.success).length\n  };\n\n  return {\n    json: {\n      status: 'batch_completed',\n      summary,\n      publishResults,\n      processingResult: processingResult.summary\n    }\n  };\n\n} catch (error) {\n  console.error('批量处理失败:', error);\n  return {\n    json: {\n      status: 'batch_failed',\n      error: error.message,\n      totalItems: batchData.length\n    }\n  };\n}"
+      },
+      "id": "batch-processor",
+      "name": "批量处理节点",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [240, 600],
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "functionCode": "// 监控和统计节点\nconst stats = {\n  timestamp: new Date().toISOString(),\n  workflow: 'huoniao-news-collection',\n  version: '2.0.0'\n};\n\n// 收集所有输入数据进行统计\nconst allInputs = $input.all();\nconst results = allInputs.map(item => item.json);\n\n// 统计各种状态\nstats.total = results.length;\nstats.published = results.filter(r => r.status === 'published').length;\nstats.failed = results.filter(r => r.status === 'failed').length;\nstats.duplicates = results.filter(r => r.status === 'duplicate').length;\nstats.skipped = results.filter(r => r.status === 'skipped').length;\nstats.processing_failed = results.filter(r => r.status === 'processing_failed').length;\n\n// 计算成功率\nstats.successRate = stats.total > 0 ? (stats.published / stats.total * 100).toFixed(2) + '%' : '0%';\n\n// 质量分析\nconst publishedArticles = results.filter(r => r.status === 'published');\nif (publishedArticles.length > 0) {\n  const qualityScores = publishedArticles\n    .map(r => r.originalData?.qualityScore || 0)\n    .filter(score => score > 0);\n  \n  if (qualityScores.length > 0) {\n    stats.avgQualityScore = (qualityScores.reduce((a, b) => a + b, 0) / qualityScores.length).toFixed(2);\n    stats.minQualityScore = Math.min(...qualityScores);\n    stats.maxQualityScore = Math.max(...qualityScores);\n  }\n}\n\n// 分类统计\nconst categories = {};\npublishedArticles.forEach(article => {\n  const category = article.originalData?.category || 'Unknown';\n  categories[category] = (categories[category] || 0) + 1;\n});\nstats.categoryDistribution = categories;\n\n// 错误分析\nconst errors = results\n  .filter(r => r.status === 'failed' || r.status === 'processing_failed')\n  .map(r => r.error)\n  .filter(error => error);\n\nconst errorCounts = {};\nerrors.forEach(error => {\n  const errorType = error.split(':')[0] || error;\n  errorCounts[errorType] = (errorCounts[errorType] || 0) + 1;\n});\nstats.errorDistribution = errorCounts;\n\n// 性能统计\nconst processingTimes = results\n  .filter(r => r.processingTime)\n  .map(r => r.processingTime);\n\nif (processingTimes.length > 0) {\n  stats.avgProcessingTime = (processingTimes.reduce((a, b) => a + b, 0) / processingTimes.length).toFixed(2) + 'ms';\n  stats.minProcessingTime = Math.min(...processingTimes) + 'ms';\n  stats.maxProcessingTime = Math.max(...processingTimes) + 'ms';\n}\n\nconsole.log('工作流统计报告:', JSON.stringify(stats, null, 2));\n\nreturn {\n  json: {\n    ...stats,\n    message: '统计报告生成完成',\n    details: results\n  }\n};"
+      },
+      "id": "monitor-stats",
+      "name": "监控统计",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1560, 200]
+    },
+    {
+      "parameters": {
+        "functionCode": "// 健康检查节点\nconst { HuoNiaoAPIGateway } = require('./火鸟门户_API集成模块.js');\n\n// 初始化网关\nconst gateway = new HuoNiaoAPIGateway({\n  baseUrl: process.env.HUONIAO_BASE_URL || 'https://hawaiihub.net',\n  adminPath: process.env.HUONIAO_ADMIN_PATH || '/admin',\n  username: process.env.HUONIAO_USERNAME,\n  password: process.env.HUONIAO_PASSWORD\n});\n\ntry {\n  // 检查系统健康状态\n  const healthCheck = await gateway.healthCheck();\n  \n  const status = {\n    timestamp: new Date().toISOString(),\n    system: 'huoniao-news-gateway',\n    status: 'healthy',\n    checks: {\n      apiConnection: healthCheck.apiAvailable,\n      authentication: healthCheck.authValid,\n      database: healthCheck.dbConnected,\n      sessionValid: healthCheck.sessionValid\n    },\n    performance: {\n      responseTime: healthCheck.responseTime,\n      memoryUsage: process.memoryUsage(),\n      uptime: process.uptime()\n    }\n  };\n\n  // 检查是否有任何问题\n  const hasIssues = Object.values(status.checks).some(check => !check);\n  if (hasIssues) {\n    status.status = 'degraded';\n    status.issues = Object.entries(status.checks)\n      .filter(([key, value]) => !value)\n      .map(([key]) => key);\n  }\n\n  console.log('系统健康检查:', JSON.stringify(status, null, 2));\n\n  return {\n    json: status\n  };\n\n} catch (error) {\n  const errorStatus = {\n    timestamp: new Date().toISOString(),\n    system: 'huoniao-news-gateway',\n    status: 'unhealthy',\n    error: error.message,\n    checks: {\n      apiConnection: false,\n      authentication: false,\n      database: false,\n      sessionValid: false\n    }\n  };\n\n  console.error('系统健康检查失败:', JSON.stringify(errorStatus, null, 2));\n\n  return {\n    json: errorStatus\n  };\n}"
+      },
+      "id": "health-check",
+      "name": "系统健康检查",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,\n      "position": [240, 800],
+      "disabled": true
+    }
+  ],
+  "connections": {
+    "新闻数据接收": {
+      "main": [
+        [
+          {
+            "node": "智能内容处理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "智能内容处理": {
+      "main": [
+        [
+          {
+            "node": "内容状态检查",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "内容状态检查": {
+      "main": [
+        [
+          {
+            "node": "数据预处理",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "重复内容处理",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "处理失败记录",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "数据预处理": {
+      "main": [
+        [
+          {
+            "node": "生成签名",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "生成签名": {
+      "main": [
+        [
+          {
+            "node": "调用API网关",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "调用API网关": {
+      "main": [
+        [
+          {
+            "node": "响应检查",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "响应检查": {
+      "main": [
+        [
+          {
+            "node": "成功处理",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "错误处理",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "成功处理": {
+      "main": [
+        [
+          {
+            "node": "记录到数据库",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "错误处理": {
+      "main": [
+        [
+          {
+            "node": "记录到数据库",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "重试检查",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "重试检查": {
+      "main": [
+        [
+          {
+            "node": "重试延迟",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "重试延迟": {
+      "main": [
+        [
+          {
+            "node": "生成签名",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "健康检查触发器": {
+      "main": [
+        [
+          {
+            "node": "健康检查",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "健康检查": {
+      "main": [
+        [
+          {
+            "node": "健康状态检查",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "健康状态检查": {
+      "main": [
+        [
+          {
+            "node": "Slack告警",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    },
+    "火鸟API网关": {
+      "main": [
+        [
+          {
+            "node": "发布状态检查",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "发布状态检查": {
+      "main": [
+        [
+          {
+            "node": "成功日志记录",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "错误日志记录",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "成功日志记录": {
+      "main": [
+        [
+          {
+            "node": "监控统计",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "错误日志记录": {
+      "main": [
+        [
+          {
+            "node": "监控统计",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "重复内容处理": {
+      "main": [
+        [
+          {
+            "node": "监控统计",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "处理失败记录": {
+      "main": [
+        [
+          {
+            "node": "监控统计",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "timezone": "Asia/Shanghai",
+    "saveManualExecutions": true,
+    "callerPolicy": "workflowsFromSameOwner",
+    "errorWorkflow": "error-handler-workflow"
+  },
+  "staticData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true
+  },
+  "pinData": {},
+  "versionId": "enhanced-v2.0.0",
+  "triggerCount": 1,
+  "tags": [
+    {
+      "id": "huoniao",
+      "name": "火鸟门户"
+    },
+    {
+      "id": "news",
+      "name": "新闻采集"
+    },
+    {
+      "id": "ai",
+      "name": "AI处理"
+    },
+    {
+      "id": "gateway",
+      "name": "API网关"
+    }
+  ]
+}

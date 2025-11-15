@@ -1,0 +1,93 @@
+---
+description: 开发规范和代码质量标准
+alwaysApply: true
+---
+
+# 开发规范
+
+## "不重复造轮子"原则
+
+### 解决方案调研要求
+- **优先搜索平台**: GitHub 等开源平台
+- **搜索范围**:
+  - 功能匹配度评估
+  - 技术栈兼容性分析
+  - 性能指标对比
+  - 社区活跃度调研
+  - 维护状态评估
+
+### 开源项目评估标准
+```yaml
+项目活跃度:
+  提交频率: 近6个月内活跃
+  Issue响应: 平均响应时间<7天
+  PR处理: 合并率>60%
+
+社区支持:
+  Star数量: ≥100为基础门槛
+  贡献者: ≥5个活跃贡献者
+  文档完整性: 覆盖率≥80%
+  安全审计: 有漏洞处理记录
+```
+
+### 决策标准
+```yaml
+采用现有方案条件:
+  功能匹配度: ≥80%
+  质量评估: ≥4.0/5.0
+  技术适配性: 通过评估
+  维护成本: 可接受
+
+自行开发触发条件:
+  功能匹配度: <60%
+  集成成本: >自研成本
+  特殊业务需求: 无法满足
+  全面评估: 确认没有合适方案
+```
+
+## 代码结构规范
+
+### 项目目录结构
+```
+项目根目录/
+├── src/                    # 源代码目录
+│   ├── components/         # 组件目录
+│   ├── utils/             # 工具函数
+│   ├── config/            # 配置文件
+│   └── tests/             # 测试文件
+├── docs/                  # 文档目录
+├── scripts/               # 脚本文件
+├── .cursor/               # Cursor配置目录
+│   └── rules/             # 规则文件
+└── README.md             # 项目说明
+```
+
+### 命名规范
+```yaml
+文件命名: kebab-case格式 (user-management.js)
+变量命名: camelCase格式 (userName, apiKey)
+常量命名: UPPER_SNAKE_CASE格式 (API_BASE_URL)
+类命名: PascalCase格式 (UserManager, ApiClient)
+```
+
+### 注释规范
+```javascript
+/**
+ * 用户管理类
+ * @description 处理用户相关的业务逻辑
+ * @author 开发团队
+ * @version 1.0.0
+ */
+class UserManager {
+    /**
+     * 创建新用户
+     * @param {Object} userData - 用户数据
+     * @param {string} userData.username - 用户名
+     * @param {string} userData.email - 邮箱地址
+     * @returns {Promise<Object>} 创建的用户对象
+     */
+    async createUser(userData) {
+        // 实现逻辑
+    }
+}
+```

@@ -1,0 +1,273 @@
+---
+description: AI生成Markdown文件时必须遵循的格式规范 - 防止常见格式错误
+alwaysApply: true
+---
+
+# AI Markdown 生成规范
+
+> 强制AI在生成Markdown文件时遵循严格的格式规范，避免常见错误
+
+## 核心原则
+
+### ✅ 必须遵守的格式规则
+
+1. **字符编码规范** 🔤
+   - ✅ **必须使用** UTF-8编码：所有Markdown文件使用UTF-8
+   - ❌ **禁止使用** GBK、ISO-8859-1等其他编码
+   - ✅ 文件开头添加UTF-8 BOM（可选，但建议不使用）
+   - ✅ 特殊字符必须正确转义或使用Unicode
+
+2. **标题格式统一**
+   - ✅ **必须使用** ATX风格：`## 二级标题`、`### 三级标题`
+   - ❌ **禁止使用** 下划线风格：`标题\n===` 或 `标题\n---`
+   - 标题前后必须有空行
+
+3. **代码块格式**
+   - ✅ **必须** 使用语言标识：\`\`\`python、\`\`\`bash等
+   - ✅ **必须** 在代码块前后加空行
+   - ❌ **禁止** 使用缩进的代码块（除非Markdown明确需要）
+
+4. **链接格式**
+   - ✅ **必须** 使用Markdown链接，例如 `[链接](https://example.com)`
+   - ❌ **禁止** 裸露URL：直接写 `https://example.com`
+   - ❌ **禁止** 使用HTML链接：`<a href="">文本</a>`
+
+5. **文本格式化**
+   - ✅ **必须** 使用Markdown语法：`**粗体**`、`*斜体*`
+   - ❌ **禁止** 使用HTML标签：`<strong>`、`<em>`、`<br>`
+
+6. **列表格式**
+   - ✅ **必须** 列表前后加空行
+   - ✅ **必须** 列表项前后有空格：`- 项目`（不是`-项目`）
+   - 有序列表使用 `1.` 格式
+
+7. **空行规则**
+   - ✅ 标题前后：必须有空行
+   - ✅ 段落之间：必须有空行
+   - ✅ 代码块前后：必须有空行
+   - ✅ 列表前后：必须有空行
+   - ❌ **禁止** 连续3个以上空行
+
+8. **字符限制**
+   - ✅ 每行最多100字符（软限制）
+   - ✅ 超长行自动换行
+   - ✅ URL和代码链接不受限制
+
+9. **特殊字符转义** ⚠️
+   - ✅ 需要字面显示的 `#`、`*`、`_`、`\` 必须转义：`\#`、`\*`、`\_`、`\\`
+   - ✅ 代码块内的特殊字符不需要转义
+   - ✅ URL中的特殊字符通常不需要转义
+
+## 代码块示例对比
+
+### ❌ 错误示例
+
+```markdown
+标题
+===
+
+这是内容 https://example.com
+
+<strong>粗体文本</strong>
+
+  缩进代码示例
+
+## 标题1
+内容
+
+## 标题1
+重复标题
+```
+
+### ✅ 正确示例
+
+```markdown
+## 标题
+
+这是内容 [查看链接](https://example.com)
+
+**粗体文本**
+
+\`\`\`python
+缩进代码示例
+\`\`\`
+
+## 标题1
+
+内容
+
+## 标题2
+
+避免重复标题
+
+```
+
+## 常用模板
+
+### 标准文档模板
+
+```markdown
+# 文档标题
+
+文档简短描述
+
+## 功能特性
+
+- 特性1
+- 特性2
+
+## 使用方法
+
+### 步骤1：安装
+
+\`\`\`bash
+npm install
+\`\`\`
+
+### 步骤2：配置
+
+配置说明...
+
+## 参考资料
+
+- [官方文档](https://example.com)
+- [API参考](https://api.example.com)
+
+```
+
+### 代码示例模板
+
+```python
+# 示例代码
+def example():
+    """
+    函数说明
+    """
+    return True
+```
+
+## 输出检查清单
+
+生成Markdown后，AI必须自我检查：
+
+- [ ] 所有标题使用 `##` 等 ATX 风格，绝不使用下划线标题
+- [ ] 所有代码块都写明语言（例如标注为 python、bash）
+- [ ] 所有URL都改写成 Markdown 链接（示例 `[链接](https://example.com)`)
+- [ ] 所有粗体用 `**文本**`，不用 `<strong>`
+- [ ] 标题前后都有空行
+- [ ] 代码块前后都有空行
+- [ ] 段落之间有空行
+- [ ] 没有尾部空格
+- [ ] 没有重复标题
+- [ ] 每行不超过100字符（除URL和代码）
+
+## 自动格式化
+
+如果生成的Markdown不符合规范，AI必须：
+
+1. 读取 `.vscode/MARKDOWN_USAGE.md` 参考规范
+2. 使用 `yzhang.markdown-all-in-one` 格式化
+3. 使用 `markdownlint` 检查错误
+4. 根据错误提示修正格式
+
+## 零容忍错误
+
+以下错误**绝不**允许出现：
+
+1. 裸露URL（必须是链接格式）
+2. HTML标签（必须用Markdown语法）
+3. 标题下划线格式（必须用ATX风格）
+4. 代码块无语言标识（必须指定语言）
+5. 标题和代码块前后无空行
+6. **字符编码错误**（必须UTF-8，禁止GBK等）
+7. **特殊字符未转义**（需要显示的 `#`、`*`、`_` 必须转义）
+
+## 编码与传输规范 🔤📡
+
+### 文件编码要求
+
+**所有Markdown文件**：
+
+- ✅ 编码：**UTF-8 without BOM**（推荐）
+- ✅ 行尾：LF（Unix风格）
+- ❌ 禁止：GBK、GB2312、ISO-8859-1
+- ❌ 禁止：CRLF（Windows行尾）
+
+### 传输配置要求
+
+**后端API响应**：
+
+- ✅ Content-Type: `text/markdown; charset=utf-8`
+- ✅ 设置编码头，避免浏览器误判
+- ✅ 确保HTTP响应为UTF-8
+
+**代码示例**：
+
+```python
+# Python Flask示例
+@app.route('/api/markdown')
+def get_markdown():
+    content = generate_markdown_content()
+    return Response(
+        content,
+        mimetype='text/markdown; charset=utf-8',
+        headers={'Content-Type': 'text/markdown; charset=utf-8'}
+    )
+```
+
+```javascript
+// Node.js Express示例
+app.get('/api/markdown', (req, res) => {
+    const content = generateMarkdown();
+    res.setHeader('Content-Type', 'text/markdown; charset=utf-8');
+    res.send(content);
+});
+```
+
+```php
+// PHP示例
+header('Content-Type: text/markdown; charset=utf-8');
+echo $markdownContent;
+```
+
+### 解析器兼容性
+
+**目标平台**：
+
+- ✅ GitHub Flavored Markdown (GFM)
+- ✅ CommonMark
+- ✅ Unified/Remark生态系统
+- ✅ Marked.js、Markdown-it
+
+**AI生成策略**：
+
+- ✅ 使用标准Markdown语法，避免平台特定扩展
+- ✅ 不使用GitHub特定功能（除非明确目标平台）
+- ✅ 测试多个解析器确保兼容性
+
+## 自动化处理流程 🔄
+
+生成Markdown时，遵循以下流程：
+
+```text
+1. 生成内容
+   ↓
+2. 编码统一为UTF-8（无BOM）
+   ↓
+3. 字符转义检查（# * _ \ 等）
+   ↓
+4. Markdown语法校验（markdownlint）
+   ↓
+5. 设置传输头（Content-Type + charset）
+   ↓
+6. 解析器兼容性测试（可选）
+   ↓
+7. 输出或返回
+```
+
+## 参考文档
+
+- 完整规范：`.vscode/MARKDOWN_USAGE.md`
+- Markdownlint规则：`.vscode/settings.json`
+- 解决方案：`.vscode/AI_MARKDOWN_SOLUTION.md`
+- 文档质量：`.cursor/rules/document-quality.mdc`

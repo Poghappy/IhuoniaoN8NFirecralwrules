@@ -1,0 +1,264 @@
+---
+description: 新闻采集器使用规范 - Cursor IDE 环境专用
+alwaysApply: false
+globs:
+  - "**/news-collector/**/*.py"
+  - "**/news-collector/**/*.json"
+---
+
+# 新闻采集器使用规范
+
+## 核心原则
+
+### 使用场景
+- ✅ 仅在 Cursor IDE 环境中使用
+- ✅ 采集内容后本地存储
+- ✅ 人工审核后批量上传
+- ❌ 不自动集成到火鸟系统
+- ❌ 不创建自动化定时任务
+
+## 采集流程
+
+### 标准工作流
+1. **配置采集源** - 在 `config/sites.json` 中配置网站
+2. **执行采集** - 使用命令行或Python脚本
+3. **本地存储** - 数据保存到 `data/` 目录
+4. **人工审核** - 检查采集内容质量
+5. **导出数据** - 导出为JSON/CSV格式
+6. **手动上传** - 批量上传到火鸟系统
+
+### 禁止操作
+- ❌ 不要创建自动上传脚本
+- ❌ 不要直接连接火鸟数据库
+- ❌ 不要创建定时任务
+- ❌ 不要修改火鸟系统代码
+
+## 数据管理
+
+### 本地存储结构
+```
+data/
+├── raw/              # 原始采集数据（JSON）
+├── processed/        # 处理后的数据
+├── export/           # 导出文件（用于上传）
+└── news.db          # SQLite数据库
+```
+
+### 导出格式
+- **JSON格式** - 用于API批量导入
+- **CSV格式** - 用于Excel审核
+- **Markdown格式** - 用于内容预览
+
+## 命令规范
+
+### 推荐命令
+```bash
+# 采集单个网站（带导出）
+python src/main.py crawl \
+  --url https://example.com \
+  --type news \
+  --max-pages 100 \
+  --wait \
+  --save-db \
+  --output data/export/news_$(date +%Y%m%d).json
+
+# 批量采集
+python src/main.py batch \
+  --config config/sites.json \
+  --wait \
+  --save-db
+
+# 导出数据
+python src/main.py export \
+  --crawl-id <id> \
+  --format json \
+  --output data/export/
+```
+
+### 禁止命令
+```bash
+# ❌ 不要创建自动上传
+# ❌ 不要连接火鸟数据库
+# ❌ 不要创建cron任务
+```
+
+## 代码规范
+
+### 允许的操作
+```python
+# ✅ 采集内容
+crawler.crawl_news_site(url="...")
+
+# ✅ 保存到本地数据库
+db.save_articles(articles)
+
+# ✅ 导出为文件
+export_to_json(articles, "data/export/news.json")
+```
+
+### 禁止的操作
+```python
+# ❌ 不要自动上传
+# upload_to_huoniao(articles)
+
+# ❌ 不要连接火鸟数据库
+# mysql_conn = connect_to_huoniao_db()
+
+# ❌ 不要创建定时任务
+# schedule.every().day.at("00:00").do(crawl_news)
+```
+
+## 数据审核
+
+### 审核清单
+- [ ] 标题是否准确
+- [ ] 内容是否完整
+- [ ] 图片是否有效
+- [ ] 来源是否标注
+- [ ] 格式是否正确
+- [ ] 是否有重复内容
+
+### 审核工具
+- 使用 `list-articles` 命令查看
+- 导出为CSV在Excel中审核
+- 使用Markdown预览内容
+
+## 导出规范
+
+### JSON导出格式
+```json
+{
+  "articles": [
+    {
+      "title": "文章标题",
+      "content": "文章内容（Markdown）",
+      "url": "原文链接",
+      "author": "作者",
+      "publish_date": "2025-01-11",
+      "category": "分类",
+      "tags": ["标签1", "标签2"],
+      "images": ["图片URL1", "图片URL2"]
+    }
+  ],
+  "metadata": {
+    "crawl_id": "任务ID",
+    "crawl_date": "2025-01-11",
+    "total_count": 100
+  }
+}
+```
+
+### CSV导出格式
+- 包含所有必要字段
+- 使用UTF-8编码
+- 适合Excel打开审核
+
+## 最佳实践
+
+### 采集前
+1. 检查API配额
+2. 配置合理的页面限制
+3. 设置路径过滤规则
+4. 准备存储空间
+
+### 采集中
+1. 监控采集进度
+2. 检查错误日志
+3. 避免重复采集
+4. 控制采集速度
+
+### 采集后
+1. 验证数据完整性
+2. 人工审核内容
+3. 导出为标准格式
+4. 备份原始数据
+
+## 文件命名规范
+
+### 导出文件命名
+```
+data/export/
+├── news_20250111_tech.json       # 科技新闻
+├── news_20250111_finance.json    # 财经新闻
+├── articles_20250111.csv         # CSV格式
+└── backup_20250111.zip           # 备份文件
+```
+
+### 命名规则
+- 使用日期：`YYYYMMDD`
+- 使用分类：`tech`, `finance`, `sports`
+- 使用格式：`.json`, `.csv`, `.md`
+
+## 错误处理
+
+### 常见问题
+1. **API配额不足** - 等待配额恢复
+2. **网站无法访问** - 检查网络和URL
+3. **内容格式错误** - 调整路径过滤
+4. **存储空间不足** - 清理旧数据
+
+### 日志查看
+```bash
+# 查看最新日志
+tail -f logs/crawler.log
+
+# 查看错误日志
+grep ERROR logs/crawler.log
+```
+
+## 安全注意事项
+
+### API密钥安全
+- ✅ 使用环境变量
+- ✅ 不提交到Git
+- ✅ 定期轮换密钥
+- ❌ 不在代码中硬编码
+
+### 数据安全
+- ✅ 定期备份数据
+- ✅ 敏感内容脱敏
+- ✅ 遵守版权规定
+- ❌ 不泄露原始数据
+
+## 工作流示例
+
+### 完整采集流程
+```bash
+# 1. 配置网站列表
+vim config/sites.json
+
+# 2. 执行采集
+python src/main.py batch --config config/sites.json --wait --save-db
+
+# 3. 查看采集结果
+python src/main.py list-articles --crawl-id <id> --limit 20
+
+# 4. 导出数据
+python src/main.py export --crawl-id <id> --format json --output data/export/
+
+# 5. 人工审核
+# 在Excel或文本编辑器中审核
+
+# 6. 手动上传到火鸟系统
+# 使用火鸟系统的批量导入功能
+```
+
+## 性能建议
+
+### 采集优化
+- 合理设置 `max_pages` 限制
+- 使用路径过滤减少无效页面
+- 避免高峰时段采集
+- 分批次采集大型网站
+
+### 存储优化
+- 定期清理旧数据
+- 压缩备份文件
+- 使用数据库索引
+- 监控磁盘空间
+
+## 更新记录
+
+- 2025-01-11: 创建规则，明确仅用于Cursor IDE环境
+- 禁止自动集成到火鸟系统
+- 强调人工审核和手动上传流程

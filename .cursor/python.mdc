@@ -1,0 +1,52 @@
+---
+description: Python 采集与自动化项目规范
+globs:
+  - "**/*.py"
+alwaysApply: true
+---
+
+# HawaiiHub Firecrawl Python 规范
+
+- 本项目用于 Firecrawl 采集、火鸟门户 API 集成、n8n 自动化与智能 Agent 协同，所有 Python 代码必须面向生产可靠性设计。
+- 规则来源：Cursor 官方 Rules 指南、Cursor Directory Python 样例、awesome-cursorrules，并结合 HawaiiHub 现有模块（`火爬采集器.py`、`数据处理.py`、`API集成.py`、`集成测试.py`）内的实践。
+
+## 代码风格与质量
+- **类型注解**：所有函数/方法参数与返回值必须显式注解（包括返回 `None` 时写 `-> None`），必要时使用 `TypedDict`、`Protocol` 等高级类型；禁止省略类型导致 mypy --strict 失败。
+- **文档字符串**：公共 API、类与模块需提供中文 docstring（PEP 257），包含用途、关键参数、返回值/副作用。
+- **格式化与 Lint**：遵循 Ruff 默认配置；保持每行 ≤ 100 字符；避免 `print`，统一使用 `logging`。
+- **命名与结构**：遵循 PEP 8（snake_case、PascalCase、UPPER_CASE）；模块内逻辑拆分为纯函数 + dataclass，不得写杂乱脚本代码。
+
+## Firecrawl 与数据处理
+- Firecrawl 数据结构统一使用 `ArticleData` → `ProcessedArticle` → `PublishRequest` 的三段流，确保字段映射、评分、元数据传递完整。
+- 扩展采集能力时优先复用 `FirecrawlCollector` 的封装：通过配置（`CollectorConfig`、`FirecrawlCollectorConfig`）驱动，而非写散乱请求。
+- 处理流程需执行内容清洗、关键词提取、分类、质量评分；新增步骤必须在 `DataProcessor` 中以可测试函数实现。
+- 任何针对 Firecrawl API 的请求需内置重试、超时与速率限制，沿用 `RateLimiter` 或新增时保持一致策略。
+
+## 火鸟门户 API 集成
+- 使用 `HuoNiaoAPIClient` 统一出入口；发送请求前调用速率限制器，异常时进行指数退避重试。
+- 新增映射字段或业务逻辑时，在 `DataMapper` 中集中处理，确保 `process_and_publish`、`batch_process_and_publish` 统计逻辑不被破坏。
+- 所有 API 响应需通过 `PublishResponse` 封装，严禁在调用处直接解析 `requests` 响应。
+- 针对外部配置（base_url、api_key、默认分类/作者等）统一通过 `APIConfig` 注入，禁止硬编码。
+
+## 测试与验证
+- 单元/集成测试均使用 `pytest` 或现有 `unittest` 套件；新增测试放入 `集成测试.py` 或 `tests/` 目录，覆盖成功与失败分支。
+- 添加新功能时，同步完善性能与端到端场景（参考 `TestPerformance`、`TestEndToEndIntegration`）。
+- 任何影响 Firecrawl 或 API 的改动必须提供可重复的 mock/fixture，避免对真实服务发起请求。
+
+## 错误处理与日志
+- 所有网络、IO、解析错误需捕获并抛出自定义异常或返回带 `error_code` 的响应，提供明确上下文。
+- 日志等级：结构化 INFO 记录关键流程，WARNING 报告可恢复异常，ERROR 记录失败原因；日志消息需包含 URL、外部 ID 等关键索引。
+
+## CLI 与示例脚本
+- 主业务逻辑禁止使用 `print`，统一使用 `logging`；仅在 `if __name__ == "__main__":` 或调试脚本中提供有限的控制台输出。
+- 示例脚本输出需说明用途，避免与生产日志混淆，可通过 `logging.basicConfig` 统一格式。
+
+## 自动化与 n8n 协作
+- 设计函数/类时考虑在 n8n 节点中复用：保持纯函数接口，输入输出使用 JSON 友好类型。
+- 配置数据加载/保存时，优先调用既有配置管理器（`ConfigManager`），保持与 n8n MCP 配置一致。
+
+## 文档与知识同步
+- 更新重要流程时同步维护 `Firecrawl工具/文档` 或现有指南；必要时引用规则来源（Cursor Docs、awesome-cursorrules）并用中文说明变更。
+- 保持 `.cursor/rules` 目录内文件精简，如需子模块专属规则，请在对应目录创建嵌套 `.cursor/rules` 并拆分内容。
+
+遵循以上规范，以确保 Cursor Agent 在处理 Python 爬虫、API 集成与自动化任务时能保持一致、可靠的输出。

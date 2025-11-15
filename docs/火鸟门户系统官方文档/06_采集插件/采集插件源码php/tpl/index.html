@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>采集节点管理</title>
+    <link rel="stylesheet" href="{#$cfg_staticPath#}css/admin/bootstrap.css">
+</head>
+<style>
+    .caozuo div{
+        float: left;
+        margin-left: 5px;
+    }
+    a{
+        text-decoration:none;
+    }
+    body{
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+</style>
+
+<script>var staticPath = '{#$cfg_staticPath#}';</script>
+<body>
+<table class="table table-bordered" style="margin-left: 5px;">
+    <div style="margin-left: 5px;"><h4>采集节点管理</h4></div>
+    <th>编号</th>
+    <th>节点名称</th>
+    <th>针对规则</th>
+    <th>创建时间</th>
+    <th>操作</th>
+
+    {#foreach from=$nodes key=id item=node#}
+        <tr>
+            <td>{#$id+1#}</td>
+            <td><a href="./index.php?getNewsList={#$node['id']#}">{#$node['nodename']#}</a></td>
+            <td>
+                {#if $node['type'] eq 1#}
+                采集多个页面
+                {#elseif $node['type'] eq 2#}
+                采集接口
+                {#else#}
+                采集单个页面
+                {#/if#}
+            </td>
+            <td>{#date("Y-m-d H:i:s", $node['created_at'])#}</td>
+            <td>
+                <a href="./index.php?getView={#$node['id']#}&type={#$node['type']#}">采集</a>&nbsp;&nbsp;
+                <a href="./index.php?changeNode={#$node['id']#}">更改</a>&nbsp;&nbsp;
+                <a href="" data-node="{#$node['id']#}" onclick="deleteNode($(this))">删除</a>&nbsp;&nbsp;
+                <a href="./index.php?export={#$node['id']#}">发布</a>
+            </td>
+        </tr>
+    {#/foreach#}
+
+
+</table>
+<div class="caozuo">
+    <div><a class="btn btn-small btn-primary" href="./insertNode.php">添加任务</a></div>
+</div>
+
+</body>
+<script src="{#$cfg_staticPath#}js/core/jquery-1.8.3.min.js?v=1531357464"></script>
+<script>
+
+    
+    function deleteNode(e) {
+        if(confirm("确定删除该节点下面的所有内容？")){
+            var nodeId = e.attr("data-node");
+            $.get("./index.php?delete="+nodeId, function(result){
+                if(result.code == 200){
+                    window.location.reload();
+                }else{
+                    alert(result.msg);
+                }
+            });
+        }
+
+
+
+    }
+
+
+
+</script>
+
+
+</html>

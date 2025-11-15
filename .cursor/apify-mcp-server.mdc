@@ -1,0 +1,177 @@
+---
+description: Apify MCP Server 配置和使用规范
+alwaysApply: false
+---
+
+# Apify MCP Server 配置规范
+
+## 概述
+
+Apify MCP Server 让 AI 代理可以使用 Apify Store 中的数千个现成的爬虫、抓取器和自动化工具，从社交媒体、搜索引擎、地图、电商网站或其他任何网站提取数据。
+
+## 配置说明
+
+### 环境变量
+
+**必须配置 `APIFY_TOKEN` 环境变量**：
+
+1. 获取 Apify Token：
+   - 访问 [Apify Console](https://console.apify.com/)
+   - 登录或注册账户
+   - 进入 Settings → Integrations → Personal API tokens
+   - 创建新的 API token 或使用现有 token
+
+2. 设置环境变量：
+   - macOS/Linux: `export APIFY_TOKEN="your-apify-token"`
+   - Windows: `set APIFY_TOKEN=your-apify-token`
+   - 或者在 `.env` 文件中添加：`APIFY_TOKEN=your-apify-token`
+
+### MCP 配置
+
+Apify MCP Server 已配置在 `.cursor/mcp.json` 中：
+
+```json
+{
+  "apify": {
+    "command": "npx",
+    "args": [
+      "-y",
+      "@apify/actors-mcp-server@latest",
+      "--tools",
+      "actors,docs,apify/rag-web-browser"
+    ],
+    "env": {
+      "APIFY_TOKEN": "${env:APIFY_TOKEN}"
+    }
+  }
+}
+```
+
+### 配置参数说明
+
+**工具配置 (`--tools`)**：
+
+- `actors` - 默认的 Actor 发现和调用工具
+- `docs` - 文档工具
+- `apify/rag-web-browser` - RAG Web Browser Actor（用于新闻采集和网页内容提取）
+
+**自定义工具配置**：
+
+如果需要使用其他 Actor，可以修改 `--tools` 参数：
+
+```json
+"--tools",
+"actors,docs,apify/rag-web-browser,apify/your-actor"
+```
+
+**最小配置**（仅使用单个 Actor）：
+
+```json
+"--tools",
+"apify/rag-web-browser"
+```
+
+## 使用场景
+
+### 1. 新闻采集
+
+使用 RAG Web Browser Actor 采集新闻：
+
+```python
+# 通过 MCP 工具调用 Apify Actor
+# 使用 apify/rag-web-browser 采集网页内容
+```
+
+### 2. 数据提取
+
+使用 Apify Store 中的各种 Actor 提取数据：
+
+- 社交媒体数据提取
+- 电商网站数据提取
+- 搜索引擎结果提取
+- 地图数据提取
+
+### 3. 网页抓取
+
+使用 Apify Actors 进行网页抓取和自动化任务。
+
+## 与 Firecrawl 的配合
+
+Apify MCP Server 与 Firecrawl MCP Server 可以配合使用：
+
+- **Firecrawl**：适用于结构化数据提取和内容清洗
+- **Apify**：适用于大规模网页抓取和复杂自动化任务
+
+## 最佳实践
+
+### 1. 工具选择
+
+- **新闻采集**：优先使用 `apify/rag-web-browser`
+- **数据提取**：根据目标网站选择合适的 Actor
+- **大规模抓取**：使用 Apify Actors 的并发和队列功能
+
+### 2. 错误处理
+
+- 所有 Apify API 调用必须包含错误处理
+- 使用重试机制处理网络错误
+- 记录 API 调用日志
+
+### 3. 速率限制
+
+- Apify 有速率限制，注意控制请求频率
+- 使用 Apify 的队列功能处理大量任务
+- 监控 API 使用量和费用
+
+## 故障排查
+
+### 1. Token 错误
+
+**问题**：`APIFY_TOKEN` 环境变量未设置或无效
+
+**解决方案**：
+
+1. 检查环境变量是否正确设置：
+   ```bash
+   echo $APIFY_TOKEN
+   ```
+
+2. 验证 Token 是否有效：
+   - 访问 [Apify Console](https://console.apify.com/)
+   - 检查 Token 是否过期
+   - 重新生成 Token
+
+### 2. Actor 不可用
+
+**问题**：指定的 Actor 不可用或不存在
+
+**解决方案**：
+
+1. 检查 Actor 名称是否正确
+2. 访问 [Apify Store](https://apify.com/store) 搜索 Actor
+3. 确认 Actor 是否为公开可用
+4. 检查是否需要付费订阅
+
+### 3. 工具未加载
+
+**问题**：MCP 工具未加载或不可用
+
+**解决方案**：
+
+1. 检查 `.cursor/mcp.json` 配置是否正确
+2. 重启 Cursor 编辑器
+3. 检查 MCP 日志：`.cursor/logs/mcp.log`
+4. 验证 Node.js 版本（需要 v18 或更高版本）
+
+## 参考资料
+
+- [Apify MCP Server GitHub](https://github.com/apify/apify-mcp-server)
+- [Apify Console](https://console.apify.com/)
+- [Apify Store](https://apify.com/store)
+- [Apify MCP Server 文档](https://mcp.apify.com)
+- [Model Context Protocol](https://modelcontextprotocol.io/)
+
+## 更新日志
+
+- **2025-01-15**：添加 Apify MCP Server 配置
+- 配置工具：`actors`, `docs`, `apify/rag-web-browser`
+- 支持新闻采集和数据提取场景

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>获取节点url</title>
+    <link rel="stylesheet" href="{#$cfg_staticPath#}css/admin/bootstrap.css">
+</head>
+<style>
+    .caozuo div{
+        margin-bottom: 200px;
+    }
+</style>
+<script>var staticPath = '{#$cfg_staticPath#}';</script>
+
+<body style="margin-left: 22px;">
+<table class="table table-bordered" style="width: 600px;">
+    <div>
+        <h4>采集指定节点</h4>
+    </div>
+
+    <input type="hidden" name="nodeId" value="{#$nodeInfo['id']#}">
+    <tr>
+        <td>节点名称</td>
+        <td>{#$nodeInfo['nodename']#}</td>
+    </tr>
+
+    <tr>
+        <td>每页采集</td>
+        <td><input type="text" style="width: 40px;" class="get_pages" value="10">&nbsp;条</td>
+    </tr>
+    <tr>
+        <td>间隔时间</td>
+        <td><input type="text" style="width: 40px;" class="get_times" value="1">&nbsp;秒</td>
+    </tr>
+</table>
+
+<div class="caozuo">
+    <div>
+        <button class="btn btn-small btn-primary" onclick="start()">开始采集</button>&nbsp;&nbsp;&nbsp;
+        <a class="btn btn-small btn-primary" onclick="getNewsList()">查看已采集</a>
+
+    </div>
+
+</div>
+
+<!--进度条-->
+<div>
+    <table id="load" width="700" border="0" bgcolor="#FAFAFA" cellpadding="0" cellspacing="0" bordercolor="#000000" style="border-collapse:collapse;display: none;margin-left: 25px;margin-top: -200px;margin-bottom: 30px;">
+        <tr>
+            <td><br><br>
+                <table id="load2" width="100%" border="1" cellspacing="0" cellpadding="0" bordercolor="#287BCE" style="border-collapse:collapse;display: none;">
+                    <tr bgcolor="#F7F7F6">
+                        <td width="20%" height="100" valign="middle">
+                            <table align='center' width='500'>
+                                <tr>
+                                    <td colspan='2' align='center' id="progressPersent"><font size="2">
+                                        正在进行采集，请稍后...
+                                    </font>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td id='tdOne' height='25' style="width: 1%; background-color: #0a7bcc"> </td>
+                                    <td id='tdTwo' height='25' style="background-color: #999999;width:500px;"> </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>　
+</div>
+<!--进度条end-->
+
+
+
+<div class="urls">
+    <div><h4>获取到的种子网址：(此处只展示10条)</h4></div>
+
+    <div>
+        <table class="table table-bordered" style="width: 600px;">
+
+            {#if $urls#}
+            {#foreach from=$urls item=url#}
+            <tr>
+            <td>
+                <li style="list-style-type:none;">{#$url#}</li>
+            </td>
+            </tr>
+            {#/foreach#}
+            {#else#}
+            <h5>未采集到url,请调整列表页规则</h5>
+            {#/if#}
+
+
+        </tr>
+        </table>
+    </div>
+</div>
+
+</body>
+<script src="{#$cfg_staticPath#}js/core/jquery-1.8.3.min.js?v=1531357464"></script>
+<script src="{#$cfg_staticPath#}js/ui/jquery.dialog-4.2.0.js?v=1531357464"></script>
+<script>
+
+    /**
+     * 获取已下载
+     */
+    function getNewsList() {
+        var nodeId = $("input[name='nodeId']").val();
+        window.location.href = './index.php?getNewsList=' + nodeId;
+    }
+
+
+    function start()
+    {
+
+        var nodeId = $("input[name='nodeId']").val();
+        var page = $(".get_pages").val();
+        var time = ($(".get_times").val());
+        if(!page || !time){
+            alert("请输入每次采集的页数和间隔时间");return;
+        }
+        if(page*1 > 50){
+            alert("采集条数必须小于50");return;
+        }
+        if(time*1 < 1){
+            alert("间隔必须大于1秒");return;
+        }
+        $("#load").css('display', 'block');
+        $("#load2").css('display', 'block');
+        $.ajax({
+            type: "GET",
+            url: "./index.php?resUrls=1&node_id=" + nodeId,
+            data: '',
+            async:true,
+            dataType: "json",
+
+            success: function(data){
+                if(data.code == 201){
+                    alert("操作失败！请稍后再试");
+                }else if (data.code == 200) {
+                    get(nodeId, page, time);
+                }
+            }
+        })
+
+    }
+
+    function get(nodeId, page, time) {
+        $.ajax({
+            type: "GET",
+            url: "./getNews.php",
+            data: {
+                "node" : nodeId*1,
+                "page" : page*1,
+            },
+            async:true,
+            dataType: "json",
+
+            success: function(data){
+
+                if(data.code == 201){
+                    $("#tdTwo").css("background-color",'#0a7bcc');
+                    $("#progressPersent").html('已完成');
+                }else if (data.code == 200) {
+                    var per = data.data;
+                    //增加宽度
+                    $("#tdOne").css("width",per);
+                    //显示比率
+                    $("#progressPersent").html('当前已完成：' + per);
+
+                    setTimeout(function(){
+                        get(nodeId,page,time);
+                    }, time*1000);
+
+                }
+            }
+        })
+    }
+
+</script>
+
+
+</html>

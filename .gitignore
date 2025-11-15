@@ -1,0 +1,28 @@
+# 环境变量和敏感信息
+.env
+.env.local
+.env.*.local
+
+# MCP 配置 (包含个人访问令牌)
+.cursor/mcp.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 日志
+*.log
+logs/
+
+# 临时文件
+tmp/
+temp/
+*.tmp

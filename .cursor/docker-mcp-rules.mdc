@@ -1,0 +1,490 @@
+---
+description: Docker Hub MCP Server 开发规则
+globs: ["**/*.ts", "**/*.js", "**/*.json", "**/*.md"]
+alwaysApply: true
+---
+
+# Docker Hub MCP Server - 开发规则
+
+## 🎯 项目目标
+
+创建一个简单、可靠、灵活的 Docker Hub MCP Server，作为 AI 助手和 Docker Hub 之间的中间件。
+
+## 🏗️ 架构原则
+
+### 简单优先 (Simplicity First)
+
+**核心理念：**
+> "Focus on simplicity and practical value over premature optimization or overengineering."
+
+**实践要点：**
+- ✅ 优先选择直接实现而非复杂架构
+- ✅ 只在有明确收益时才增加复杂度
+- ✅ 记录技术决策的理由
+- ✅ 考虑开发者体验和可维护性
+
+### 避免过早优化
+
+1. **从简单开始**
+   - 使用直接的实现解决核心问题
+   - 避免复杂的架构直到确实需要
+   - 尽可能使用简单的数据结构和算法
+
+2. **先测量再优化**
+   - 添加适当的监控来识别真正的瓶颈
+   - 只在收集真实使用数据后才优化
+   - 专注于已证实的痛点而非理论问题
+
+3. **增量复杂性**
+   - 逐步添加功能和优化
+   - 确保每次添加都提供显著价值
+   - 记录更复杂实现的理由
+
+## 🔧 MCP 工具使用规范
+
+### 搜索镜像
+
+```typescript
+// 正确示例
+const searchQuery = "Search for official nginx images on Docker Hub";
+const result = await mcp.invoke("docker-hub-search", { query: "nginx", official: true });
+
+// 错误示例 - 不要直接调用 Docker Hub API
+// ❌ const result = await fetch('https://hub.docker.com/api/...');
+```
+
+### 管理仓库
+
+```typescript
+// 列出仓库
+const repos = await mcp.invoke("docker-hub-list-repos", { namespace: "myuser" });
+
+// 创建仓库
+const newRepo = await mcp.invoke("docker-hub-create-repo", {
+  name: "my-app",
+  description: "My application",
+  private: false
+});
+```
+
+### 标签操作
+
+```typescript
+// 查看标签
+const tags = await mcp.invoke("docker-hub-list-tags", {
+  repository: "nginx",
+  namespace: "library"
+});
+
+// 获取最新标签
+const latest = await mcp.invoke("docker-hub-get-tag", {
+  repository: "my-app",
+  tag: "latest"
+});
+```
+
+## 📝 开发规范
+
+### 文件操作原则
+
+**必须遵守：**
+- ✅ 优先更新现有文件
+- ✅ 创建前检查文件是否已存在
+- ✅ 使用版本控制跟踪变更
+- ✅ 清理临时文件
+
+**严格禁止：**
+- ❌ 随意创建新文件
+- ❌ 创建重复文件
+- ❌ 不清理临时文件
+
+### TypeScript 代码规范
+
+```typescript
+// ✅ 正确：使用类型注解和错误处理
+async function searchImages(query: string): Promise<SearchResult[]> {
+  try {
+    const result = await dockerHubAPI.search(query);
+    return result.images;
+  } catch (error) {
+    logger.error("Failed to search images", { query, error });
+    throw new Error(`Search failed: ${error.message}`);
+  }
+}
+
+// ❌ 错误：缺少类型注解和错误处理
+async function searchImages(query) {
+  const result = await dockerHubAPI.search(query);
+  return result.images;
+}
+```
+
+### 错误处理模式
+
+```typescript
+// 使用 Guard Clauses 模式
+async function processImage(image: DockerImage | null): Promise<void> {
+  // 错误处理在前
+  if (!image) {
+    throw new Error("Image is required");
+  }
+
+  if (!image.tags || image.tags.length === 0) {
+    throw new Error("Image must have at least one tag");
+  }
+
+  // Happy path 在后
+  await processImageTags(image.tags);
+  await updateImageMetadata(image);
+}
+```
+
+### 日志记录规范
+
+```typescript
+import { logger } from './logger';
+
+// ✅ 正确：结构化日志
+logger.info("Searching Docker Hub", {
+  query: searchQuery,
+  filters: appliedFilters,
+  timestamp: new Date().toISOString()
+});
+
+logger.error("API call failed", {
+  endpoint: "/search",
+  statusCode: response.status,
+  error: error.message
+});
+
+// ❌ 错误：非结构化日志
+console.log("Searching...");
+console.error(error);
+```
+
+## 🔐 安全最佳实践
+
+### 令牌管理
+
+**必须：**
+- ✅ 使用环境变量存储 Docker Hub PAT
+- ✅ 定期轮换访问令牌（每 3-6 个月）
+- ✅ 使用最小权限原则
+- ✅ 实现令牌过期检测
+
+**禁止：**
+- ❌ 在代码中硬编码令牌
+- ❌ 提交 `.env` 文件到 Git
+- ❌ 在日志中输出完整令牌
+- ❌ 使用过期或泄露的令牌
+
+### 配置文件保护
+
+```typescript
+// .gitignore 必须包含
+.env
+.env.local
+.env.*.local
+.cursor/mcp.json  // 包含敏感令牌
+*.log
+logs/
+```
+
+### 安全代码示例
+
+```typescript
+// ✅ 正确：从环境变量读取
+const dockerHubToken = process.env.DOCKER_HUB_PAT;
+if (!dockerHubToken) {
+  throw new Error("DOCKER_HUB_PAT environment variable is required");
+}
+
+// ✅ 正确：日志中隐藏敏感信息
+logger.info("Using Docker Hub token", {
+  tokenPrefix: dockerHubToken.substring(0, 10) + "...",
+  tokenLength: dockerHubToken.length
+});
+
+// ❌ 错误：硬编码令牌
+const dockerHubToken = "dckr_pat_abc123...";
+
+// ❌ 错误：日志中暴露完整令牌
+logger.info("Token:", dockerHubToken);
+```
+
+## ⚡ 性能优化
+
+### 缓存策略
+
+```typescript
+// 简单的内存缓存实现
+class SimpleCache<T> {
+  private cache = new Map<string, { data: T; expiry: number }>();
+
+  async get(key: string): Promise<T | null> {
+    const entry = this.cache.get(key);
+    if (entry && entry.expiry > Date.now()) {
+      return entry.data;
+    }
+    this.cache.delete(key);
+    return null;
+  }
+
+  set(key: string, data: T, ttlSeconds: number = 300): void {
+    this.cache.set(key, {
+      data,
+      expiry: Date.now() + ttlSeconds * 1000
+    });
+  }
+
+  invalidate(key: string): void {
+    this.cache.delete(key);
+  }
+
+  invalidatePattern(pattern: string): void {
+    for (const key of this.cache.keys()) {
+      if (key.includes(pattern)) {
+        this.cache.delete(key);
+      }
+    }
+  }
+}
+
+// 使用示例
+const imageCache = new SimpleCache<DockerImage>();
+
+async function getImage(name: string): Promise<DockerImage> {
+  // 先检查缓存
+  const cached = await imageCache.get(name);
+  if (cached) {
+    return cached;
+  }
+
+  // 缓存未命中，调用 API
+  const image = await dockerHubAPI.getImage(name);
+  imageCache.set(name, image, 300); // 缓存 5 分钟
+  return image;
+}
+```
+
+### API 调用优化
+
+**最佳实践：**
+- ✅ 使用缓存减少 API 调用
+- ✅ 批量操作而非单个请求
+- ✅ 实现请求去重
+- ✅ 遵守 Docker Hub API 速率限制
+- ✅ 使用 ETags 优化
+
+```typescript
+// ✅ 正确：批量获取标签
+async function getMultipleTags(repos: string[]): Promise<TagInfo[]> {
+  const promises = repos.map(repo =>
+    dockerHubAPI.getTags(repo).catch(err => {
+      logger.warn(`Failed to get tags for ${repo}`, { error: err });
+      return [];
+    })
+  );
+
+  const results = await Promise.all(promises);
+  return results.flat();
+}
+
+// ❌ 错误：串行调用
+async function getMultipleTags(repos: string[]): Promise<TagInfo[]> {
+  const results = [];
+  for (const repo of repos) {
+    const tags = await dockerHubAPI.getTags(repo);
+    results.push(...tags);
+  }
+  return results;
+}
+```
+
+## 🧪 测试规范
+
+### 单元测试
+
+```typescript
+import { describe, it, expect, beforeEach } from '@jest/globals';
+
+describe('Docker Hub MCP Server', () => {
+  let server: DockerHubMCPServer;
+
+  beforeEach(() => {
+    server = new DockerHubMCPServer({
+      token: 'test-token',
+      cacheEnabled: false
+    });
+  });
+
+  it('should search images successfully', async () => {
+    const result = await server.searchImages('nginx');
+
+    expect(result).toBeDefined();
+    expect(result.length).toBeGreaterThan(0);
+    expect(result[0]).toHaveProperty('name');
+    expect(result[0]).toHaveProperty('description');
+  });
+
+  it('should handle API errors gracefully', async () => {
+    await expect(
+      server.searchImages('')
+    ).rejects.toThrow('Invalid search query');
+  });
+
+  it('should cache search results', async () => {
+    server.config.cacheEnabled = true;
+
+    const result1 = await server.searchImages('nginx');
+    const result2 = await server.searchImages('nginx');
+
+    expect(result1).toEqual(result2);
+    expect(server.cacheHits).toBe(1);
+  });
+});
+```
+
+### 集成测试
+
+```typescript
+describe('Docker Hub API Integration', () => {
+  it('should authenticate with valid token', async () => {
+    const client = new DockerHubClient(process.env.DOCKER_HUB_PAT!);
+    const user = await client.getCurrentUser();
+
+    expect(user).toBeDefined();
+    expect(user.username).toBeTruthy();
+  });
+
+  it('should reject invalid token', async () => {
+    const client = new DockerHubClient('invalid-token');
+
+    await expect(
+      client.getCurrentUser()
+    ).rejects.toThrow('Authentication failed');
+  });
+});
+```
+
+## 📊 监控和日志
+
+### 日志级别
+
+```typescript
+enum LogLevel {
+  DEBUG = 0,  // 详细调试信息
+  INFO = 1,   // 一般信息
+  WARN = 2,   // 警告信息
+  ERROR = 3   // 错误信息
+}
+
+// 生产环境使用 INFO 或 WARN
+const LOG_LEVEL = process.env.LOG_LEVEL || LogLevel.INFO;
+```
+
+### 监控指标
+
+**关键指标：**
+- API 调用次数和成功率
+- 响应时间（P50、P95、P99）
+- 错误率和错误类型
+- 缓存命中率
+- 令牌使用情况
+
+```typescript
+interface Metrics {
+  apiCalls: {
+    total: number;
+    success: number;
+    failed: number;
+  };
+  responseTime: {
+    p50: number;
+    p95: number;
+    p99: number;
+  };
+  cache: {
+    hits: number;
+    misses: number;
+    hitRate: number;
+  };
+}
+```
+
+## 🚀 Git 提交规范
+
+### Conventional Commits
+
+```bash
+# 功能
+feat: 添加镜像搜索功能
+feat: 🐳 支持多标签推送
+
+# 修复
+fix: 修复令牌过期问题
+fix: 🐛 解决缓存失效 bug
+
+# 文档
+docs: 更新 MCP 配置说明
+docs: 📝 添加安全最佳实践
+
+# 重构
+refactor: 优化 API 调用逻辑
+refactor: ♻️ 简化错误处理流程
+
+# 性能
+perf: 实现请求缓存
+perf: ⚡️ 优化镜像搜索速度
+
+# 测试
+test: 添加 API 集成测试
+test: ✅ 完善错误处理测试
+
+# 配置
+chore: 更新依赖版本
+chore: 🔧 优化 TypeScript 配置
+```
+
+## ✅ 检查清单
+
+### 开发前
+- [ ] 阅读项目文档
+- [ ] 配置开发环境
+- [ ] 获取 Docker Hub 令牌
+- [ ] 配置 `.env` 文件
+- [ ] 测试 MCP Server 连接
+
+### 代码提交前
+- [ ] 代码格式化（Prettier/ESLint）
+- [ ] 类型检查通过（TypeScript）
+- [ ] 单元测试通过
+- [ ] 集成测试通过
+- [ ] 文档已更新
+- [ ] Commit 消息符合规范
+- [ ] 没有敏感信息
+- [ ] 没有 TODO 注释
+
+### 部署前
+- [ ] 所有测试通过
+- [ ] 代码审查完成
+- [ ] 性能测试完成
+- [ ] 安全扫描通过
+- [ ] 文档完整
+- [ ] 变更日志更新
+- [ ] 备份现有配置
+
+## 🎓 参考资源
+
+### 官方文档
+- [Docker Hub API](https://docs.docker.com/docker-hub/api/latest/)
+- [MCP Protocol](https://modelcontextprotocol.io/)
+- [TypeScript Handbook](https://www.typescriptlang.org/docs/)
+
+### 最佳实践
+- [Cursor Rules Best Practices](https://medium.com/elementor-engineers/cursor-rules-best-practices-for-developers-16a438a4935c)
+- [Docker MCP Best Practices](https://www.docker.com/blog/mcp-server-best-practices/)
+
+---
+
+**记住：简单优先，安全第一，持续优化！**
