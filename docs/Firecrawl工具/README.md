@@ -71,7 +71,7 @@ Firecrawl工具/
 #### 代码模块
 - [Flask 存储](./code/flask-storage.py)
 - [Supabase 客户端](./code/supabase-client.py)
-- [代码模块目录](./代码模块/)
+- [代码模块目录](./代码模块/) (已规范化命名)
 
 ### 📦 官方资料
 
