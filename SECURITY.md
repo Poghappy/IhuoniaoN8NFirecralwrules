@@ -25,7 +25,7 @@
    - 填写安全漏洞报告表单
 
 2. **邮件报告**
-   - 发送邮件至: security@example.com
+   - 发送邮件至: security@example.com (请替换为实际的安全联系邮箱)
    - 主题: `[SECURITY] 漏洞描述`
    - 包含详细的漏洞信息
 
@@ -89,8 +89,8 @@
 
 如有安全问题，请通过以下方式联系：
 
-- **GitHub Security Advisories**: [报告漏洞](https://github.com/YOUR_USERNAME/YOUR_REPO/security/advisories/new)
-- **邮件**: security@example.com
+- **GitHub Security Advisories**: [报告漏洞](https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/security/advisories/new)
+- **邮件**: security@example.com (请替换为实际的安全联系邮箱)
 
 ---
 
