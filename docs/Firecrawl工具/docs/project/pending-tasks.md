@@ -29,17 +29,18 @@
 
 以下文件包含占位符，需要替换为实际值：
 
-**`.github/CODEOWNERS`**
-- 将所有 `@YOUR_USERNAME` 替换为实际的 GitHub 用户名或团队名称
-- 示例：`* @zhiledeng` 或 `* @your-org/team-name`
+**`.github/CODEOWNERS`** ✅ 已完成
+- ~~将所有 `@YOUR_USERNAME` 替换为实际的 GitHub 用户名或团队名称~~
+- 已更新为：`* @Poghappy`
 
-**`.github/ISSUE_TEMPLATE/config.yml`**
-- 将 `YOUR_USERNAME/YOUR_REPO` 替换为实际的仓库路径
-- 示例：`https://github.com/zhiledeng/Hawaiihub.net/discussions`
+**`.github/ISSUE_TEMPLATE/config.yml`** ✅ 已完成
+- ~~将 `YOUR_USERNAME/YOUR_REPO` 替换为实际的仓库路径~~
+- 已更新为：`https://github.com/Poghappy/IhuoniaoN8NFirecralwrules`
 
-**`SECURITY.md`**
-- 将 `security@example.com` 替换为实际的安全联系邮箱
-- 将 `YOUR_USERNAME/YOUR_REPO` 替换为实际的仓库路径
+**`SECURITY.md`** ⚠️ 部分完成
+- 将 `security@example.com` 替换为实际的安全联系邮箱（仍需手动更新）
+- ~~将 `YOUR_USERNAME/YOUR_REPO` 替换为实际的仓库路径~~
+- 已更新为：`https://github.com/Poghappy/IhuoniaoN8NFirecralwrules`
 
 #### 1.2 分支保护规则
 
@@ -204,9 +205,9 @@ uv pip install -r requirements.txt
 
 ## ✅ 完成检查清单
 
-- [ ] 更新 CODEOWNERS 中的用户名
-- [ ] 更新 ISSUE_TEMPLATE/config.yml 中的仓库路径
-- [ ] 更新 SECURITY.md 中的联系信息
+- [x] 更新 CODEOWNERS 中的用户名 ✅ 已完成（已更新为 @Poghappy）
+- [x] 更新 ISSUE_TEMPLATE/config.yml 中的仓库路径 ✅ 已完成（已更新为 Poghappy/IhuoniaoN8NFirecralwrules）
+- [ ] 更新 SECURITY.md 中的联系信息 ⚠️ 部分完成（仓库路径已更新，邮箱仍需要手动更新为实际的安全联系邮箱）
 - [ ] 配置 main 分支保护规则
 - [ ] 配置 develop 分支保护规则（可选）
 - [ ] 创建所有标签
