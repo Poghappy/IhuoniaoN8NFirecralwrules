@@ -113,11 +113,32 @@ pytest tests/ -v
 - 编写文档字符串
 - 添加单元测试
 
+## 🔗 与代码目录的关系
+
+### 目录分工
+- **`代码模块/`** (本目录): 业务逻辑和功能模块
+  - Firecrawl 数据采集
+  - 数据处理和转换
+  - API 集成
+  - 任务调度
+
+- **`code/`**: 核心工具和基础功能
+  - Flask 存储适配器
+  - Supabase 客户端封装
+  - 提供基础服务支持
+
+### 使用关系
+```python
+# 本目录中的代码可以使用 code/ 中的工具
+from code.flask_storage import FlaskSessionStorage
+from code.supabase_client import get_supabase
+```
+
 ## 🔗 相关链接
 
 - [返回项目首页](../README.md)
 - [快速开始指南](../QUICKSTART.md)
-- [代码文件](../code/)
+- [代码文件](../code/) - 核心工具代码
 - [测试文件](../tests/)
 
 ---
