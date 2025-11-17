@@ -82,7 +82,7 @@ class TestFirecrawlCollector(unittest.TestCase):
         with self.assertRaises(ValueError):
             CollectorConfig(api_key="", base_url="https://api.firecrawl.dev")
 
-    @patch("火爬采集器.FirecrawlApp")
+    @patch("firecrawl_collector.FirecrawlApp")
     def test_scrape_single_page(self, mock_firecrawl):
         """测试单页抓取"""
         # 模拟Firecrawl响应
@@ -113,7 +113,7 @@ class TestFirecrawlCollector(unittest.TestCase):
         self.assertEqual(result.content, "Test content")
         self.assertEqual(result.url, "https://example.com/test")
 
-    @patch("火爬采集器.FirecrawlApp")
+    @patch("firecrawl_collector.FirecrawlApp")
     def test_crawl_website(self, mock_firecrawl):
         """测试网站爬取"""
         # 模拟爬取响应
@@ -276,7 +276,7 @@ class TestAPIIntegration(unittest.TestCase):
         )
         self.integration = APIIntegration(self.api_config)
 
-    @patch("api_integration.requests.Session")
+    @patch("代码模块.api_integration.requests.Session")
     def test_api_connection(self, mock_session):
         """测试API连接"""
         # 模拟成功响应
@@ -289,7 +289,7 @@ class TestAPIIntegration(unittest.TestCase):
         result = self.integration.test_connection()
         self.assertTrue(result)
 
-    @patch("api_integration.requests.Session")
+    @patch("代码模块.api_integration.requests.Session")
     def test_publish_article(self, mock_session):
         """测试文章发布"""
         # 模拟发布响应
@@ -454,8 +454,8 @@ class TestEndToEndIntegration(unittest.TestCase):
             self.scheduler.stop()
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
-    @patch("火爬采集器.FirecrawlApp")
-    @patch("api_integration.requests.Session")
+    @patch("firecrawl_collector.FirecrawlApp")
+    @patch("代码模块.api_integration.requests.Session")
     def test_complete_workflow(self, mock_session, mock_firecrawl):
         """测试完整工作流程"""
         # 模拟Firecrawl响应
