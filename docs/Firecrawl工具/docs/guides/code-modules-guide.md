@@ -44,7 +44,11 @@ pip install -r requirements.txt
 #### 1. 单页采集
 
 ```python
-from 代码模块.firecrawl_collector import FirecrawlCollector
+# 方式一：如果代码模块目录在 Python 路径中
+from firecrawl_collector import FirecrawlCollector
+
+# 方式二：如果使用相对导入（在代码模块目录内）
+# from .firecrawl_collector import FirecrawlCollector
 
 # 初始化采集器
 collector = FirecrawlCollector(api_key="your-api-key")
@@ -68,7 +72,8 @@ results = collector.crawl(
 #### 3. 数据处理
 
 ```python
-from 代码模块.data_processing import DataProcessor
+# 导入数据处理模块
+from data_processing import DataProcessor
 
 processor = DataProcessor()
 processed = processor.process(raw_data)
@@ -77,13 +82,16 @@ processed = processor.process(raw_data)
 #### 4. 发布内容
 
 ```python
-from 代码模块.api_integration import HuoniaoAPIClient
+# 导入 API 集成模块
+from api_integration import APIIntegration
 
-client = HuoniaoAPIClient(
+# 初始化 API 客户端
+client = APIIntegration(
     base_url="https://api.example.com",
     api_key="your-key"
 )
 
+# 发布文章
 result = client.publish_article({
     "title": "文章标题",
     "content": "文章内容",
@@ -140,7 +148,8 @@ pytest tests/test_integration.py -v
 ### 运行完整测试套件
 
 ```bash
-pytest tests/ -v --cov=代码模块 --cov-report=html
+# 运行测试并生成覆盖率报告
+pytest tests/ -v --cov=. --cov-report=html
 ```
 
 ## 🔗 相关链接
