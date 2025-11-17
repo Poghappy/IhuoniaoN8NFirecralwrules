@@ -76,6 +76,7 @@ Firecrawl工具/
 - [项目特定规则](./docs/project/project-specific-rules.md)
 - [资源索引](./docs/project/resource-index.md)
 - [文档合并方案](./docs/project/docs-merge-plan-and-best-practices.md)
+- [GitHub 配置清单](./docs/project/github-configuration-checklist.md)
 
 #### 项目报告
 - [项目改进完成报告](./docs/reports/项目改进完成报告.md)
