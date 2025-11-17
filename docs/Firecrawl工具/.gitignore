@@ -113,6 +113,11 @@ data/
 *.pdf
 !官方资料/*.pdf
 
+# Hidden directories (except .cursor, .github, .git)
+.vercel/
+.trae/
+*.venv/
+
 # API Keys and secrets
 *_key.txt
 *_secret.txt
