@@ -30,7 +30,7 @@ from unittest.mock import Mock, patch
 
 # 导入测试模块
 try:
-    from .火爬采集器 import FirecrawlCollector, CollectorConfig, ArticleData
+    from .firecrawl_collector import FirecrawlCollector, CollectorConfig, ArticleData
     from .data_processing import DataProcessor, ProcessedArticle
     from .api_integration import (
         APIIntegration,
@@ -38,14 +38,14 @@ try:
         PublishStatus,
         PublishRequest,
     )
-    from .任务调度 import TaskScheduler, TaskStatus, TaskType
-    from .火爬配置 import ConfigManager, FirecrawlCollectorConfig
+    from .task_scheduler import TaskScheduler, TaskStatus, TaskType
+    from .firecrawl_config import ConfigManager, FirecrawlCollectorConfig
 except ImportError:
     # 如果作为独立模块运行
     import sys
 
     sys.path.append(".")
-    from 火爬采集器 import FirecrawlCollector, CollectorConfig, ArticleData
+    from firecrawl_collector import FirecrawlCollector, CollectorConfig, ArticleData
     from data_processing import DataProcessor, ProcessedArticle
     from api_integration import (
         APIIntegration,
@@ -53,8 +53,8 @@ except ImportError:
         PublishStatus,
         PublishRequest,
     )
-    from 任务调度 import TaskScheduler, TaskStatus, TaskType
-    from 火爬配置 import ConfigManager, FirecrawlCollectorConfig
+    from task_scheduler import TaskScheduler, TaskStatus, TaskType
+    from firecrawl_config import ConfigManager, FirecrawlCollectorConfig
 
 
 class TestFirecrawlCollector(unittest.TestCase):
