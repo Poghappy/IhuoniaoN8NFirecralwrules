@@ -14,6 +14,7 @@ ARCHIVE_DIR="docs/archive/temp-docs-$(date +%Y%m%d)"
 TEMP_DOCS=(
     "EXECUTION_PROGRESS.md"
     "EXECUTION_SUMMARY.md"
+    "EXECUTION_COMPLETE.md"
     "NEXT_STEPS.md"
     "NEXT_ACTIONS_DETAILED.md"
     "PROJECT_STATUS_REPORT.md"
@@ -24,6 +25,12 @@ TEMP_DOCS=(
     "INITIALIZATION_COMPLETE.md"
     "PROJECT_INIT.md"
     "SETUP_SUMMARY.md"
+    "AUTOMATED_CONFIGURATION_GUIDE.md"
+    "CHATGPT_CONFIGURATION_NOW.md"
+    "CHATGPT_MCP_SETUP.md"
+    "DOCKER_CONFIG_AUDIT_REPORT.md"
+    "FIRECRAWL_UPDATE_SUMMARY.md"
+    "FIRECRAWL_DOCS_UPDATE.md"
 )
 
 echo -e "${BLUE}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"

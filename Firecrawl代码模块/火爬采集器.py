@@ -380,7 +380,8 @@ class FirecrawlCollector:
                     raise
 
                 wait_time = self.config.retry_delay * (2**attempt)
-                logger.warning(f"操作失败，{wait_time}秒后重试 (第{attempt + 1}次): {e!s}")
+                logger.warning(
+                    f"操作失败，{wait_time}秒后重试 (第{attempt + 1}次): {e!s}")
                 await asyncio.sleep(wait_time)
 
     def _process_scrape_result(self, result, url: str) -> Optional[ArticleData]:
@@ -395,7 +396,8 @@ class FirecrawlCollector:
                 content = str(result)
 
             # 获取元数据
-            metadata = getattr(result, "metadata", {}) if hasattr(result, "metadata") else {}
+            metadata = getattr(result, "metadata", {}) if hasattr(
+                result, "metadata") else {}
 
             # 提取标题
             title = metadata.get("title", "")
@@ -443,7 +445,8 @@ class FirecrawlCollector:
         """保存为Markdown格式"""
         with open(output_file, "w", encoding="utf-8") as f:
             f.write("# 抓取结果报告\n\n")
-            f.write(f"**导出时间**: {data.get('exported_at', datetime.now().isoformat())}\n\n")
+            f.write(
+                f"**导出时间**: {data.get('exported_at', datetime.now().isoformat())}\n\n")
 
             if "articles" in data:
                 f.write(f"**文章总数**: {len(data['articles'])}\n\n")
@@ -517,7 +520,8 @@ async def example_usage():
 
     # 保存结果
     if crawl_result.articles:
-        collector.save_results(crawl_result.articles, "output/crawl_results.json", "json")
+        collector.save_results(crawl_result.articles,
+                               "output/crawl_results.json", "json")
         print("结果已保存到 output/crawl_results.json")
 
 

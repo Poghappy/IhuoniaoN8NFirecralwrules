@@ -226,6 +226,7 @@ class TestTaskScheduler:
         """测试注册执行器的验证。"""
         # 测试非可调用对象
         with pytest.raises(ValueError, match="执行器必须是可调用对象"):
+            # type: ignore[arg-type]
             self.scheduler.register_executor(TaskType.CRAWL, "not_callable")
 
     def test_start_and_stop(self) -> None:
@@ -296,6 +297,8 @@ class TestTaskValidation:
 
     def test_task_from_dict(self) -> None:
         """测试任务反序列化。"""
+        from dataclasses import asdict
+
         task_dict = {
             "id": "test-deserialize",
             "name": "测试任务",
@@ -303,7 +306,7 @@ class TestTaskValidation:
             "url": "https://example.com",
             "priority": TaskPriority.NORMAL.value,
             "status": TaskStatus.PENDING.value,
-            "config": TaskConfig().to_dict(),
+            "config": asdict(TaskConfig()),
             "metadata": {},
             "created_at": datetime.now(timezone.utc).isoformat(),
         }

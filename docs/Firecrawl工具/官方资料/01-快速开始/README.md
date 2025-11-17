@@ -1,6 +1,6 @@
 # Firecrawl 快速开始文档
 
-> **最后更新**: 2025-01-27  
+> **最后更新**: 2025-01-27
 > **基于**: Firecrawl v2 官方文档
 
 ## 📚 文档列表
@@ -73,14 +73,14 @@ import Firecrawl from '@mendable/firecrawl-js';
 const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
 
 // 抓取页面
-const doc = await firecrawl.scrape('https://firecrawl.dev', { 
-  formats: ['markdown', 'html'] 
+const doc = await firecrawl.scrape('https://firecrawl.dev', {
+  formats: ['markdown', 'html']
 });
 
 // 爬取网站
-const docs = await firecrawl.crawl({ 
-  url: 'https://docs.firecrawl.dev', 
-  limit: 10 
+const docs = await firecrawl.crawl({
+  url: 'https://docs.firecrawl.dev',
+  limit: 10
 });
 ```
 
