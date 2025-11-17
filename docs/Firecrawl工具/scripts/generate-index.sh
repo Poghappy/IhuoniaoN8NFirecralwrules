@@ -22,22 +22,22 @@ echo -e "${GREEN}开始生成文档索引...${NC}"
 generate_directory_index() {
     local dir="$1"
     local readme_file="$dir/README.md"
-    
+
     if [ ! -d "$dir" ]; then
         return
     fi
-    
+
     echo -e "${YELLOW}处理目录: $dir${NC}"
-    
+
     # 如果 README.md 已存在，备份
     if [ -f "$readme_file" ]; then
         cp "$readme_file" "${readme_file}.bak"
     fi
-    
+
     # 生成目录名称
     local dir_name=$(basename "$dir")
     local title=$(echo "$dir_name" | sed 's/-/ /g' | sed 's/_/ /g')
-    
+
     # 生成 README.md 内容
     {
         echo "# $title"
@@ -50,14 +50,14 @@ generate_directory_index() {
         echo ""
         echo "## 📚 文件列表"
         echo ""
-        
+
         # 列出 Markdown 文件
         find "$dir" -maxdepth 1 -name "*.md" -type f ! -name "README.md" | sort | while read file; do
             local filename=$(basename "$file")
             local name=$(echo "$filename" | sed 's/\.md$//' | sed 's/-/ /g')
             echo "- [$name](./$filename)"
         done
-        
+
         # 列出子目录
         find "$dir" -maxdepth 1 -type d ! -path "$dir" | sort | while read subdir; do
             local subdir_name=$(basename "$subdir")
@@ -65,14 +65,14 @@ generate_directory_index() {
                 echo "- [$subdir_name](./$subdir_name/)"
             fi
         done
-        
+
         echo ""
         echo "## 🔗 相关链接"
         echo ""
         echo "- [返回项目首页](../../README.md)"
-        
+
     } > "$readme_file"
-    
+
     echo "  ✓ 生成: $readme_file"
 }
 

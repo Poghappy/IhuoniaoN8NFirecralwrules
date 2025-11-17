@@ -8,6 +8,22 @@
 
 本目录包含 Firecrawl 网页采集工具的完整文档，包括官方资料、代码模块、集成指南和最佳实践。
 
+## 🚀 快速开始
+
+**新用户？** 查看 [快速开始指南](./QUICKSTART.md) 快速上手！
+
+**快速命令**:
+```bash
+# 安装依赖
+pip install -r requirements.txt
+
+# 运行示例
+python examples/fastmcp_quickstart_example.py
+
+# 运行测试
+pytest tests/ -v
+```
+
 ## 🗂️ 文档结构
 
 ```

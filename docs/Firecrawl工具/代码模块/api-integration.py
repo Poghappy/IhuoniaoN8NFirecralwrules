@@ -32,13 +32,13 @@ from urllib.parse import urljoin
 
 # 导入本地模块
 try:
-    from .数据处理 import ProcessedArticle, DataProcessor
+    from .data_processing import ProcessedArticle, DataProcessor
 except ImportError:
     # 如果作为独立模块运行
     import sys
 
     sys.path.append(".")
-    from 数据处理 import ProcessedArticle, DataProcessor
+    from data_processing import ProcessedArticle, DataProcessor
 
 
 class PublishStatus(Enum):

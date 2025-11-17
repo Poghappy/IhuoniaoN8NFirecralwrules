@@ -12,21 +12,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install black flake8 mypy
-      
+
       - name: Check code formatting
         run: |
           black --check code/ tests/ || true
-      
+
       - name: Lint with flake8
         run: |
           flake8 code/ tests/ --count --select=E9,F63,F7,F82 --show-source --statistics || true
@@ -37,18 +37,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install pytest pytest-cov
-      
+
       - name: Run tests
         run: |
           pytest tests/ -v --cov=code --cov-report=term-missing || true
@@ -58,7 +58,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Validate documentation
         run: |
           chmod +x scripts/validate-docs.sh

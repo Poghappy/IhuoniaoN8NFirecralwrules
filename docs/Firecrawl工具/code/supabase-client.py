@@ -19,10 +19,10 @@ key: str = os.environ.get("SUPABASE_KEY", "")
 def get_supabase() -> Client:
     """
     Get or create Supabase client instance.
-    
+
     This function creates a Supabase client instance and stores it in Flask's
     application context (g) to ensure it's reused across requests.
-    
+
     Returns:
         Client: Supabase client instance
     """
