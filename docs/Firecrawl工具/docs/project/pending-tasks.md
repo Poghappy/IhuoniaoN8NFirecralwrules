@@ -1,7 +1,7 @@
 # 待办事项清单
 
-> **创建时间**: 2025-01-27  
-> **版本**: v1.0  
+> **创建时间**: 2025-01-27
+> **版本**: v1.0
 > **状态**: 📋 待处理
 
 ## 📋 概述
@@ -37,9 +37,9 @@
 - ~~将 `YOUR_USERNAME/YOUR_REPO` 替换为实际的仓库路径~~
 - 已更新为：`https://github.com/Poghappy/IhuoniaoN8NFirecralwrules`
 
-**`SECURITY.md`** ⚠️ 部分完成
-- 将 `security@example.com` 替换为实际的安全联系邮箱（仍需手动更新）
-- ~~将 `YOUR_USERNAME/YOUR_REPO` 替换为实际的仓库路径~~
+**`SECURITY.md`** ✅ 已完成
+- ✅ 已将 `security@example.com` 替换为 `security@hawaiihub.net`
+- ✅ 已将 `YOUR_USERNAME/YOUR_REPO` 替换为实际的仓库路径
 - 已更新为：`https://github.com/Poghappy/IhuoniaoN8NFirecralwrules`
 
 #### 1.2 分支保护规则
@@ -202,17 +202,26 @@ uv pip install -r requirements.txt
 - [GitHub 配置完整清单](./github-configuration-checklist.md)
 - [GitHub 配置完成总结](./github-configuration-summary.md)
 - [项目规则](./project-rules.md)
+- [手动配置指南](../../../../.github/scripts/manual-config-guide.md) - 详细的 GitHub 网页端配置步骤
+- [标签创建脚本](../../../../.github/scripts/create-labels.sh) - 自动创建 GitHub 标签的脚本
 
 ## ✅ 完成检查清单
 
+### 已完成的自动化配置
+
 - [x] 更新 CODEOWNERS 中的用户名 ✅ 已完成（已更新为 @Poghappy）
 - [x] 更新 ISSUE_TEMPLATE/config.yml 中的仓库路径 ✅ 已完成（已更新为 Poghappy/IhuoniaoN8NFirecralwrules）
-- [ ] 更新 SECURITY.md 中的联系信息 ⚠️ 部分完成（仓库路径已更新，邮箱仍需要手动更新为实际的安全联系邮箱）
-- [ ] 配置 main 分支保护规则
-- [ ] 配置 develop 分支保护规则（可选）
-- [ ] 创建所有标签
-- [ ] 配置仓库基础设置
-- [ ] 启用安全设置
+- [x] 更新 SECURITY.md 中的联系信息 ✅ 已完成（邮箱已更新为 security@hawaiihub.net，仓库路径已更新）
+- [x] 创建标签配置脚本 ✅ 已完成（`.github/scripts/create-labels.sh`）
+- [x] 创建手动配置指南 ✅ 已完成（`.github/scripts/manual-config-guide.md`）
+
+### 需要在 GitHub 网页端手动完成的配置
+
+- [ ] 配置 main 分支保护规则（参考 `.github/scripts/manual-config-guide.md`）
+- [ ] 配置 develop 分支保护规则（可选，参考 `.github/scripts/manual-config-guide.md`）
+- [ ] 创建所有标签（运行 `.github/scripts/create-labels.sh` 或手动创建）
+- [ ] 配置仓库基础设置（参考 `.github/scripts/manual-config-guide.md`）
+- [ ] 启用安全设置（参考 `.github/scripts/manual-config-guide.md`）
 - [ ] 验证 Issue 模板
 - [ ] 验证 PR 模板
 - [ ] 验证 CI 工作流
@@ -221,6 +230,6 @@ uv pip install -r requirements.txt
 
 ---
 
-**最后更新**: 2025-01-27  
+**最后更新**: 2025-01-27
 **维护者**: AI Agent Team
 

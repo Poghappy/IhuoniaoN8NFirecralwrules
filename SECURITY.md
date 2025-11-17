@@ -4,9 +4,9 @@
 
 我们目前支持以下版本的安全更新：
 
-| 版本 | 支持状态 |
-| ---- | -------- |
-| 1.x  | ✅ 支持   |
+| 版本  | 支持状态 |
+| ----- | -------- |
+| 1.x   | ✅ 支持   |
 | < 1.0 | ❌ 不支持 |
 
 ## 🚨 报告安全漏洞
@@ -25,7 +25,7 @@
    - 填写安全漏洞报告表单
 
 2. **邮件报告**
-   - 发送邮件至: security@example.com (请替换为实际的安全联系邮箱)
+   - 发送邮件至: security@hawaiihub.net
    - 主题: `[SECURITY] 漏洞描述`
    - 包含详细的漏洞信息
 
@@ -90,10 +90,9 @@
 如有安全问题，请通过以下方式联系：
 
 - **GitHub Security Advisories**: [报告漏洞](https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/security/advisories/new)
-- **邮件**: security@example.com (请替换为实际的安全联系邮箱)
+- **邮件**: security@hawaiihub.net
 
 ---
 
-**最后更新**: 2025-01-27  
+**最后更新**: 2025-01-27
 **维护者**: AI Agent Team
-
