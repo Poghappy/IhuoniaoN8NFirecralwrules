@@ -217,14 +217,14 @@ uv pip install -r requirements.txt
 
 ### 需要在 GitHub 网页端手动完成的配置
 
-- [ ] 配置 main 分支保护规则（参考 `.github/scripts/manual-config-guide.md`）
+- [x] 配置 main 分支保护规则（参考 `.github/scripts/manual-config-guide.md`）✅ 已完成
 - [ ] 配置 develop 分支保护规则（可选，参考 `.github/scripts/manual-config-guide.md`）
-- [ ] 创建所有标签（运行 `.github/scripts/create-labels.sh` 或手动创建）
-- [ ] 配置仓库基础设置（参考 `.github/scripts/manual-config-guide.md`）
-- [ ] 启用安全设置（参考 `.github/scripts/manual-config-guide.md`）
+- [x] 创建所有标签（运行 `.github/scripts/create-labels.sh` 或手动创建）✅ 部分完成（核心标签已创建）
+- [x] 配置仓库基础设置（参考 `.github/scripts/manual-config-guide.md`）✅ 已完成
+- [x] 启用安全设置（参考 `.github/scripts/manual-config-guide.md`）✅ 已完成
 - [ ] 验证 Issue 模板
 - [ ] 验证 PR 模板
-- [ ] 验证 CI 工作流
+- [ ] 验证 CI 工作流（需要等待首次运行后添加状态检查）
 - [ ] 验证 CodeQL
 - [ ] 验证 Dependabot
 
