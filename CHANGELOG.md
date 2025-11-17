@@ -31,6 +31,12 @@
 - 修复 Python 语言服务器冲突（禁用 Cursor Pyright，使用 Pylance）
 - 修复 cSpell 配置格式问题
 
+### 改进
+- **代码质量改进** (`Firecrawl代码模块/任务调度.py`)
+  - 为关键函数添加类型注解（`__lt__`, `register_executor`, `add_task`, `start`, `stop`, `_scheduler_loop`, `_check_scheduled_tasks`, `_process_task_queue`, `_check_running_tasks`, `_cleanup_completed_tasks`, `_handle_task_completion`）
+  - 改进类型注解（使用更具体的泛型类型参数）
+  - 改进日志格式（使用 lazy % formatting 替代 f-string，提高性能）
+
 ## [1.0.0] - 2025-01-XX
 
 ### 新增
