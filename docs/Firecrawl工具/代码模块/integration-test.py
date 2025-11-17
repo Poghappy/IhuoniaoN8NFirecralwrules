@@ -31,8 +31,8 @@ from unittest.mock import Mock, patch
 # 导入测试模块
 try:
     from .火爬采集器 import FirecrawlCollector, CollectorConfig, ArticleData
-    from .数据处理 import DataProcessor, ProcessedArticle
-    from .API集成 import (
+    from .data_processing import DataProcessor, ProcessedArticle
+    from .api_integration import (
         APIIntegration,
         APIConfig,
         PublishStatus,
@@ -46,8 +46,8 @@ except ImportError:
 
     sys.path.append(".")
     from 火爬采集器 import FirecrawlCollector, CollectorConfig, ArticleData
-    from 数据处理 import DataProcessor, ProcessedArticle
-    from API集成 import (
+    from data_processing import DataProcessor, ProcessedArticle
+    from api_integration import (
         APIIntegration,
         APIConfig,
         PublishStatus,
