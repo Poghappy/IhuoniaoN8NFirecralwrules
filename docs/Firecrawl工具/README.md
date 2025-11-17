@@ -170,10 +170,10 @@ Firecrawl工具/
 
 ### 按场景分类
 
-- **博客爬取**: [爬取规则特性 - 博客](./docs/features/crawl-rules-features.md#博客爬取场景)
-- **新闻网站**: [爬取规则特性 - 新闻](./docs/features/crawl-rules-features.md#新闻网站场景)
-- **电商产品**: [爬取规则特性 - 电商](./docs/features/crawl-rules-features.md#电商产品场景)
-- **文档站点**: [爬取规则特性 - 文档](./docs/features/crawl-rules-features.md#文档站点场景)
+- **博客爬取**: [爬取规则特性 - 博客](./docs/features/crawl-rules-features.md#博客爬取)
+- **新闻网站**: [爬取规则特性 - 新闻](./docs/features/crawl-rules-features.md#新闻网站)
+- **电商产品**: [爬取规则特性 - 电商](./docs/features/crawl-rules-features.md#电商产品)
+- **文档站点**: [爬取规则特性 - 文档](./docs/features/crawl-rules-features.md#文档站点)
 
 ## 🛠️ 工具和脚本
 
