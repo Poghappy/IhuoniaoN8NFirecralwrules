@@ -1,0 +1,33 @@
+# 代码所有者配置
+# 每行定义了一个文件模式，后跟一个或多个所有者
+# 所有者可以是用户名或团队名称
+
+# 全局默认所有者
+* @YOUR_USERNAME
+
+# 文档相关
+/docs/ @YOUR_USERNAME
+*.md @YOUR_USERNAME
+
+# Python 代码
+*.py @YOUR_USERNAME
+requirements.txt @YOUR_USERNAME
+pyproject.toml @YOUR_USERNAME
+
+# GitHub 配置
+/.github/ @YOUR_USERNAME
+
+# 配置文件
+*.yml @YOUR_USERNAME
+*.yaml @YOUR_USERNAME
+*.json @YOUR_USERNAME
+
+# 脚本文件
+*.sh @YOUR_USERNAME
+scripts/ @YOUR_USERNAME
+
+# 测试文件
+tests/ @YOUR_USERNAME
+*_test.py @YOUR_USERNAME
+test_*.py @YOUR_USERNAME
+
