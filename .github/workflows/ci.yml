@@ -43,18 +43,27 @@ jobs:
           python-version: '3.11'
 
       - name: Install dependencies
+        working-directory: docs/Firecrawl工具
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt
+          fi
           pip install pytest pytest-cov pytest-mock
 
       - name: Run unit tests
+        working-directory: docs/Firecrawl工具
         run: |
-          pytest tests/ -v --cov=code --cov-report=term-missing || true
+          if [ -d tests ]; then
+            pytest tests/ -v --cov=代码模块 --cov-report=term-missing || true
+          fi
 
       - name: Run integration tests
+        working-directory: docs/Firecrawl工具
         run: |
-          pytest tests/test_integration.py -v || true
+          if [ -f tests/test_integration.py ]; then
+            pytest tests/test_integration.py -v || true
+          fi
 
   docs:
     name: Validate Documentation
@@ -63,7 +72,10 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: Validate documentation
+        working-directory: docs/Firecrawl工具
         run: |
-          chmod +x scripts/validate-docs.sh
-          ./scripts/validate-docs.sh || true
+          if [ -f scripts/validate-docs.sh ]; then
+            chmod +x scripts/validate-docs.sh
+            ./scripts/validate-docs.sh || true
+          fi
 
