@@ -137,7 +137,7 @@ echo ""
 echo -e "${BLUE}🔀 检查 Git 状态...${NC}"
 if git rev-parse --git-dir > /dev/null 2>&1; then
     check_pass "Git 仓库已初始化"
-    
+
     # 检查是否有未提交的更改
     if [ -n "$(git status --porcelain)" ]; then
         check_warn "存在未提交的更改"

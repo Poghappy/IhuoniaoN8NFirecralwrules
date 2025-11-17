@@ -44,33 +44,33 @@ if [ -f "pyproject.toml" ]; then
     else
         check_fail "pyproject.toml 缺少 [project] 部分"
     fi
-    
+
     if grep -q "^name = " pyproject.toml; then
         check_pass "pyproject.toml 包含项目名称"
     else
         check_fail "pyproject.toml 缺少项目名称"
     fi
-    
+
     if grep -q "^version = " pyproject.toml; then
         check_pass "pyproject.toml 包含版本号"
     else
         check_fail "pyproject.toml 缺少版本号"
     fi
-    
+
     # 检查 Ruff 配置
     if grep -q "^\[tool.ruff\]" pyproject.toml; then
         check_pass "pyproject.toml 包含 Ruff 配置"
     else
         check_warn "pyproject.toml 缺少 Ruff 配置"
     fi
-    
+
     # 检查 MyPy 配置
     if grep -q "^\[tool.mypy\]" pyproject.toml; then
         check_pass "pyproject.toml 包含 MyPy 配置"
     else
         check_warn "pyproject.toml 缺少 MyPy 配置"
     fi
-    
+
     # 检查 Pytest 配置
     if grep -q "^\[tool.pytest.ini_options\]" pyproject.toml; then
         check_pass "pyproject.toml 包含 Pytest 配置"
@@ -86,20 +86,20 @@ echo ""
 echo -e "${BLUE}🔒 验证 .gitignore...${NC}"
 if [ -f ".gitignore" ]; then
     check_pass ".gitignore 文件存在"
-    
+
     # 检查关键条目
     if grep -q "^\.env$" .gitignore; then
         check_pass ".env 在 .gitignore 中"
     else
         check_fail ".env 未在 .gitignore 中"
     fi
-    
+
     if grep -q "^__pycache__" .gitignore; then
         check_pass "__pycache__ 在 .gitignore 中"
     else
         check_warn "__pycache__ 未在 .gitignore 中"
     fi
-    
+
     if grep -q "^\.pytest_cache" .gitignore; then
         check_pass ".pytest_cache 在 .gitignore 中"
     else
@@ -114,40 +114,40 @@ echo ""
 echo -e "${BLUE}🐙 验证 GitHub 配置...${NC}"
 if [ -d ".github" ]; then
     check_pass ".github 目录存在"
-    
+
     # 检查工作流
     if [ -f ".github/workflows/ci.yml" ]; then
         check_pass "CI 工作流存在"
     else
         check_warn "CI 工作流缺失"
     fi
-    
+
     if [ -f ".github/workflows/codeql.yml" ]; then
         check_pass "CodeQL 工作流存在"
     else
         check_warn "CodeQL 工作流缺失"
     fi
-    
+
     # 检查模板
     if [ -d ".github/ISSUE_TEMPLATE" ]; then
         check_pass "Issue 模板目录存在"
     else
         check_warn "Issue 模板目录缺失"
     fi
-    
+
     if [ -f ".github/PULL_REQUEST_TEMPLATE.md" ]; then
         check_pass "PR 模板存在"
     else
         check_warn "PR 模板缺失"
     fi
-    
+
     # 检查 Dependabot
     if [ -f ".github/dependabot.yml" ]; then
         check_pass "Dependabot 配置存在"
     else
         check_warn "Dependabot 配置缺失"
     fi
-    
+
     # 检查 CODEOWNERS
     if [ -f ".github/CODEOWNERS" ]; then
         check_pass "CODEOWNERS 存在"
