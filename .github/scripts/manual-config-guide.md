@@ -1,3 +1,4 @@
+
 # GitHub 手动配置指南
 
 > **创建时间**: 2025-01-27
@@ -23,10 +24,12 @@
 5. 配置以下选项：
 
    ✅ **Require a pull request before merging**
+
    - ✅ Require approvals: `1`
    - ✅ Dismiss stale pull request approvals when new commits are pushed
 
    ✅ **Require status checks to pass before merging**
+
    - ✅ Require branches to be up to date before merging
    - 在 **Status checks that are required** 中选择：
      - `lint`
@@ -38,8 +41,8 @@
    ✅ **Do not allow bypassing the above settings**
 
    ✅ **Restrict who can push to matching branches**
-   - 添加管理员账户
 
+   - 添加管理员账户
 6. 点击 **Create** 保存
 
 #### 1.2 配置 develop 分支保护（可选）
@@ -49,8 +52,8 @@
 3. 配置以下选项：
 
    ✅ **Require a pull request before merging**
-   - ✅ Require status checks to pass before merging
 
+   - ✅ Require status checks to pass before merging
 4. 点击 **Create** 保存
 
 ### 2. 创建标签
@@ -73,6 +76,7 @@ chmod +x .github/scripts/create-labels.sh
 3. 按照以下列表创建标签：
 
 **类型标签**:
+
 - `bug` - Bug 报告 (颜色: `#d73a4a`)
 - `feature` - 新功能 (颜色: `#0e8a16`)
 - `enhancement` - 功能增强 (颜色: `#0052cc`)
@@ -80,23 +84,27 @@ chmod +x .github/scripts/create-labels.sh
 - `question` - 问题咨询 (颜色: `#d876e3`)
 
 **优先级标签**:
+
 - `priority: high` - 高优先级 (颜色: `#b60205`)
 - `priority: medium` - 中优先级 (颜色: `#fbca04`)
 - `priority: low` - 低优先级 (颜色: `#e4e669`)
 
 **状态标签**:
+
 - `status: in-progress` - 进行中 (颜色: `#1d76db`)
 - `status: blocked` - 已阻塞 (颜色: `#ee0701`)
 - `status: needs-review` - 需要审查 (颜色: `#fef2c0`)
 - `status: ready` - 就绪 (颜色: `#0e8a16`)
 
 **技术标签**:
+
 - `python` - Python 相关 (颜色: `#0052cc`)
 - `javascript` - JavaScript 相关 (颜色: `#d4c5f9`)
 - `api` - API 相关 (颜色: `#7057ff`)
 - `database` - 数据库相关 (颜色: `#ededed`)
 
 **依赖标签**:
+
 - `dependencies` - 依赖更新 (颜色: `#0366d6`)
 - `github-actions` - GitHub Actions (颜色: `#000000`)
 
@@ -108,11 +116,13 @@ chmod +x .github/scripts/create-labels.sh
    **Repository name**: `IhuoniaoN8NFirecralwrules`
 
    **Description**: 添加项目描述，例如：
+
    ```
    HawaiiHub Firecrawl × 火鸟门户 × n8n 的采集与自动化运营仓库
    ```
 
    **Topics**: 添加以下主题标签：
+
    - `firecrawl`
    - `web-scraping`
    - `automation`
@@ -124,6 +134,7 @@ chmod +x .github/scripts/create-labels.sh
    **Default branch**: `main`
 
    **Features**: 启用以下功能：
+
    - ✅ Issues
    - ✅ Projects
    - ✅ Wiki（可选）
@@ -135,19 +146,24 @@ chmod +x .github/scripts/create-labels.sh
 2. 在 **Code security and analysis** 部分，启用以下功能：
 
    ✅ **Dependency graph**
+
    - 点击 **Enable** 启用依赖图
 
    ✅ **Dependabot alerts**
+
    - 点击 **Enable** 启用 Dependabot 警报
 
    ✅ **Dependabot security updates**
+
    - 点击 **Enable** 启用自动安全更新
 
    ✅ **Code scanning**
+
    - 点击 **Set up** 配置代码扫描
    - 选择 **Set up this workflow** 使用默认配置
 
    ✅ **Secret scanning**
+
    - 点击 **Enable** 启用密钥扫描
 
 ### 5. 验证配置
@@ -228,4 +244,3 @@ export GITHUB_TOKEN=your_token_here
 
 **最后更新**: 2025-01-27
 **维护者**: AI Agent Team
-
