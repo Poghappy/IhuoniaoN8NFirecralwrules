@@ -381,8 +381,8 @@ class TaskScheduler:
         self.logger = logging.getLogger(__name__)
 
         # 任务队列
-        self.task_queue: PriorityQueue[Task] = PriorityQueue()
-        self.running_tasks: Dict[str, Future[Dict[str, Any]]] = {}
+        self.task_queue = PriorityQueue()
+        self.running_tasks: Dict[str, Future] = {}
 
         # 线程池
         self.executor = ThreadPoolExecutor(max_workers=max_workers)
@@ -392,7 +392,7 @@ class TaskScheduler:
         self._scheduler_thread: Optional[threading.Thread] = None
 
         # 任务执行器映射
-        self.task_executors: Dict[TaskType, Callable[[Task], Dict[str, Any]]] = {}
+        self.task_executors: Dict[TaskType, Callable] = {}
 
         # 统计信息
         self.stats = {"total_tasks": 0, "completed_tasks": 0, "failed_tasks": 0, "running_tasks": 0}
@@ -428,13 +428,13 @@ class TaskScheduler:
             else:
                 # 立即执行的任务
                 self.task_queue.put(task)
-                self.logger.info(f"任务已添加到队列: {task.id}")
+                self.logger.info("任务已添加到队列: %s", task.id)
 
             self.stats["total_tasks"] += 1
             return True
 
         except Exception as e:
-            self.logger.error(f"添加任务失败: {e!s}")
+            self.logger.error("添加任务失败: %s", e)
             return False
 
     def create_task(
@@ -481,7 +481,7 @@ class TaskScheduler:
             return None
 
         except Exception as e:
-            self.logger.error(f"创建任务失败: {e!s}")
+            self.logger.error("创建任务失败: %s", e)
             return None
 
     def cancel_task(self, task_id: str) -> bool:
@@ -537,7 +537,7 @@ class TaskScheduler:
             return False
 
         except Exception as e:
-            self.logger.error("暂停任务失败: %s", e)
+            self.logger.error(f"暂停任务失败: {e!s}")
             return False
 
     def resume_task(self, task_id: str) -> bool:
@@ -556,13 +556,13 @@ class TaskScheduler:
                 self.storage.update_task(task)
                 self.task_queue.put(task)
 
-                self.logger.info("任务已恢复: %s", task_id)
+                self.logger.info(f"任务已恢复: {task_id}")
                 return True
 
             return False
 
         except Exception as e:
-            self.logger.error("恢复任务失败: %s", e)
+            self.logger.error(f"恢复任务失败: {e!s}")
             return False
 
     def get_task_status(self, task_id: str) -> Optional[TaskStatus]:
@@ -651,7 +651,7 @@ class TaskScheduler:
                 time.sleep(self.check_interval)
 
             except Exception as e:
-                self.logger.error("调度器循环错误: %s", e)
+                self.logger.error(f"调度器循环错误: {e!s}")
                 time.sleep(self.check_interval)
 
     def _check_scheduled_tasks(self):
@@ -665,7 +665,7 @@ class TaskScheduler:
                 if task.scheduled_time and task.scheduled_time <= current_time:
                     # 时间到了，添加到执行队列
                     self.task_queue.put(task)
-                    self.logger.info("定时任务已加入执行队列: %s", task.id)
+                    self.logger.info(f"定时任务已加入执行队列: {task.id}")
 
                 elif task.cron_expression and croniter:
                     # 检查Cron表达式
@@ -692,13 +692,13 @@ class TaskScheduler:
                             self.task_queue.put(new_task)
                             self.storage.save_task(new_task)
 
-                            self.logger.info("Cron任务已创建并加入队列: %s", new_task.id)
+                            self.logger.info(f"Cron任务已创建并加入队列: {new_task.id}")
 
                     except Exception as e:
-                        self.logger.error("Cron表达式解析失败: %s, %s", task.cron_expression, e)
+                        self.logger.error(f"Cron表达式解析失败: {task.cron_expression}, {e!s}")
 
         except Exception as e:
-            self.logger.error("检查定时任务失败: %s", e)
+            self.logger.error(f"检查定时任务失败: {e!s}")
 
     def _process_task_queue(self):
         """处理任务队列"""
@@ -728,10 +728,10 @@ class TaskScheduler:
             self.storage.update_task(task)
 
             self.stats["running_tasks"] += 1
-            self.logger.info("任务开始执行: %s", task.id)
+            self.logger.info(f"任务开始执行: {task.id}")
 
         except Exception as e:
-            self.logger.error("处理任务队列失败: %s", e)
+            self.logger.error(f"处理任务队列失败: {e!s}")
 
     def _check_running_tasks(self):
         """检查运行中的任务"""
@@ -754,7 +754,7 @@ class TaskScheduler:
                 self.stats["running_tasks"] -= 1
 
         except Exception as e:
-            self.logger.error(f"检查运行任务失败: {e!s}")
+            self.logger.error("检查运行任务失败: %s", e)
 
     def _cleanup_completed_tasks(self):
         """清理完成的任务"""
@@ -762,7 +762,7 @@ class TaskScheduler:
             # 这里可以实现任务清理逻辑，比如删除过期的已完成任务
             pass
         except Exception as e:
-            self.logger.error("清理任务失败: %s", e)
+            self.logger.error(f"清理任务失败: {e!s}")
 
     def _execute_task(self, task: Task) -> Dict[str, Any]:
         """执行任务
@@ -783,7 +783,7 @@ class TaskScheduler:
 
     def _handle_task_completion(
         self, task_id: str, result: Optional[Dict[str, Any]], error: Optional[str]
-    ) -> None:
+    ):
         """处理任务完成
 
         Args:
@@ -827,19 +827,19 @@ class TaskScheduler:
                     # 重试次数用完，标记为失败
                     task.status = TaskStatus.FAILED
                     self.stats["failed_tasks"] += 1
-                    self.logger.error("任务执行失败: %s, 错误: %s", task_id, error)
+                    self.logger.error(f"任务执行失败: {task_id}, 错误: {error}")
             else:
                 # 任务成功
                 task.status = TaskStatus.COMPLETED
                 task.result = result
                 self.stats["completed_tasks"] += 1
-                self.logger.info("任务执行成功: %s", task_id)
+                self.logger.info(f"任务执行成功: {task_id}")
 
             # 更新任务状态
             self.storage.update_task(task)
 
         except Exception as e:
-            self.logger.error("处理任务完成失败: %s", e)
+            self.logger.error(f"处理任务完成失败: {e!s}")
 
     def get_statistics(self) -> Dict[str, Any]:
         """获取统计信息
