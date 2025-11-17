@@ -1,24 +1,23 @@
 #!/usr/bin/env node
 /**
  * ChatGPT MCP HTTP Server
- * 
+ *
  * 将本地 MCP 工具暴露为 HTTP 端点，供 ChatGPT 桌面版连接
- * 
+ *
  * 使用方法：
  * 1. 启动服务器: node server.js
  * 2. 使用 ngrok 暴露: ngrok http 3000
  * 3. 在 ChatGPT 中配置 connector URL: https://your-ngrok-url.ngrok.app/mcp
  */
 
-const http = require('http');
-const https = require('https');
-const { spawn } = require('child_process');
-const { Server } = require('@modelcontextprotocol/sdk/server/index.js');
-const { StdioServerTransport } = require('@modelcontextprotocol/sdk/server/stdio.js');
+import http from 'http';
+import { spawn } from 'child_process';
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 
 const PORT = process.env.PORT || 3000;
 const MCP_SERVER_COMMAND = process.env.MCP_SERVER_COMMAND || 'npx';
-const MCP_SERVER_ARGS = process.env.MCP_SERVER_ARGS 
+const MCP_SERVER_ARGS = process.env.MCP_SERVER_ARGS
   ? process.env.MCP_SERVER_ARGS.split(',')
   : ['-y', 'firecrawl-mcp'];
 
@@ -110,10 +109,10 @@ const server = http.createServer(async (req, res) => {
       req.on('end', async () => {
         try {
           const message = JSON.parse(body);
-          
+
           // 转发消息到 MCP 服务器
           const response = await mcpConnection.server.handleRequest(message);
-          
+
           res.writeHead(200, { 'Content-Type': 'application/json' });
           res.end(JSON.stringify(response));
         } catch (error) {

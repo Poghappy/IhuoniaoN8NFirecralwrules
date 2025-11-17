@@ -1,67 +1,77 @@
-# 火鸟门户系统 (HuoNiao Portal)
+# HawaiiHub.net - Firecrawl × 火鸟门户 × n8n 采集与自动化运营
 
 ## 📋 项目简介
 
-火鸟门户系统是一个功能完整的PHP门户网站管理系统，提供内容管理、用户管理、支付集成等核心功能。
+这是 HawaiiHub 夏威夷华人平台的采集与自动化运营仓库，整合了 Firecrawl 数据采集、火鸟门户系统 API 集成和 n8n 工作流自动化，实现内容采集、处理、发布的完整自动化流程。
 
-## 🚀 主要功能
+## 🚀 核心功能
 
-- **内容管理**: 文章发布、分类管理、内容审核
-- **用户系统**: 用户注册、登录、权限管理
-- **支付集成**: 支持支付宝、微信支付、PayPal等多种支付方式
-- **API接口**: 完整的RESTful API支持
-- **管理后台**: 功能完善的后台管理系统
-- **移动端支持**: 响应式设计，支持移动设备访问
+- **Firecrawl 数据采集**: 使用 Firecrawl API 进行网页内容采集和处理
+- **火鸟门户系统集成**: 完整的 API 集成模块，支持内容发布和管理
+- **n8n 工作流自动化**: 自动化工作流配置和执行
+- **数据处理管道**: 数据清洗、关键词提取、分类、评分等处理流程
+- **任务调度**: 支持定时任务和批量处理
 
-## 📁 目录结构
+## 📁 项目结构
 
 ```
-├── admin/              # 管理后台
-├── api/                # API接口
-├── include/            # 核心类库和配置
-├── static/             # 静态资源 (CSS, JS, 图片)
-├── templates/          # 前端模板
-├── log/                # 日志文件
-└── templates_c/        # 编译缓存
+├── Firecrawl代码模块/          # Firecrawl 采集器核心代码
+│   ├── 火爬采集器.py           # 主采集器模块
+│   ├── 数据处理.py             # 数据清洗和处理
+│   ├── API集成.py              # 火鸟门户 API 集成
+│   ├── 任务调度.py             # 任务调度管理
+│   └── 集成测试.py             # 完整测试套件
+├── docs/                       # 项目文档
+│   ├── Firecrawl工具/          # Firecrawl 相关文档和代码
+│   └── 火鸟门户系统官方文档/    # 火鸟门户系统完整文档
+├── Nginx代理管理/              # Nginx 代理配置和管理
+├── .cursor/                    # Cursor AI 配置和规则
+└── 火鸟门户_*.js              # n8n 工作流配置
 ```
 
 ## ⚙️ 系统要求
 
-- **PHP**: 7.0 或更高版本
-- **MySQL**: 5.6 或更高版本
-- **Web服务器**: Apache/Nginx
-- **扩展要求**: 
-  - GD库 (图片处理)
-  - cURL (API调用)
-  - JSON (数据处理)
-  - PDO (数据库连接)
+- **Python**: 3.8+ (用于 Firecrawl 采集器)
+- **Node.js**: 16+ (用于 n8n 工作流)
+- **Firecrawl API**: 需要有效的 API 密钥
+- **火鸟门户系统**: 已部署的系统实例和 API 访问权限
 
-## 🔧 安装配置
+## 🔧 快速开始
 
 ### 1. 环境准备
 
-确保服务器满足系统要求，并配置好PHP和MySQL环境。
-
-### 2. 数据库配置
-
-1. 创建数据库
-2. 配置数据库连接信息 (请参考 `include/dbinfo.inc.php.example`)
-3. 导入数据库结构
-
-### 3. 文件权限
-
-设置以下目录的写入权限：
 ```bash
-chmod 755 log/
-chmod 755 templates_c/
-chmod 755 api/upload/
+# 安装 Python 依赖
+cd Firecrawl代码模块
+pip install -r requirements.txt
+
+# 或使用 uv (推荐)
+uv pip install -r requirements.txt
 ```
 
-### 4. 配置文件
+### 2. 配置设置
 
 复制并配置必要的配置文件：
-- `include/dbinfo.inc.php` (数据库配置)
-- `api/appConfig.json` (应用配置)
+
+```bash
+# 复制配置示例
+cp Firecrawl代码模块/配置示例.json Firecrawl代码模块/config.json
+
+# 编辑配置文件，填入：
+# - Firecrawl API 密钥
+# - 火鸟门户系统 API 地址和认证信息
+# - 数据库连接信息（如需要）
+```
+
+### 3. 运行测试
+
+```bash
+# 运行集成测试
+python Firecrawl代码模块/集成测试.py
+
+# 或使用 pytest
+pytest Firecrawl代码模块/
+```
 
 ## 🔐 安全配置
 
@@ -86,37 +96,79 @@ chmod 755 log/
 chmod 755 api/upload/
 ```
 
-## 📚 API文档
+## 📚 文档资源
 
-系统提供完整的RESTful API接口，支持：
+### Firecrawl 工具文档
+- **快速开始**: `docs/Firecrawl工具/QUICKSTART.md`
+- **API 参考**: `docs/Firecrawl工具/官方资料/02-API参考/`
+- **代码模块**: `Firecrawl代码模块/` 目录下的 Python 模块
 
-- 用户认证和授权
-- 内容管理操作
-- 文件上传处理
-- 支付接口集成
+### 火鸟门户系统文档
+- **API 接口文档**: `docs/火鸟门户系统官方文档/02_API接口/`
+- **功能模块文档**: `docs/火鸟门户系统官方文档/03_功能模块/`
+- **采集插件文档**: `docs/火鸟门户系统官方文档/06_采集插件/`
 
-详细API文档请参考 `api/` 目录下的相关文件。
+### n8n 工作流
+- **新闻采集工作流**: `火鸟门户_新闻采集工作流_增强版.json`
+- **API 集成模块**: `火鸟门户_API集成模块.js`
+- **内容处理模块**: `火鸟门户_内容处理核心模块.js`
 
 ## 🛠️ 开发指南
 
 ### 代码规范
 
-- 遵循PSR-4自动加载规范
-- 使用UTF-8编码
-- 代码注释使用中文
-- 变量和函数命名使用驼峰命名法
+**Python 代码**:
+- 使用类型注解（必需）
+- 中文 docstring
+- 遵循 PEP 8 规范
+- 使用 `ruff` 进行代码检查和格式化
+- 使用 `mypy --strict` 进行类型检查
 
-### 调试模式
+**测试**:
+- 使用 `pytest` 进行测试
+- 测试文件位于 `tests/` 目录
+- 所有测试必须有类型注解和 docstring
 
-开发环境下可以启用调试模式：
-```php
-// 在配置文件中设置
-define('DEBUG_MODE', true);
+### 开发工具
+
+```bash
+# 代码格式化
+ruff format .
+
+# 代码检查
+ruff check .
+
+# 类型检查
+mypy --strict Firecrawl代码模块/
+
+# 运行测试
+pytest
 ```
+
+### 工作流程
+
+1. **采集**: 使用 `FirecrawlCollector` 采集网页内容
+2. **处理**: 使用 `DataProcessor` 清洗和处理数据
+3. **发布**: 使用 `APIIntegration` 发布到火鸟门户系统
+
+## 🔐 安全注意事项
+
+1. **API 密钥保护**:
+   - 不要将 API 密钥提交到版本控制
+   - 使用环境变量或配置文件（已加入 .gitignore）
+   - `.cursor/mcp.json` 包含敏感信息，已排除
+
+2. **配置文件**:
+   - 敏感配置使用 `.env` 文件
+   - 参考 `.env.example` 创建配置
+
+3. **数据库**:
+   - 数据库备份文件已排除在版本控制外
+   - 生产环境数据库信息不要提交
 
 ## 📞 技术支持
 
-- **问题反馈**: 请通过GitHub Issues提交问题
+- **问题反馈**: 请通过 [GitHub Issues](https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/issues) 提交问题
 - **功能建议**: 欢迎提交功能改进建议
 - **安全问题**: 请通过私有渠道报告安全漏洞
 
@@ -126,10 +178,12 @@ define('DEBUG_MODE', true);
 
 ## 🔄 更新日志
 
-- **版本管理**: 采用语义化版本控制
-- **更新通知**: 重要更新会通过系统通知
-- **兼容性**: 向后兼容性保证
+详细更新日志请参考 [CHANGELOG.md](./CHANGELOG.md)
+
+## 🤝 贡献指南
+
+欢迎贡献代码！请参考 [CONTRIBUTING.md](./CONTRIBUTING.md) 了解贡献流程。
 
 ---
 
-**注意**: 本系统包含敏感配置和商业代码，请妥善保管源代码，避免泄露。
+**注意**: 本项目包含敏感配置和商业代码，请妥善保管源代码，避免泄露。

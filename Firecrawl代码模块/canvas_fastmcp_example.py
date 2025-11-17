@@ -1,7 +1,7 @@
 """
-FastMCP 快速开始示例（带兼容处理与简单测试）。
+FastMCP 快速开始示例(带兼容处理与简单测试).
 
-在真实环境中（已安装 `mcp` 包），本文件示例一个 FastMCP 服务器：
+在真实环境中(已安装 `mcp` 包)，本文件示例一个 FastMCP 服务器:
 - 注册一个加法工具 `add`
 - 注册一个动态资源 `greeting://{name}`
 - 注册一个用于生成问候 Prompt 的函数 `greet_user`
@@ -35,7 +35,7 @@ except ModuleNotFoundError:
 
             return decorator
 
-        def resource(self, pattern: str):
+        def resource(self, pattern: str):  # noqa: ARG002
             """用作装饰器的假实现，直接返回原函数。"""
 
             def decorator(func):
@@ -66,18 +66,18 @@ def add(a: int, b: int) -> int:
 # 定义一个动态资源，通过 URL 模式生成个性化问候
 @mcp.resource("greeting://{name}")
 def get_greeting(name: str) -> str:
-    """返回个性化问候语，例如："Hello, 张三!""""""
+    """返回个性化问候语，例如: "Hello, 张三!"."""
     return f"Hello, {name}!"
 
 
 # 定义一个 Prompt，可根据不同风格生成问候文本
 @mcp.prompt()
 def greet_user(name: str, style: str = "friendly") -> str:
-    """根据名字和风格生成问候提示词，返回一段英文说明文本。
+    """根据名字和风格生成问候提示词，返回一段英文说明文本.
 
-    参数：
-    - name: 用户名字，会出现在提示词中
-    - style: 风格，可选："friendly" / "formal" / "casual"
+    Args:
+        name: 用户名字，会出现在提示词中
+        style: 风格，可选: "friendly" / "formal" / "casual"
     """
 
     styles = {
@@ -94,10 +94,11 @@ def greet_user(name: str, style: str = "friendly") -> str:
 # 简单“测试用例”区域
 # =====================
 
-def _run_tests() -> None:
-    """简单测试当前文件中的核心函数逻辑。
 
-    注意：
+def _run_tests() -> None:
+    """简单测试当前文件中的核心函数逻辑.
+
+    注意:
     - 这里只测试 Python 逻辑，不测试真实 MCP 通信
     """
 
@@ -127,4 +128,4 @@ def _run_tests() -> None:
 if __name__ == "__main__":
     # 在当前环境直接运行本文件时，执行简单测试
     _run_tests()
-    print("所有测试通过，核心逻辑正常运行。")
+    print("所有测试通过, 核心逻辑正常运行.")
