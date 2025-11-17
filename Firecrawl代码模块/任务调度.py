@@ -212,7 +212,7 @@ class FileTaskStorage(TaskStorage):
                 json.dump(task.to_dict(), f, ensure_ascii=False, indent=2)
             return True
         except Exception as e:
-            self.logger.error(f"保存任务失败: {e!s}")
+            self.logger.error("保存任务失败: %s", e)
             return False
 
     def load_task(self, task_id: str) -> Optional[Task]:
@@ -226,7 +226,7 @@ class FileTaskStorage(TaskStorage):
 
             return Task.from_dict(data)
         except Exception as e:
-            self.logger.error(f"加载任务失败: {e!s}")
+            self.logger.error("加载任务失败: %s", e)
             return None
 
     def update_task(self, task: Task) -> bool:
@@ -239,7 +239,7 @@ class FileTaskStorage(TaskStorage):
                 task_file.unlink()
             return True
         except Exception as e:
-            self.logger.error(f"删除任务失败: {e!s}")
+            self.logger.error("删除任务失败: %s", e)
             return False
 
     def list_tasks(self, status: Optional[TaskStatus] = None, limit: int = 100) -> List[Task]:
@@ -253,7 +253,7 @@ class FileTaskStorage(TaskStorage):
                 if len(tasks) >= limit:
                     break
         except Exception as e:
-            self.logger.error(f"列出任务失败: {e!s}")
+            self.logger.error("列出任务失败: %s", e)
 
         return sorted(tasks, key=lambda t: t.created_at, reverse=True)
 
@@ -286,7 +286,7 @@ class RedisTaskStorage(TaskStorage):
 
             return True
         except Exception as e:
-            self.logger.error(f"保存任务失败: {e!s}")
+            self.logger.error("保存任务失败: %s", e)
             return False
 
     def load_task(self, task_id: str) -> Optional[Task]:
@@ -300,7 +300,7 @@ class RedisTaskStorage(TaskStorage):
             task_data = json.loads(data)
             return Task.from_dict(task_data)
         except Exception as e:
-            self.logger.error(f"加载任务失败: {e!s}")
+            self.logger.error("加载任务失败: %s", e)
             return None
 
     def update_task(self, task: Task) -> bool:
@@ -325,7 +325,7 @@ class RedisTaskStorage(TaskStorage):
 
             return True
         except Exception as e:
-            self.logger.error(f"删除任务失败: {e!s}")
+            self.logger.error("删除任务失败: %s", e)
             return False
 
     def list_tasks(self, status: Optional[TaskStatus] = None, limit: int = 100) -> List[Task]:
@@ -353,7 +353,7 @@ class RedisTaskStorage(TaskStorage):
                 if task:
                     tasks.append(task)
         except Exception as e:
-            self.logger.error(f"列出任务失败: {e!s}")
+            self.logger.error("列出任务失败: %s", e)
 
         return sorted(tasks, key=lambda t: t.created_at, reverse=True)
 
@@ -405,7 +405,7 @@ class TaskScheduler:
             executor: 执行器函数
         """
         self.task_executors[task_type] = executor
-        self.logger.info(f"注册任务执行器: {task_type.value}")
+        self.logger.info("注册任务执行器: %s", task_type.value)
 
     def add_task(self, task: Task) -> bool:
         """添加任务
@@ -424,17 +424,17 @@ class TaskScheduler:
             # 添加到队列
             if task.scheduled_time and task.scheduled_time > datetime.now(timezone.utc):
                 # 定时任务，暂不加入队列
-                self.logger.info(f"定时任务已添加: {task.id}, 执行时间: {task.scheduled_time}")
+                self.logger.info("定时任务已添加: %s, 执行时间: %s", task.id, task.scheduled_time)
             else:
                 # 立即执行的任务
                 self.task_queue.put(task)
-                self.logger.info(f"任务已添加到队列: {task.id}")
+                self.logger.info("任务已添加到队列: %s", task.id)
 
             self.stats["total_tasks"] += 1
             return True
 
         except Exception as e:
-            self.logger.error(f"添加任务失败: {e!s}")
+            self.logger.error("添加任务失败: %s", e)
             return False
 
     def create_task(
@@ -481,7 +481,7 @@ class TaskScheduler:
             return None
 
         except Exception as e:
-            self.logger.error(f"创建任务失败: {e!s}")
+            self.logger.error("创建任务失败: %s", e)
             return None
 
     def cancel_task(self, task_id: str) -> bool:
@@ -507,13 +507,13 @@ class TaskScheduler:
                 task.completed_at = datetime.now(timezone.utc)
                 self.storage.update_task(task)
 
-                self.logger.info(f"任务已取消: {task_id}")
+                self.logger.info("任务已取消: %s", task_id)
                 return True
 
             return False
 
         except Exception as e:
-            self.logger.error(f"取消任务失败: {e!s}")
+            self.logger.error("取消任务失败: %s", e)
             return False
 
     def pause_task(self, task_id: str) -> bool:
@@ -531,13 +531,13 @@ class TaskScheduler:
                 task.status = TaskStatus.PAUSED
                 self.storage.update_task(task)
 
-                self.logger.info(f"任务已暂停: {task_id}")
+                self.logger.info("任务已暂停: %s", task_id)
                 return True
 
             return False
 
         except Exception as e:
-            self.logger.error(f"暂停任务失败: {e!s}")
+            self.logger.error("暂停任务失败: %s", e)
             return False
 
     def resume_task(self, task_id: str) -> bool:
@@ -754,7 +754,7 @@ class TaskScheduler:
                 self.stats["running_tasks"] -= 1
 
         except Exception as e:
-            self.logger.error(f"检查运行任务失败: {e!s}")
+            self.logger.error("检查运行任务失败: %s", e)
 
     def _cleanup_completed_tasks(self):
         """清理完成的任务"""
@@ -821,7 +821,10 @@ class TaskScheduler:
                     threading.Thread(target=retry_task, daemon=True).start()
 
                     self.logger.info(
-                        "任务将在 %s 秒后重试: %s (第 %s 次重试)", retry_delay, task_id, task.retry_count
+                        "任务将在 %s 秒后重试: %s (第 %s 次重试)",
+                        retry_delay,
+                        task_id,
+                        task.retry_count,
                     )
                 else:
                     # 重试次数用完，标记为失败
