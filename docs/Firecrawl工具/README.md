@@ -122,7 +122,7 @@ Firecrawl工具/
 
 ### 🔗 集成指南
 
-- [n8n 集成指南](./文档/n8n与Firecrawl集成指南.md)
+- [n8n 集成指南](./docs/guides/n8n-integration-guide.md)
 
 ## 🎯 按角色导航
 
