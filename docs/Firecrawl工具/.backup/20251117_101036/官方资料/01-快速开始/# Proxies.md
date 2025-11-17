@@ -1,0 +1,102 @@
+# Proxies
+
+> Learn about proxy types, locations, and how Firecrawl selects proxies for your requests.
+
+Firecrawl provides different proxy types to help you scrape websites with varying levels of anti-bot protection. The proxy type can be specified using the `proxy` parameter.
+
+> By default, Firecrawl routes all requests through proxies to help ensure reliability and access, even if you do not specify a proxy type or location.
+
+## Location-Based Proxy Selection
+
+Firecrawl automatically selects the best proxy based on your specified or detected location. This helps optimize scraping performance and reliability. However, not all locations are currently supported. The following locations are available:
+
+| Country Code | Country Name         | Stealth Mode Support |
+| ------------ | -------------------- | -------------------- |
+| AE           | United Arab Emirates | No                   |
+| AU           | Australia            | Yes                  |
+| BR           | Brazil               | Yes                  |
+| CA           | Canada               | No                   |
+| CN           | China                | No                   |
+| CZ           | Czechia              | No                   |
+| DE           | Germany              | Yes                  |
+| FR           | France               | Yes                  |
+| GB           | United Kingdom       | No                   |
+| IL           | Israel               | No                   |
+| IN           | India                | No                   |
+| IT           | Italy                | No                   |
+| JP           | Japan                | No                   |
+| PL           | Poland               | No                   |
+| PT           | Portugal             | No                   |
+| QA           | Qatar                | No                   |
+| RU           | Russia               | No                   |
+| TR           | Turkey               | No                   |
+| US           | United States        | Yes                  |
+| VN           | Vietnam              | No                   |
+
+<Warning>The list of supported proxy locations was last updated on May 15, 2025. Availability may change over time.</Warning>
+
+If you need proxies in a location not listed above, please [contact us](mailto:help@firecrawl.com) and let us know your requirements.
+
+If you do not specify a proxy or location, Firecrawl will automatically select the best option based on the target site and your request.
+
+## How to Specify Proxy Location
+
+You can request a specific proxy location by setting the `location.country` parameter in your request. For example, to use a Brazilian proxy, set `location.country` to `BR`.
+
+For full details, see the [API reference for `location.country`](https://docs.firecrawl.dev/api-reference/endpoint/scrape#body-location).
+
+<CodeGroup>
+  ```python Python
+  from firecrawl import Firecrawl
+
+  firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
+
+  doc = firecrawl.scrape('https://example.com',
+      formats=['markdown'],
+      location={
+          'country': 'US',
+          'languages': ['en']
+      }
+  )
+
+  print(doc)
+  ```
+
+  ```js Node
+  import Firecrawl from '@mendable/firecrawl-js';
+
+  const firecrawl = new Firecrawl({ apiKey: "fc-YOUR-API-KEY" });
+
+  const doc = await firecrawl.scrape('https://example.com', {
+    formats: ['markdown'],
+    location: { country: 'US', languages: ['en'] },
+  });
+
+  console.log(doc.metadata);
+  ```
+
+  ```bash cURL
+  curl -X POST "https://api.firecrawl.dev/v2/scrape" \
+    -H "Authorization: Bearer $FIRECRAWL_API_KEY" \
+    -H "Content-Type: application/json" \
+    -d '{
+      "url": "https://example.com",
+      "formats": ["markdown"],
+      "location": { "country": "US", "languages": ["en"] }
+    }'
+  ```
+</CodeGroup>
+
+<Info>If you request a country where a proxy is not available, Firecrawl will use the closest available region (EU or US) and set the browser location to your requested country.</Info>
+
+## Proxy Types
+
+Firecrawl supports three types of proxies:
+
+* **basic**: Proxies for scraping sites with none to basic anti-bot solutions. Fast and usually works.
+* **stealth**: Stealth proxies for scraping sites with advanced anti-bot solutions, or for sites that block regular proxies. Slower, but more reliable on certain sites. [Learn more about Stealth Mode →](/features/stealth-mode)
+* **auto**: Firecrawl will automatically retry scraping with stealth proxies if the basic proxy fails. If the retry with stealth is successful, 5 credits will be billed for the scrape. If the first attempt with basic is successful, only the regular cost will be billed.
+
+***
+
+> **Note:** For detailed information on using stealth proxies, including credit costs and retry strategies, see the [Stealth Mode documentation](/features/stealth-mode).

@@ -1,0 +1,11 @@
+node_modules
+build
+dist
+.git
+.trae
+.log
+.figma
+ .venv
+ **/__pycache__
+ **/*.pyc
+ **/.DS_Store

@@ -1,0 +1,23 @@
+{
+  "name": "chatgpt-mcp-gateway",
+  "version": "1.0.0",
+  "description": "MCP Gateway Server for ChatGPT Desktop",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "mcp",
+    "chatgpt",
+    "gateway",
+    "model-context-protocol"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.16.0"
+  }
+}
+

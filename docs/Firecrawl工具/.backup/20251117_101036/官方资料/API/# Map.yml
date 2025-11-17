@@ -1,0 +1,205 @@
+# Map
+
+## OpenAPI
+
+````yaml v2-openapi POST /map
+paths:
+  path: /map
+  method: post
+  servers:
+    - url: https://api.firecrawl.dev/v2
+  request:
+    security:
+      - title: bearerAuth
+        parameters:
+          query: {}
+          header:
+            Authorization:
+              type: http
+              scheme: bearer
+          cookie: {}
+    parameters:
+      path: {}
+      query: {}
+      header: {}
+      cookie: {}
+    body:
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              url:
+                allOf:
+                  - type: string
+                    format: uri
+                    description: The base URL to start crawling from
+              search:
+                allOf:
+                  - type: string
+                    description: >-
+                      Specify a search query to order the results by relevance.
+                      Example: 'blog' will return URLs that contain the word
+                      'blog' in the URL ordered by relevance.
+              sitemap:
+                allOf:
+                  - type: string
+                    enum:
+                      - skip
+                      - include
+                      - only
+                    description: >-
+                      Sitemap mode when mapping. If you set it to `skip`, the
+                      sitemap won't be used to find URLs. If you set it to
+                      `only`, only URLs that are in the sitemap will be
+                      returned. By default (`include`), the sitemap and other
+                      methods will be used together to find URLs.
+                    default: include
+              includeSubdomains:
+                allOf:
+                  - type: boolean
+                    description: Include subdomains of the website
+                    default: true
+              ignoreQueryParameters:
+                allOf:
+                  - type: boolean
+                    description: Do not return URLs with query parameters
+                    default: true
+              limit:
+                allOf:
+                  - type: integer
+                    description: Maximum number of links to return
+                    default: 5000
+                    maximum: 30000
+              timeout:
+                allOf:
+                  - type: integer
+                    description: Timeout in milliseconds. There is no timeout by default.
+              location:
+                allOf:
+                  - type: object
+                    description: >-
+                      Location settings for the request. When specified, this
+                      will use an appropriate proxy if available and emulate the
+                      corresponding language and timezone settings. Defaults to
+                      'US' if not specified.
+                    properties:
+                      country:
+                        type: string
+                        description: >-
+                          ISO 3166-1 alpha-2 country code (e.g., 'US', 'AU',
+                          'DE', 'JP')
+                        pattern: ^[A-Z]{2}$
+                        default: US
+                      languages:
+                        type: array
+                        description: >-
+                          Preferred languages and locales for the request in
+                          order of priority. Defaults to the language of the
+                          specified location. See
+                          https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Accept-Language
+                        items:
+                          type: string
+                          example: en-US
+            required: true
+            requiredProperties:
+              - url
+        examples:
+          example:
+            value:
+              url: <string>
+              search: <string>
+              sitemap: include
+              includeSubdomains: true
+              ignoreQueryParameters: true
+              limit: 5000
+              timeout: 123
+              location:
+                country: US
+                languages:
+                  - en-US
+  response:
+    '200':
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              success:
+                allOf:
+                  - type: boolean
+              links:
+                allOf:
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          format: uri
+                        title:
+                          type: string
+                          description: The title of the page, if available.
+                        description:
+                          type: string
+                          description: A description of the page, if available.
+                      required:
+                        - url
+            refIdentifier: '#/components/schemas/MapResponse'
+        examples:
+          example:
+            value:
+              success: true
+              links:
+                - url: <string>
+                  title: <string>
+                  description: <string>
+        description: Successful response
+    '402':
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              error:
+                allOf:
+                  - type: string
+                    example: Payment required to access this resource.
+        examples:
+          example:
+            value:
+              error: Payment required to access this resource.
+        description: Payment required
+    '429':
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              error:
+                allOf:
+                  - type: string
+                    example: >-
+                      Request rate limit exceeded. Please wait and try again
+                      later.
+        examples:
+          example:
+            value:
+              error: Request rate limit exceeded. Please wait and try again later.
+        description: Too many requests
+    '500':
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              error:
+                allOf:
+                  - type: string
+                    example: An unexpected error occurred on the server.
+        examples:
+          example:
+            value:
+              error: An unexpected error occurred on the server.
+        description: Server error
+  deprecated: false
+  type: path
+components:
+  schemas: {}
+
+````

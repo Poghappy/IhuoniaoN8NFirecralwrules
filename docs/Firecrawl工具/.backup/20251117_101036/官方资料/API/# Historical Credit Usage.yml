@@ -1,0 +1,105 @@
+# Historical Credit Usage
+
+## OpenAPI
+
+````yaml v2-openapi GET /team/credit-usage/historical
+paths:
+  path: /team/credit-usage/historical
+  method: get
+  servers:
+    - url: https://api.firecrawl.dev/v2
+  request:
+    security:
+      - title: bearerAuth
+        parameters:
+          query: {}
+          header:
+            Authorization:
+              type: http
+              scheme: bearer
+          cookie: {}
+    parameters:
+      path: {}
+      query:
+        byApiKey:
+          schema:
+            - type: boolean
+              required: false
+              description: Get historical credit usage by API key
+              default: false
+      header: {}
+      cookie: {}
+    body: {}
+  response:
+    '200':
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              success:
+                allOf:
+                  - type: boolean
+                    example: true
+              periods:
+                allOf:
+                  - type: array
+                    items:
+                      type: object
+                      properties:
+                        startDate:
+                          type: string
+                          format: date-time
+                          description: Start date of the billing period
+                          example: '2025-01-01T00:00:00Z'
+                        endDate:
+                          type: string
+                          format: date-time
+                          description: End date of the billing period
+                          example: '2025-01-31T23:59:59Z'
+                        apiKey:
+                          type: string
+                          description: >-
+                            Name of the API key used for the billing period.
+                            null if byApiKey is false (default)
+                          nullable: true
+                        totalCredits:
+                          type: integer
+                          description: Total number of credits used in the billing period
+                          example: 1000
+        examples:
+          example:
+            value:
+              success: true
+              periods:
+                - startDate: '2025-01-01T00:00:00Z'
+                  endDate: '2025-01-31T23:59:59Z'
+                  apiKey: <string>
+                  totalCredits: 1000
+        description: Successful response
+    '500':
+      application/json:
+        schemaArray:
+          - type: object
+            properties:
+              success:
+                allOf:
+                  - type: boolean
+                    example: false
+              error:
+                allOf:
+                  - type: string
+                    example: >-
+                      Internal server error while fetching historical credit
+                      usage
+        examples:
+          example:
+            value:
+              success: false
+              error: Internal server error while fetching historical credit usage
+        description: Server error
+  deprecated: false
+  type: path
+components:
+  schemas: {}
+
+````
