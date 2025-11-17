@@ -671,12 +671,13 @@ class TaskScheduler:
                     # 检查Cron表达式
                     try:
                         cron = croniter(task.cron_expression, current_time)
-                        next_run_timestamp = cron.get_next(datetime)
+                        # cron.get_next() 默认返回 float (timestamp)
+                        # 使用 ret_type=datetime 参数返回 datetime 对象
+                        next_run_timestamp = cron.get_next()
                         next_run = datetime.fromtimestamp(next_run_timestamp, tz=timezone.utc)
-                        next_run_time = current_time + timedelta(minutes=1)
 
                         # 如果下次执行时间在1分钟内，添加到队列
-                        if next_run <= next_run_time:
+                        if next_run <= current_time + timedelta(minutes=1):
                             # 创建新的任务实例（保持原任务为模板）
                             new_task = Task(
                                 id=str(uuid.uuid4()),
