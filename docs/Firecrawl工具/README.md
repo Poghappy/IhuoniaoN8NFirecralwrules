@@ -36,7 +36,8 @@ Firecrawl工具/
 │   ├── ai-agents/               # AI 智能体文档
 │   ├── project/                 # 项目文档
 │   ├── features/                # 功能特性
-│   └── design/                  # 设计文档
+│   ├── design/                  # 设计文档
+│   └── reports/                 # 项目报告文档
 ├── config/                      # 配置文件
 │   └── examples/                # 配置示例
 ├── code/                        # 代码文件
@@ -75,6 +76,12 @@ Firecrawl工具/
 - [资源索引](./docs/project/resource-index.md)
 - [文档合并方案](./docs/project/docs-merge-plan-and-best-practices.md)
 
+#### 项目报告
+- [项目改进完成报告](./docs/reports/项目改进完成报告.md)
+- [项目状态总结](./docs/reports/项目状态总结.md)
+- [推进总结](./docs/reports/推进总结.md)
+- [所有报告文档](./docs/reports/) - 查看完整报告列表
+
 #### 功能特性
 - [爬取规则特性](./docs/features/crawl-rules-features.md)
 
@@ -94,6 +101,7 @@ Firecrawl工具/
 ### 📦 官方资料
 
 - [API 参考手册](./官方资料/Firecrawl_API参考手册.md)
+- [API 端点文档](./官方资料/API/) - 详细的 API 端点参考
 - [SDK 使用指南](./官方资料/Firecrawl_SDK使用指南.md)
 - [集成说明文档](./官方资料/Firecrawl集成说明文档.md)
 - [最佳实践指南](./官方资料/Firecrawl_最佳实践指南.md)
