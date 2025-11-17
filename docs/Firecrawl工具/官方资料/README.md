@@ -8,7 +8,19 @@
 
 ### 核心文档
 
-#### 1. [Firecrawl集成说明文档](./Firecrawl集成说明文档.md)
+#### 1. [快速开始指南（中文）](./01-快速开始/introduction-zh.md) ⭐ **最新**
+**官方文档中文翻译** - 基于 Firecrawl v2 官方文档的完整中文翻译
+
+- ✅ 快速开始指南（完整翻译）
+- ✅ API密钥配置
+- ✅ 基本功能介绍（Scrape、Crawl、Search、Extract）
+- ✅ 安装步骤详解
+- ✅ 页面交互操作（Actions）
+- ✅ JSON 模式提取
+- ✅ 开源与云服务对比
+- ✅ 代码示例（Python、Node.js、cURL）
+
+#### 2. [Firecrawl集成说明文档](./Firecrawl集成说明文档.md)
 **核心入门文档** - 快速了解Firecrawl的基本功能和使用方法
 
 - ✅ 快速开始指南

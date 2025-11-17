@@ -21,10 +21,15 @@ from typing import Any, Callable, Dict, List, Optional, Union
 
 
 try:
-    from firecrawl import FirecrawlApp
+    # Firecrawl v2 SDK
+    from firecrawl import Firecrawl
 except ImportError:
-    print("请安装Firecrawl SDK: pip install firecrawl-py")
-    raise
+    try:
+        # 兼容旧版本
+        from firecrawl import FirecrawlApp as Firecrawl
+    except ImportError:
+        print("请安装Firecrawl SDK: pip install firecrawl-py")
+        raise
 
 # 配置日志
 logging.basicConfig(
@@ -112,7 +117,8 @@ class FirecrawlCollector:
             config: 采集器配置
         """
         self.config = config
-        self.firecrawl = FirecrawlApp(api_key=config.api_key)
+        # Firecrawl v2 SDK 使用 api_key 参数
+        self.firecrawl = Firecrawl(api_key=config.api_key)
         self._cache = {} if config.enable_cache else None
         self._semaphore = asyncio.Semaphore(config.concurrent_limit)
 
@@ -187,10 +193,8 @@ class FirecrawlCollector:
         try:
             logger.info(f"开始爬取网站: {base_url}")
 
-            # 准备爬取参数
+            # 准备爬取参数（根据官方文档，crawl 方法不支持 formats 参数）
             crawl_params = {
-                "formats": [self.config.output_format],
-                "timeout": self.config.timeout * 1000,
                 "limit": kwargs.get("limit", 10),
                 "maxDepth": kwargs.get("max_depth", 2),
                 **{k: v for k, v in kwargs.items() if k not in ["limit", "max_depth"]},

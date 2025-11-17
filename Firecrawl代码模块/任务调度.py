@@ -31,6 +31,21 @@ import time
 from typing import Any, Callable, Dict, List, Optional
 import uuid
 
+# 自定义异常类
+class TaskStorageError(Exception):
+    """任务存储相关异常基类"""
+    pass
+
+
+class TaskNotFoundError(TaskStorageError):
+    """任务未找到异常"""
+    pass
+
+
+class TaskValidationError(ValueError):
+    """任务验证错误"""
+    pass
+
 
 # 第三方库
 try:
@@ -134,14 +149,27 @@ class Task:
     # 元数据
     metadata: Dict[str, Any] = field(default_factory=dict)
 
-    def __lt__(self, other):
-        """用于优先级队列排序"""
+    def __lt__(self, other: "Task") -> bool:
+        """用于优先级队列排序。
+
+        Args:
+            other: 另一个任务对象
+
+        Returns:
+            bool: 如果当前任务优先级更高（值更小）或创建时间更早，返回True
+        """
+        if not isinstance(other, Task):
+            return NotImplemented
         if self.priority.value != other.priority.value:
             return self.priority.value < other.priority.value
         return self.created_at < other.created_at
 
     def to_dict(self) -> Dict[str, Any]:
-        """转换为字典"""
+        """转换为字典。
+
+        Returns:
+            Dict[str, Any]: 任务的字典表示，枚举和日期时间已序列化
+        """
         data = asdict(self)
         # 处理枚举类型
         data["task_type"] = self.task_type.value
@@ -155,45 +183,116 @@ class Task:
 
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "Task":
-        """从字典创建任务"""
-        # 处理枚举类型
-        data["task_type"] = TaskType(data["task_type"])
-        data["priority"] = TaskPriority(data["priority"])
-        data["status"] = TaskStatus(data["status"])
+        """从字典创建任务。
 
-        # 处理日期时间
-        for field_name in ["created_at", "started_at", "completed_at", "scheduled_time"]:
-            if data[field_name]:
-                data[field_name] = datetime.fromisoformat(data[field_name])
+        Args:
+            data: 包含任务数据的字典
 
-        # 处理配置对象
-        if "config" in data and isinstance(data["config"], dict):
-            data["config"] = TaskConfig(**data["config"])
+        Returns:
+            Task: 任务对象
 
-        return cls(**data)
+        Raises:
+            ValueError: 数据格式错误或缺少必需字段
+            KeyError: 缺少必需的键
+        """
+        try:
+            # 创建数据副本以避免修改原始数据
+            task_data = data.copy()
+
+            # 处理枚举类型
+            task_data["task_type"] = TaskType(task_data["task_type"])
+            task_data["priority"] = TaskPriority(task_data["priority"])
+            task_data["status"] = TaskStatus(task_data["status"])
+
+            # 处理日期时间
+            for field_name in ["created_at", "started_at", "completed_at", "scheduled_time"]:
+                if task_data.get(field_name):
+                    task_data[field_name] = datetime.fromisoformat(task_data[field_name])
+
+            # 处理配置对象
+            if "config" in task_data and isinstance(task_data["config"], dict):
+                task_data["config"] = TaskConfig(**task_data["config"])
+
+            return cls(**task_data)
+        except (KeyError, ValueError, TypeError) as e:
+            raise ValueError(f"无法从字典创建任务: {e}") from e
 
 
 class TaskStorage:
-    """任务存储接口"""
+    """任务存储接口。
+
+    定义任务存储的抽象接口，子类需要实现所有方法。
+    """
 
     def save_task(self, task: Task) -> bool:
-        """保存任务"""
+        """保存任务。
+
+        Args:
+            task: 要保存的任务对象
+
+        Returns:
+            bool: 保存是否成功
+
+        Raises:
+            NotImplementedError: 子类必须实现此方法
+        """
         raise NotImplementedError
 
     def load_task(self, task_id: str) -> Optional[Task]:
-        """加载任务"""
+        """加载任务。
+
+        Args:
+            task_id: 任务ID
+
+        Returns:
+            Optional[Task]: 任务对象，如果不存在则返回None
+
+        Raises:
+            NotImplementedError: 子类必须实现此方法
+        """
         raise NotImplementedError
 
     def update_task(self, task: Task) -> bool:
-        """更新任务"""
+        """更新任务。
+
+        Args:
+            task: 要更新的任务对象
+
+        Returns:
+            bool: 更新是否成功
+
+        Raises:
+            NotImplementedError: 子类必须实现此方法
+        """
         raise NotImplementedError
 
     def delete_task(self, task_id: str) -> bool:
-        """删除任务"""
+        """删除任务。
+
+        Args:
+            task_id: 任务ID
+
+        Returns:
+            bool: 删除是否成功
+
+        Raises:
+            NotImplementedError: 子类必须实现此方法
+        """
         raise NotImplementedError
 
     def list_tasks(self, status: Optional[TaskStatus] = None, limit: int = 100) -> List[Task]:
-        """列出任务"""
+        """列出任务。
+
+        Args:
+            status: 任务状态过滤，None表示不过滤
+            limit: 最大返回数量
+
+        Returns:
+            List[Task]: 任务列表
+
+        Raises:
+            NotImplementedError: 子类必须实现此方法
+        """
         raise NotImplementedError
 
 
@@ -206,16 +305,43 @@ class FileTaskStorage(TaskStorage):
         self.logger = logging.getLogger(__name__)
 
     def save_task(self, task: Task) -> bool:
+        """保存任务到文件。
+
+        Args:
+            task: 要保存的任务对象
+
+        Returns:
+            bool: 保存是否成功
+
+        Raises:
+            OSError: 文件系统操作失败
+            ValueError: 任务数据无效
+        """
         try:
             task_file = self.storage_dir / f"{task.id}.json"
             with open(task_file, "w", encoding="utf-8") as f:
                 json.dump(task.to_dict(), f, ensure_ascii=False, indent=2)
             return True
-        except Exception as e:
-            self.logger.error("保存任务失败: %s", e)
+        except (OSError, IOError) as e:
+            self.logger.error("保存任务失败（文件系统错误）: %s", e)
+            return False
+        except (ValueError, TypeError) as e:
+            self.logger.error("保存任务失败（数据序列化错误）: %s", e)
             return False
 
     def load_task(self, task_id: str) -> Optional[Task]:
+        """从文件加载任务。
+
+        Args:
+            task_id: 任务ID
+
+        Returns:
+            Optional[Task]: 任务对象，如果不存在或加载失败则返回None
+
+        Raises:
+            OSError: 文件系统操作失败
+            ValueError: JSON解析失败或数据格式错误
+        """
         try:
             task_file = self.storage_dir / f"{task_id}.json"
             if not task_file.exists():
@@ -225,24 +351,62 @@ class FileTaskStorage(TaskStorage):
                 data = json.load(f)
 
             return Task.from_dict(data)
-        except Exception as e:
-            self.logger.error("加载任务失败: %s", e)
+        except (OSError, IOError) as e:
+            self.logger.error("加载任务失败（文件系统错误）: %s", e)
+            return None
+        except (json.JSONDecodeError, ValueError, KeyError, TypeError) as e:
+            self.logger.error("加载任务失败（数据解析错误）: %s", e)
             return None
 
     def update_task(self, task: Task) -> bool:
+        """更新任务。
+
+        Args:
+            task: 要更新的任务对象
+
+        Returns:
+            bool: 更新是否成功
+
+        Raises:
+            OSError: 文件系统操作失败
+            ValueError: 任务数据无效
+        """
         return self.save_task(task)
 
     def delete_task(self, task_id: str) -> bool:
+        """删除任务文件。
+
+        Args:
+            task_id: 任务ID
+
+        Returns:
+            bool: 删除是否成功
+
+        Raises:
+            OSError: 文件系统操作失败
+        """
         try:
             task_file = self.storage_dir / f"{task_id}.json"
             if task_file.exists():
                 task_file.unlink()
             return True
-        except Exception as e:
-            self.logger.error("删除任务失败: %s", e)
+        except OSError as e:
+            self.logger.error("删除任务失败（文件系统错误）: %s", e)
             return False
 
     def list_tasks(self, status: Optional[TaskStatus] = None, limit: int = 100) -> List[Task]:
+        """列出任务。
+
+        Args:
+            status: 任务状态过滤，None表示不过滤
+            limit: 最大返回数量
+
+        Returns:
+            List[Task]: 任务列表，按创建时间倒序排列
+
+        Raises:
+            OSError: 文件系统操作失败
+        """
         tasks = []
         try:
             for task_file in self.storage_dir.glob("*.json"):
@@ -252,29 +416,68 @@ class FileTaskStorage(TaskStorage):
 
                 if len(tasks) >= limit:
                     break
-        except Exception as e:
-            self.logger.error("列出任务失败: %s", e)
+        except OSError as e:
+            self.logger.error("列出任务失败（文件系统错误）: %s", e)
 
         return sorted(tasks, key=lambda t: t.created_at, reverse=True)
 
 
 class RedisTaskStorage(TaskStorage):
-    """Redis任务存储"""
+    """Redis任务存储。
+
+    使用Redis存储任务，支持状态索引和快速查询。
+    """
 
     def __init__(
         self, redis_url: str = "redis://localhost:6379/0", key_prefix: str = "firecrawl:task:"
-    ):
+    ) -> None:
+        """初始化Redis任务存储。
+
+        Args:
+            redis_url: Redis连接URL
+            key_prefix: 键前缀
+
+        Raises:
+            ImportError: redis库未安装
+            ConnectionError: 无法连接到Redis服务器
+        """
         if not redis:
             raise ImportError("需要安装redis库")
 
-        self.redis_client = redis.from_url(redis_url)
+        try:
+            self.redis_client = redis.from_url(redis_url)
+            # 测试连接
+            self.redis_client.ping()
+        except Exception as e:
+            raise ConnectionError(f"无法连接到Redis服务器: {e}") from e
+
         self.key_prefix = key_prefix
         self.logger = logging.getLogger(__name__)
 
     def _get_key(self, task_id: str) -> str:
+        """生成Redis键。
+
+        Args:
+            task_id: 任务ID
+
+        Returns:
+            str: Redis键
+        """
         return f"{self.key_prefix}{task_id}"
 
     def save_task(self, task: Task) -> bool:
+        """保存任务到Redis。
+
+        Args:
+            task: 要保存的任务对象
+
+        Returns:
+            bool: 保存是否成功
+
+        Raises:
+            TaskStorageError: Redis操作失败
+            ValueError: 任务数据序列化失败
+        """
         try:
             key = self._get_key(task.id)
             data = json.dumps(task.to_dict(), ensure_ascii=False)
@@ -285,11 +488,29 @@ class RedisTaskStorage(TaskStorage):
             self.redis_client.sadd(status_key, task.id)
 
             return True
+        except (ConnectionError, TimeoutError) as e:
+            self.logger.error("保存任务失败（Redis连接错误）: %s", e)
+            return False
+        except (ValueError, TypeError) as e:
+            self.logger.error("保存任务失败（数据序列化错误）: %s", e)
+            return False
         except Exception as e:
-            self.logger.error("保存任务失败: %s", e)
+            self.logger.error("保存任务失败（未知错误）: %s", e)
             return False
 
     def load_task(self, task_id: str) -> Optional[Task]:
+        """从Redis加载任务。
+
+        Args:
+            task_id: 任务ID
+
+        Returns:
+            Optional[Task]: 任务对象，如果不存在或加载失败则返回None
+
+        Raises:
+            TaskStorageError: Redis操作失败
+            ValueError: JSON解析失败或数据格式错误
+        """
         try:
             key = self._get_key(task_id)
             data = self.redis_client.get(key)
@@ -297,13 +518,34 @@ class RedisTaskStorage(TaskStorage):
             if not data:
                 return None
 
+            if isinstance(data, bytes):
+                data = data.decode("utf-8")
+
             task_data = json.loads(data)
             return Task.from_dict(task_data)
+        except (ConnectionError, TimeoutError) as e:
+            self.logger.error("加载任务失败（Redis连接错误）: %s", e)
+            return None
+        except (json.JSONDecodeError, ValueError, KeyError, TypeError) as e:
+            self.logger.error("加载任务失败（数据解析错误）: %s", e)
+            return None
         except Exception as e:
-            self.logger.error("加载任务失败: %s", e)
+            self.logger.error("加载任务失败（未知错误）: %s", e)
             return None
 
     def update_task(self, task: Task) -> bool:
+        """更新任务。
+
+        Args:
+            task: 要更新的任务对象
+
+        Returns:
+            bool: 更新是否成功
+
+        Raises:
+            TaskStorageError: Redis操作失败
+            ValueError: 任务数据序列化失败
+        """
         # 先删除旧的状态索引
         old_task = self.load_task(task.id)
         if old_task and old_task.status != task.status:
@@ -313,6 +555,17 @@ class RedisTaskStorage(TaskStorage):
         return self.save_task(task)
 
     def delete_task(self, task_id: str) -> bool:
+        """从Redis删除任务。
+
+        Args:
+            task_id: 任务ID
+
+        Returns:
+            bool: 删除是否成功
+
+        Raises:
+            TaskStorageError: Redis操作失败
+        """
         try:
             # 删除任务数据
             key = self._get_key(task_id)
@@ -324,11 +577,26 @@ class RedisTaskStorage(TaskStorage):
                 self.redis_client.srem(status_key, task_id)
 
             return True
+        except (ConnectionError, TimeoutError) as e:
+            self.logger.error("删除任务失败（Redis连接错误）: %s", e)
+            return False
         except Exception as e:
-            self.logger.error("删除任务失败: %s", e)
+            self.logger.error("删除任务失败（未知错误）: %s", e)
             return False
 
     def list_tasks(self, status: Optional[TaskStatus] = None, limit: int = 100) -> List[Task]:
+        """列出任务。
+
+        Args:
+            status: 任务状态过滤，None表示不过滤
+            limit: 最大返回数量
+
+        Returns:
+            List[Task]: 任务列表，按创建时间倒序排列
+
+        Raises:
+            TaskStorageError: Redis操作失败
+        """
         tasks = []
         try:
             if status:
@@ -352,8 +620,10 @@ class RedisTaskStorage(TaskStorage):
                 task = self.load_task(task_id)
                 if task:
                     tasks.append(task)
+        except (ConnectionError, TimeoutError) as e:
+            self.logger.error("列出任务失败（Redis连接错误）: %s", e)
         except Exception as e:
-            self.logger.error("列出任务失败: %s", e)
+            self.logger.error("列出任务失败（未知错误）: %s", e)
 
         return sorted(tasks, key=lambda t: t.created_at, reverse=True)
 
@@ -397,13 +667,20 @@ class TaskScheduler:
         # 统计信息
         self.stats = {"total_tasks": 0, "completed_tasks": 0, "failed_tasks": 0, "running_tasks": 0}
 
-    def register_executor(self, task_type: TaskType, executor: Callable):
-        """注册任务执行器
+    def register_executor(
+        self, task_type: TaskType, executor: Callable[[Task], Dict[str, Any]]
+    ) -> None:
+        """注册任务执行器。
 
         Args:
             task_type: 任务类型
-            executor: 执行器函数
+            executor: 执行器函数，接受Task对象，返回执行结果字典
+
+        Raises:
+            ValueError: 执行器函数签名不正确
         """
+        if not callable(executor):
+            raise ValueError(f"执行器必须是可调用对象，当前类型: {type(executor)}")
         self.task_executors[task_type] = executor
         self.logger.info("注册任务执行器: %s", task_type.value)
 
@@ -433,8 +710,11 @@ class TaskScheduler:
             self.stats["total_tasks"] += 1
             return True
 
+        except (TaskStorageError, ValueError) as e:
+            self.logger.error("添加任务失败（存储或验证错误）: %s", e)
+            return False
         except Exception as e:
-            self.logger.error("添加任务失败: %s", e)
+            self.logger.error("添加任务失败（未知错误）: %s", e)
             return False
 
     def create_task(
@@ -480,8 +760,11 @@ class TaskScheduler:
                 return task
             return None
 
+        except (TaskValidationError, ValueError) as e:
+            self.logger.error("创建任务失败（验证错误）: %s", e)
+            return None
         except Exception as e:
-            self.logger.error("创建任务失败: %s", e)
+            self.logger.error("创建任务失败（未知错误）: %s", e)
             return None
 
     def cancel_task(self, task_id: str) -> bool:
@@ -512,8 +795,11 @@ class TaskScheduler:
 
             return False
 
+        except (TaskStorageError, TaskNotFoundError) as e:
+            self.logger.error("取消任务失败（存储错误）: %s", e)
+            return False
         except Exception as e:
-            self.logger.error("取消任务失败: %s", e)
+            self.logger.error("取消任务失败（未知错误）: %s", e)
             return False
 
     def pause_task(self, task_id: str) -> bool:
@@ -536,8 +822,11 @@ class TaskScheduler:
 
             return False
 
+        except (TaskStorageError, TaskNotFoundError) as e:
+            self.logger.error("暂停任务失败（存储错误）: %s", e)
+            return False
         except Exception as e:
-            self.logger.error("暂停任务失败: %s", e)
+            self.logger.error("暂停任务失败（未知错误）: %s", e)
             return False
 
     def resume_task(self, task_id: str) -> bool:
@@ -561,8 +850,11 @@ class TaskScheduler:
 
             return False
 
+        except (TaskStorageError, TaskNotFoundError) as e:
+            self.logger.error("恢复任务失败（存储错误）: %s", e)
+            return False
         except Exception as e:
-            self.logger.error("恢复任务失败: %s", e)
+            self.logger.error("恢复任务失败（未知错误）: %s", e)
             return False
 
     def get_task_status(self, task_id: str) -> Optional[TaskStatus]:
@@ -600,8 +892,12 @@ class TaskScheduler:
         """
         return self.storage.list_tasks(status, limit)
 
-    def start(self):
-        """启动调度器"""
+    def start(self) -> None:
+        """启动调度器。
+
+        Raises:
+            RuntimeError: 如果调度器已经在运行
+        """
         if self._running:
             self.logger.warning("调度器已在运行")
             return
@@ -612,8 +908,8 @@ class TaskScheduler:
 
         self.logger.info("任务调度器已启动")
 
-    def stop(self):
-        """停止调度器"""
+    def stop(self) -> None:
+        """停止调度器。"""
         if not self._running:
             return
 
@@ -632,8 +928,12 @@ class TaskScheduler:
 
         self.logger.info("任务调度器已停止")
 
-    def _scheduler_loop(self):
-        """调度器主循环"""
+    def _scheduler_loop(self) -> None:
+        """调度器主循环。
+
+        持续检查定时任务、处理队列、监控运行中的任务。
+        捕获所有异常以确保循环不会中断。
+        """
         while self._running:
             try:
                 # 检查定时任务
@@ -650,12 +950,18 @@ class TaskScheduler:
 
                 time.sleep(self.check_interval)
 
+            except (TaskStorageError, ValueError) as e:
+                self.logger.error("调度器循环错误（存储或验证错误）: %s", e)
+                time.sleep(self.check_interval)
             except Exception as e:
-                self.logger.error("调度器循环错误: %s", e)
+                self.logger.error("调度器循环错误（未知错误）: %s", e)
                 time.sleep(self.check_interval)
 
-    def _check_scheduled_tasks(self):
-        """检查定时任务"""
+    def _check_scheduled_tasks(self) -> None:
+        """检查定时任务。
+
+        检查所有待执行的定时任务，如果执行时间已到或Cron表达式匹配，则加入执行队列。
+        """
         try:
             # 获取所有待执行的定时任务
             pending_tasks = self.storage.list_tasks(TaskStatus.PENDING)
@@ -694,14 +1000,21 @@ class TaskScheduler:
 
                             self.logger.info("Cron任务已创建并加入队列: %s", new_task.id)
 
+                    except (ValueError, TypeError) as e:
+                        self.logger.error("Cron表达式解析失败（格式错误）: %s, %s", task.cron_expression, e)
                     except Exception as e:
-                        self.logger.error("Cron表达式解析失败: %s, %s", task.cron_expression, e)
+                        self.logger.error("Cron表达式解析失败（未知错误）: %s, %s", task.cron_expression, e)
 
+        except TaskStorageError as e:
+            self.logger.error("检查定时任务失败（存储错误）: %s", e)
         except Exception as e:
-            self.logger.error("检查定时任务失败: %s", e)
+            self.logger.error("检查定时任务失败（未知错误）: %s", e)
 
-    def _process_task_queue(self):
-        """处理任务队列"""
+    def _process_task_queue(self) -> None:
+        """处理任务队列。
+
+        从队列中取出任务并提交到线程池执行。
+        """
         try:
             # 检查是否有可用的工作线程
             if len(self.running_tasks) >= self.max_workers:
@@ -730,11 +1043,16 @@ class TaskScheduler:
             self.stats["running_tasks"] += 1
             self.logger.info("任务开始执行: %s", task.id)
 
+        except TaskStorageError as e:
+            self.logger.error("处理任务队列失败（存储错误）: %s", e)
         except Exception as e:
-            self.logger.error("处理任务队列失败: %s", e)
+            self.logger.error("处理任务队列失败（未知错误）: %s", e)
 
-    def _check_running_tasks(self):
-        """检查运行中的任务"""
+    def _check_running_tasks(self) -> None:
+        """检查运行中的任务。
+
+        检查所有正在执行的任务，处理已完成的任务。
+        """
         try:
             completed_tasks = []
 
@@ -745,8 +1063,10 @@ class TaskScheduler:
                     try:
                         result = future.result()
                         self._handle_task_completion(task_id, result, None)
+                    except ValueError as e:
+                        self._handle_task_completion(task_id, None, f"验证错误: {e}")
                     except Exception as e:
-                        self._handle_task_completion(task_id, None, str(e))
+                        self._handle_task_completion(task_id, None, f"执行错误: {e}")
 
             # 清理已完成的任务
             for task_id in completed_tasks:
@@ -756,8 +1076,11 @@ class TaskScheduler:
         except Exception as e:
             self.logger.error("检查运行任务失败: %s", e)
 
-    def _cleanup_completed_tasks(self):
-        """清理完成的任务"""
+    def _cleanup_completed_tasks(self) -> None:
+        """清理完成的任务。
+
+        清理过期的已完成任务（当前为空实现，可根据需要扩展）。
+        """
         try:
             # 这里可以实现任务清理逻辑，比如删除过期的已完成任务
             pass
@@ -765,13 +1088,17 @@ class TaskScheduler:
             self.logger.error("清理任务失败: %s", e)
 
     def _execute_task(self, task: Task) -> Dict[str, Any]:
-        """执行任务
+        """执行任务。
 
         Args:
             task: 任务对象
 
         Returns:
             Dict[str, Any]: 执行结果
+
+        Raises:
+            ValueError: 未找到对应的任务执行器
+            RuntimeError: 任务执行失败
         """
         # 获取任务执行器
         executor = self.task_executors.get(task.task_type)
@@ -779,17 +1106,24 @@ class TaskScheduler:
             raise ValueError(f"未找到任务类型 {task.task_type.value} 的执行器")
 
         # 执行任务
-        return executor(task)
+        try:
+            return executor(task)
+        except Exception as e:
+            # 将执行器抛出的异常包装为 RuntimeError
+            raise RuntimeError(f"任务执行失败: {e}") from e
 
     def _handle_task_completion(
         self, task_id: str, result: Optional[Dict[str, Any]], error: Optional[str]
-    ):
-        """处理任务完成
+    ) -> None:
+        """处理任务完成。
 
         Args:
             task_id: 任务ID
-            result: 执行结果
-            error: 错误信息
+            result: 执行结果，成功时提供
+            error: 错误信息，失败时提供
+
+        Raises:
+            TaskStorageError: 存储操作失败
         """
         try:
             task = self.storage.load_task(task_id)
@@ -812,7 +1146,7 @@ class TaskScheduler:
                         2 ** (task.retry_count - 1)
                     )  # 指数退避
 
-                    def retry_task():
+                    def retry_task() -> None:
                         time.sleep(retry_delay)
                         task.status = TaskStatus.PENDING
                         self.storage.update_task(task)
@@ -841,8 +1175,10 @@ class TaskScheduler:
             # 更新任务状态
             self.storage.update_task(task)
 
+        except TaskStorageError as e:
+            self.logger.error("处理任务完成失败（存储错误）: %s", e)
         except Exception as e:
-            self.logger.error("处理任务完成失败: %s", e)
+            self.logger.error("处理任务完成失败（未知错误）: %s", e)
 
     def get_statistics(self) -> Dict[str, Any]:
         """获取统计信息

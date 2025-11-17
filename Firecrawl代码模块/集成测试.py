@@ -80,7 +80,7 @@ class TestFirecrawlCollector(unittest.TestCase):
         with self.assertRaises(ValueError):
             CollectorConfig(api_key="")
 
-    @patch("火爬采集器.FirecrawlApp")
+    @patch("火爬采集器.Firecrawl")
     def test_scrape_single_page(self, mock_firecrawl):
         """测试单页抓取"""
         # 模拟Firecrawl响应
@@ -115,7 +115,7 @@ class TestFirecrawlCollector(unittest.TestCase):
             self.assertEqual(result.content, "Test content")
             self.assertEqual(result.url, "https://example.com/test")
 
-    @patch("火爬采集器.FirecrawlApp")
+    @patch("火爬采集器.Firecrawl")
     def test_crawl_website(self, mock_firecrawl):
         """测试网站爬取"""
         # 模拟爬取响应
@@ -485,7 +485,7 @@ class TestEndToEndIntegration(unittest.TestCase):
             self.scheduler.stop()
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
-    @patch("火爬采集器.FirecrawlApp")
+    @patch("火爬采集器.Firecrawl")
     @patch("api_integration.requests.Session")
     def test_complete_workflow(self, mock_session, mock_firecrawl):
         """测试完整工作流程"""
