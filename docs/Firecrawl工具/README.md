@@ -62,6 +62,7 @@ Firecrawl工具/
 - [Cursor Git 使用指南](./docs/guides/cursor-git-guide.md)
 - [MCP 设置指南](./docs/guides/mcp-setup-guide.md)
 - [Cursor 配置迁移](./docs/guides/cursor-config-migration.md)
+- [代码模块使用指南](./docs/guides/code-modules-guide.md)
 
 #### AI 智能体
 - [AI 智能体配置](./docs/ai-agents/ai-agent-config.md)
@@ -88,6 +89,7 @@ Firecrawl工具/
 - [Flask 存储](./code/flask-storage.py)
 - [Supabase 客户端](./code/supabase-client.py)
 - [代码模块目录](./代码模块/) (已规范化命名)
+- [代码模块使用指南](./docs/guides/code-modules-guide.md)
 
 ### 📦 官方资料
 
@@ -175,9 +177,11 @@ Firecrawl工具/
 
 - **总文档数**: 100+ 个文件
 - **官方资料**: 50+ 个文档
-- **代码模块**: 6 个 Python 文件
+- **代码模块**: 7 个 Python 文件
 - **配置示例**: 3 个示例文件
 - **规则文件**: 5 个 .mdc 文件
+- **测试文件**: 4 个测试文件
+- **脚本工具**: 6 个自动化脚本
 
 ## 🔄 更新记录
 
