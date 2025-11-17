@@ -1,0 +1,39 @@
+# Firecrawl 工具项目依赖
+# Python 依赖包列表
+
+# 核心依赖
+firecrawl-py>=0.0.16
+requests>=2.31.0
+
+# Web 框架
+flask>=3.0.0
+flask-cors>=4.0.0
+
+# 数据库
+supabase>=2.0.0
+psycopg2-binary>=2.9.9
+
+# 数据处理
+pandas>=2.1.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+
+# 工具库
+python-dotenv>=1.0.0
+pyyaml>=6.0.1
+jsonschema>=4.20.0
+
+# 异步支持
+aiohttp>=3.9.0
+asyncio>=3.4.3
+
+# 日志和监控
+loguru>=0.7.2
+
+# 开发依赖（可选）
+# pytest>=7.4.0
+# pytest-asyncio>=0.21.0
+# black>=23.11.0
+# flake8>=6.1.0
+# mypy>=1.7.0
+
