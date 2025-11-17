@@ -455,7 +455,7 @@ class TestEndToEndIntegration(unittest.TestCase):
         shutil.rmtree(self.temp_dir, ignore_errors=True)
 
     @patch("firecrawl_collector.FirecrawlApp")
-    @patch("代码模块.api_integration.requests.Session")
+    @patch("api_integration.requests.Session")
     def test_complete_workflow(self, mock_session, mock_firecrawl):
         """测试完整工作流程"""
         # 模拟Firecrawl响应
