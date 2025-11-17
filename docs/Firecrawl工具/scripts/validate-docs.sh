@@ -57,11 +57,12 @@ validate_links() {
     local file="$1"
     # 提取 Markdown 链接
     while IFS= read -r line || [ -n "$line" ]; do
-        # 匹配 [text](path) 格式
-        if [[ "$line" =~ \[([^\]]+)\]\(([^)]+)\) ]]; then
-            local link_path="${BASH_REMATCH[2]}"
+        # 匹配 [text](path) 格式 - 使用 grep 提取链接
+        echo "$line" | grep -oE '\[([^\]]+)\]\(([^)]+)\)' | while IFS= read -r match; do
+            # 提取链接路径部分
+            link_path=$(echo "$match" | sed -E 's/\[([^\]]+)\]\(([^)]+)\)/\2/')
             # 跳过外部链接
-            if [[ "$link_path" =~ ^(http|https|mailto|#|mdc:) ]]; then
+            if echo "$link_path" | grep -qE '^(http|https|mailto|#|mdc:)'; then
                 continue
             fi
             # 解析相对路径
@@ -76,7 +77,7 @@ validate_links() {
             else
                 valid_links=$((valid_links + 1))
             fi
-        fi
+        done
     done < "$file"
 }
 
