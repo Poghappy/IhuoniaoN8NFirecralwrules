@@ -29,11 +29,11 @@ valid_links=0
 # 检查文档元数据
 check_metadata() {
     local file="$1"
-    if head -5 "$file" | grep -q "版本\|创建时间\|最后更新"; then
-        ((files_with_metadata++))
+    if head -5 "$file" 2>/dev/null | grep -q "版本\|创建时间\|最后更新"; then
+        files_with_metadata=$((files_with_metadata + 1))
         return 0
     else
-        ((files_without_metadata++))
+        files_without_metadata=$((files_without_metadata + 1))
         echo -e "  ${YELLOW}⚠️  缺少元数据: $file${NC}"
         return 1
     fi
@@ -56,7 +56,7 @@ check_naming() {
 validate_links() {
     local file="$1"
     # 提取 Markdown 链接
-    while IFS= read -r line; do
+    while IFS= read -r line || [ -n "$line" ]; do
         # 匹配 [text](path) 格式
         if [[ "$line" =~ \[([^\]]+)\]\(([^)]+)\) ]]; then
             local link_path="${BASH_REMATCH[2]}"
@@ -66,12 +66,15 @@ validate_links() {
             fi
             # 解析相对路径
             local file_dir=$(dirname "$file")
-            local resolved_path=$(cd "$file_dir" && realpath -m "$link_path" 2>/dev/null || echo "")
+            local resolved_path=""
+            if [ -d "$file_dir" ]; then
+                resolved_path=$(cd "$file_dir" 2>/dev/null && realpath -m "$link_path" 2>/dev/null || echo "")
+            fi
             if [ -z "$resolved_path" ] || [ ! -e "$resolved_path" ]; then
                 echo -e "  ${RED}❌ 无效链接: $file -> $link_path${NC}"
-                ((broken_links++))
+                broken_links=$((broken_links + 1))
             else
-                ((valid_links++))
+                valid_links=$((valid_links + 1))
             fi
         fi
     done < "$file"
@@ -79,16 +82,16 @@ validate_links() {
 
 # 主验证流程
 echo -e "${YELLOW}步骤 1: 检查文档元数据...${NC}"
-find . -name "*.md" -type f ! -path "./.git/*" ! -path "./.backup/*" ! -path "./node_modules/*" | while read file; do
-    ((total_files++))
+while IFS= read -r file; do
+    total_files=$((total_files + 1))
     check_metadata "$file"
     check_naming "$file"
-done
+done < <(find . -name "*.md" -type f ! -path "./.git/*" ! -path "./.backup/*" ! -path "./node_modules/*" 2>/dev/null)
 
 echo -e "${YELLOW}步骤 2: 验证文档链接...${NC}"
-find . -name "*.md" -type f ! -path "./.git/*" ! -path "./.backup/*" ! -path "./node_modules/*" | while read file; do
+while IFS= read -r file; do
     validate_links "$file"
-done
+done < <(find . -name "*.md" -type f ! -path "./.git/*" ! -path "./.backup/*" ! -path "./node_modules/*" 2>/dev/null)
 
 # 输出统计结果
 echo ""
