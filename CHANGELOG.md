@@ -12,13 +12,24 @@
 - 完善 .gitignore，添加更多需要忽略的文件类型
 - 添加 CHANGELOG.md 记录项目变更
 - 添加 CONTRIBUTING.md 贡献指南
+- 添加配置验证脚本 (`scripts/verify_config.py`)
+- 添加项目状态报告和详细行动计划文档
+- 创建 GitHub 配置脚本和文档
 
 ### 变更
 - 更新 README.md 以反映实际项目内容（Firecrawl × 火鸟门户 × n8n）
 - 优化项目文档结构
+- 优化终端配置（字体、环境变量、行为选项）
+- 更新集成测试以匹配新的 API
 
 ### 修复
 - 修复 .gitignore 中遗漏的数据库文件类型
+- **修复 cron 表达式解析逻辑错误** (`Firecrawl代码模块/任务调度.py`)
+  - 修复 `cron.get_next()` 的返回值处理（正确使用 float timestamp）
+  - 修复时间比较逻辑（`next_run <= current_time + timedelta(minutes=1)`）
+  - 移除不必要的 `next_run_time` 变量
+- 修复 Python 语言服务器冲突（禁用 Cursor Pyright，使用 Pylance）
+- 修复 cSpell 配置格式问题
 
 ## [1.0.0] - 2025-01-XX
 

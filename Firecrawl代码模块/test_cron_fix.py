@@ -16,8 +16,8 @@ try:
         current_time = datetime.now(timezone.utc)
         cron = croniter("0 * * * *", current_time)
 
-        # 测试 get_next(datetime) 返回类型
-        result_timestamp = cron.get_next(datetime)
+        # 测试 get_next() 返回类型（默认返回 float timestamp）
+        result_timestamp = cron.get_next()
 
         # 将时间戳转换为 datetime 对象
         result = datetime.fromtimestamp(result_timestamp, tz=timezone.utc)

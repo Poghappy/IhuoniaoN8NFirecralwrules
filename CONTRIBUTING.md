@@ -97,13 +97,13 @@ pytest --cov=Firecrawl代码模块
    ```python
    def collect_article(url: str) -> dict[str, Any]:
        """采集指定 URL 的文章内容。
-       
+
        Args:
            url: 要采集的网页 URL
-           
+
        Returns:
            包含文章数据的字典
-           
+
        Raises:
            ValueError: 当 URL 格式无效时
        """
@@ -113,7 +113,7 @@ pytest --cov=Firecrawl代码模块
    ```bash
    # 使用 ruff 格式化
    ruff format .
-   
+
    # 检查代码风格
    ruff check .
    ```
