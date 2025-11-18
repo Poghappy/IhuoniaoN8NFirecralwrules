@@ -201,8 +201,7 @@ class TestDataProcessor(unittest.TestCase):
     def test_extract_keywords(self):
         """测试关键词提取"""
         text = "Python是一种编程语言。机器学习和人工智能是热门技术。"
-        keywords = self.processor.keyword_extractor.extract_keywords(
-            "Python编程", text)
+        keywords = self.processor.keyword_extractor.extract_keywords("Python编程", text)
 
         self.assertIsInstance(keywords, list)
         self.assertGreaterEqual(len(keywords), 0)
@@ -350,8 +349,7 @@ class TestAPIIntegration(unittest.TestCase):
         # 验证映射结果
         self.assertEqual(publish_request.title, "测试文章标题")
         self.assertEqual(publish_request.content, "测试文章内容")
-        self.assertEqual(publish_request.source_url,
-                         "https://example.com/test")
+        self.assertEqual(publish_request.source_url, "https://example.com/test")
         self.assertIn("quality_score", publish_request.metadata)
 
 
@@ -467,8 +465,7 @@ class TestEndToEndIntegration(unittest.TestCase):
         # 创建配置
         self.collector_config = CollectorConfig(api_key="test_api_key")
 
-        self.api_config = APIConfig(
-            base_url="https://api.test.com/", api_key="test_api_key")
+        self.api_config = APIConfig(base_url="https://api.test.com/", api_key="test_api_key")
 
         # 创建组件
         self.collector = FirecrawlCollector(self.collector_config)
@@ -536,8 +533,7 @@ class TestEndToEndIntegration(unittest.TestCase):
             }
 
             # 3. 处理和发布
-            response = self.integration.process_and_publish(
-                firecrawl_data, auto_publish=False)
+            response = self.integration.process_and_publish(firecrawl_data, auto_publish=False)
 
             # 验证结果
             if response:
@@ -607,8 +603,7 @@ class TestPerformance(unittest.TestCase):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             futures = [executor.submit(process_item, i) for i in range(20)]
-            results = [future.result()
-                       for future in concurrent.futures.as_completed(futures)]
+            results = [future.result() for future in concurrent.futures.as_completed(futures)]
 
         end_time = time.time()
         processing_time = end_time - start_time
@@ -618,8 +613,7 @@ class TestPerformance(unittest.TestCase):
         self.assertTrue(all(result is not None for result in results))
 
         # 验证并发性能
-        self.assertLess(processing_time, 10.0,
-                        f"并发处理时间过长: {processing_time:.2f}秒")
+        self.assertLess(processing_time, 10.0, f"并发处理时间过长: {processing_time:.2f}秒")
 
 
 class TestConfigManager(unittest.TestCase):
@@ -640,8 +634,7 @@ class TestConfigManager(unittest.TestCase):
 
         # 创建配置
         config = FirecrawlCollectorConfig(
-            firecrawl_api=FirecrawlAPIConfig(
-                api_key="test_key", base_url="https://api.test.com")
+            firecrawl_api=FirecrawlAPIConfig(api_key="test_key", base_url="https://api.test.com")
         )
 
         manager = ConfigManager()
@@ -659,8 +652,7 @@ class TestConfigManager(unittest.TestCase):
         self.assertIsNotNone(loaded_config.firecrawl_api)
         if loaded_config.firecrawl_api:
             self.assertEqual(loaded_config.firecrawl_api.api_key, "test_key")
-            self.assertEqual(
-                loaded_config.firecrawl_api.base_url, "https://api.test.com")
+            self.assertEqual(loaded_config.firecrawl_api.base_url, "https://api.test.com")
 
     def test_config_validation(self):
         """测试配置验证"""
@@ -669,7 +661,8 @@ class TestConfigManager(unittest.TestCase):
         # 有效配置
         valid_config = FirecrawlCollectorConfig(
             firecrawl_api=FirecrawlAPIConfig(
-                api_key="valid_key", base_url="https://api.firecrawl.dev")
+                api_key="valid_key", base_url="https://api.firecrawl.dev"
+            )
         )
 
         errors = valid_config.validate()
@@ -677,8 +670,7 @@ class TestConfigManager(unittest.TestCase):
 
         # 无效配置
         invalid_config = FirecrawlCollectorConfig(
-            firecrawl_api=FirecrawlAPIConfig(
-                api_key="", base_url="invalid_url")
+            firecrawl_api=FirecrawlAPIConfig(api_key="", base_url="invalid_url")
         )
 
         errors = invalid_config.validate()
@@ -734,8 +726,7 @@ def run_all_tests():
             print(f"  - {test}: {traceback.split('\n')[-2]}")
 
     success_rate = (
-        (result.testsRun - len(result.failures) -
-         len(result.errors)) / result.testsRun * 100
+        (result.testsRun - len(result.failures) - len(result.errors)) / result.testsRun * 100
     )
     print(f"\n成功率: {success_rate:.1f}%")
 

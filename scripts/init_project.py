@@ -294,13 +294,10 @@ def main():
     args = parser.parse_args()
 
     initializer = ProjectInitializer(project_root=args.project_root)
-    success = initializer.run_initialization(
-        install_deps=args.install_deps, dev=args.dev
-    )
+    success = initializer.run_initialization(install_deps=args.install_deps, dev=args.dev)
 
     sys.exit(0 if success else 1)
 
 
 if __name__ == "__main__":
     main()
-

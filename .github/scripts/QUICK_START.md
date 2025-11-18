@@ -12,12 +12,13 @@
 #### 方式一：使用脚本（推荐）
 
 1. **获取 GitHub Personal Access Token**
+
    - 访问：https://github.com/settings/tokens
    - 点击 **Generate new token** > **Generate new token (classic)**
    - 设置权限：✅ `repo` (完整仓库访问权限)
    - 点击 **Generate token** 并复制 token
-
 2. **运行脚本**
+
    ```bash
    # 设置 Token（临时，仅当前终端会话有效）
    export GITHUB_TOKEN=your_token_here
@@ -26,8 +27,8 @@
    cd /Users/zhiledeng/Movies/Hawaiihub.net
    ./.github/scripts/create-labels.sh
    ```
-
 3. **验证结果**
+
    - 访问：https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/labels
    - 确认所有标签已创建
 
@@ -37,33 +38,34 @@
 
 按照以下列表逐个创建：
 
-| 标签名称 | 描述 | 颜色代码 |
-|---------|------|---------|
-| `bug` | Bug 报告 | `#d73a4a` |
-| `feature` | 新功能 | `#0e8a16` |
-| `enhancement` | 功能增强 | `#0052cc` |
-| `documentation` | 文档更新 | `#0075ca` |
-| `question` | 问题咨询 | `#d876e3` |
-| `priority: high` | 高优先级 | `#b60205` |
-| `priority: medium` | 中优先级 | `#fbca04` |
-| `priority: low` | 低优先级 | `#e4e669` |
-| `status: in-progress` | 进行中 | `#1d76db` |
-| `status: blocked` | 已阻塞 | `#ee0701` |
-| `status: needs-review` | 需要审查 | `#fef2c0` |
-| `status: ready` | 就绪 | `#0e8a16` |
-| `python` | Python 相关 | `#0052cc` |
-| `javascript` | JavaScript 相关 | `#d4c5f9` |
-| `api` | API 相关 | `#7057ff` |
-| `database` | 数据库相关 | `#ededed` |
-| `dependencies` | 依赖更新 | `#0366d6` |
-| `github-actions` | GitHub Actions | `#000000` |
+| 标签名称               | 描述            | 颜色代码  |
+| ---------------------- | --------------- | --------- |
+| `bug`                  | Bug 报告        | `#d73a4a` |
+| `feature`              | 新功能          | `#0e8a16` |
+| `enhancement`          | 功能增强        | `#0052cc` |
+| `documentation`        | 文档更新        | `#0075ca` |
+| `question`             | 问题咨询        | `#d876e3` |
+| `priority: high`       | 高优先级        | `#b60205` |
+| `priority: medium`     | 中优先级        | `#fbca04` |
+| `priority: low`        | 低优先级        | `#e4e669` |
+| `status: in-progress`  | 进行中          | `#1d76db` |
+| `status: blocked`      | 已阻塞          | `#ee0701` |
+| `status: needs-review` | 需要审查        | `#fef2c0` |
+| `status: ready`        | 就绪            | `#0e8a16` |
+| `python`               | Python 相关     | `#0052cc` |
+| `javascript`           | JavaScript 相关 | `#d4c5f9` |
+| `api`                  | API 相关        | `#7057ff` |
+| `database`             | 数据库相关      | `#ededed` |
+| `dependencies`         | 依赖更新        | `#0366d6` |
+| `github-actions`       | GitHub Actions  | `#000000` |
 
 ### 步骤 2: 配置分支保护规则（5 分钟）
 
 1. **访问分支设置**
-   - 打开：https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/settings/branches
 
+   - 打开：https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/settings/branches
 2. **配置 main 分支保护**
+
    - 点击 **Add rule**
    - **Branch name pattern**: 输入 `main`
    - 勾选以下选项：
@@ -76,8 +78,8 @@
      - ✅ **Do not allow bypassing the above settings**
      - ✅ **Restrict who can push to matching branches**（可选）
    - 点击 **Create** 保存
-
 3. **配置 develop 分支保护**（可选）
+
    - 点击 **Add rule**
    - **Branch name pattern**: 输入 `develop`
    - 勾选：
@@ -88,9 +90,10 @@
 ### 步骤 3: 启用安全设置（3 分钟）
 
 1. **访问安全设置**
-   - 打开：https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/settings/security_analysis
 
+   - 打开：https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/settings/security_analysis
 2. **启用功能**
+
    - ✅ **Dependency graph** - 点击 **Enable**
    - ✅ **Dependabot alerts** - 点击 **Enable**
    - ✅ **Dependabot security updates** - 点击 **Enable**
@@ -100,9 +103,10 @@
 ### 步骤 4: 配置仓库基础设置（2 分钟）
 
 1. **访问仓库设置**
-   - 打开：https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/settings
 
+   - 打开：https://github.com/Poghappy/IhuoniaoN8NFirecralwrules/settings
 2. **更新仓库信息**
+
    - **Description**: 输入
      ```
      HawaiiHub Firecrawl × 火鸟门户 × n8n 的采集与自动化运营仓库
@@ -118,8 +122,8 @@
      data-collection
      ```
    - 点击 **Save changes**
-
 3. **启用功能**
+
    - 在 **Features** 部分，确保以下功能已启用：
      - ✅ Issues
      - ✅ Projects
@@ -166,34 +170,37 @@
 如果标签创建脚本失败，请检查：
 
 1. **Token 权限**
+
    - 确保 Token 有 `repo` 权限
    - 确保 Token 未过期
-
 2. **网络连接**
+
    - 检查是否能访问 GitHub API
    - 尝试手动创建标签
-
 3. **查看详细错误**
+
    - 脚本会显示详细的错误信息
    - 检查 HTTP 状态码
 
 ### 分支保护规则无法保存
 
 1. **权限检查**
+
    - 确保你有仓库管理员权限
    - 检查组织设置是否允许配置分支保护
-
 2. **状态检查名称**
+
    - 确保状态检查名称正确：`lint`, `test`, `docs`
    - 如果名称不同，需要先运行一次 CI 工作流
 
 ### 安全设置无法启用
 
 1. **仓库类型**
+
    - 某些功能可能仅适用于公开仓库
    - 检查仓库可见性设置
-
 2. **组织限制**
+
    - 如果是组织仓库，检查组织策略
    - 可能需要组织管理员权限
 
@@ -216,4 +223,3 @@
 
 **最后更新**: 2025-01-27
 **维护者**: AI Agent Team
-

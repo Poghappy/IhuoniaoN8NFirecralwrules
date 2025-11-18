@@ -73,9 +73,7 @@ class TestFirecrawlCollector(unittest.TestCase):
     def test_config_validation(self):
         """测试配置验证"""
         # 测试有效配置
-        valid_config = CollectorConfig(
-            api_key="valid_key", base_url="https://api.firecrawl.dev"
-        )
+        valid_config = CollectorConfig(api_key="valid_key", base_url="https://api.firecrawl.dev")
         self.assertIsNotNone(valid_config)
 
         # 测试无效配置
@@ -138,14 +136,10 @@ class TestFirecrawlCollector(unittest.TestCase):
         }
 
         mock_firecrawl.return_value.crawl_url.return_value = mock_response
-        mock_firecrawl.return_value.check_crawl_status.return_value = (
-            mock_status_response
-        )
+        mock_firecrawl.return_value.check_crawl_status.return_value = mock_status_response
 
         # 执行测试
-        results = self.collector.crawl_website(
-            "https://example.com", max_pages=2
-        )
+        results = self.collector.crawl_website("https://example.com", max_pages=2)
 
         # 验证结果
         self.assertEqual(len(results), 2)
@@ -240,8 +234,7 @@ class TestDataProcessor(unittest.TestCase):
         # 高质量内容
         high_quality = ProcessedArticle(
             title="详细的Python编程指南",
-            content="这是一篇详细的Python编程指南，包含了大量的示例代码和最佳实践。"
-            * 10,
+            content="这是一篇详细的Python编程指南，包含了大量的示例代码和最佳实践。" * 10,
             summary="Python编程的完整指南",
             keywords=["Python", "编程", "指南"],
             source_url="https://example.com",
@@ -338,9 +331,7 @@ class TestAPIIntegration(unittest.TestCase):
         # 验证映射结果
         self.assertEqual(publish_request.title, "测试文章标题")
         self.assertEqual(publish_request.content, "测试文章内容")
-        self.assertEqual(
-            publish_request.source_url, "https://example.com/test"
-        )
+        self.assertEqual(publish_request.source_url, "https://example.com/test")
         self.assertIn("quality_score", publish_request.metadata)
 
 
@@ -438,9 +429,7 @@ class TestEndToEndIntegration(unittest.TestCase):
             api_key="test_api_key", base_url="https://api.firecrawl.dev"
         )
 
-        self.api_config = APIConfig(
-            base_url="https://api.test.com/", api_key="test_api_key"
-        )
+        self.api_config = APIConfig(base_url="https://api.test.com/", api_key="test_api_key")
 
         # 创建组件
         self.collector = FirecrawlCollector(self.collector_config)
@@ -474,9 +463,7 @@ class TestEndToEndIntegration(unittest.TestCase):
             },
         }
 
-        mock_firecrawl.return_value.scrape_url.return_value = (
-            mock_firecrawl_response
-        )
+        mock_firecrawl.return_value.scrape_url.return_value = mock_firecrawl_response
 
         # 模拟API响应
         mock_api_response = Mock()
@@ -490,9 +477,7 @@ class TestEndToEndIntegration(unittest.TestCase):
 
         # 执行完整流程
         # 1. 数据采集
-        article_data = self.collector.scrape_single_page(
-            "https://example.com/python-guide"
-        )
+        article_data = self.collector.scrape_single_page("https://example.com/python-guide")
         self.assertIsNotNone(article_data)
 
         # 2. 数据处理
@@ -503,9 +488,7 @@ class TestEndToEndIntegration(unittest.TestCase):
         }
 
         # 3. 处理和发布
-        response = self.integration.process_and_publish(
-            firecrawl_data, auto_publish=False
-        )
+        response = self.integration.process_and_publish(firecrawl_data, auto_publish=False)
 
         # 验证结果
         self.assertTrue(response.success)
@@ -572,10 +555,7 @@ class TestPerformance(unittest.TestCase):
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=4) as executor:
             futures = [executor.submit(process_item, i) for i in range(20)]
-            results = [
-                future.result()
-                for future in concurrent.futures.as_completed(futures)
-            ]
+            results = [future.result() for future in concurrent.futures.as_completed(futures)]
 
         end_time = time.time()
         processing_time = end_time - start_time
@@ -585,9 +565,7 @@ class TestPerformance(unittest.TestCase):
         self.assertTrue(all(result is not None for result in results))
 
         # 验证并发性能
-        self.assertLess(
-            processing_time, 10.0, f"并发处理时间过长: {processing_time:.2f}秒"
-        )
+        self.assertLess(processing_time, 10.0, f"并发处理时间过长: {processing_time:.2f}秒")
 
 
 class TestConfigManager(unittest.TestCase):
@@ -605,9 +583,7 @@ class TestConfigManager(unittest.TestCase):
     def test_config_save_load(self):
         """测试配置保存和加载"""
         # 创建配置
-        config = FirecrawlCollectorConfig(
-            api_key="test_key", base_url="https://api.test.com"
-        )
+        config = FirecrawlCollectorConfig(api_key="test_key", base_url="https://api.test.com")
 
         manager = ConfigManager()
 
@@ -637,7 +613,8 @@ class TestConfigManager(unittest.TestCase):
 
         # 无效配置
         invalid_config = FirecrawlCollectorConfig(
-            api_key="", base_url="invalid_url"  # 空API密钥  # 无效URL
+            api_key="",
+            base_url="invalid_url",  # 空API密钥  # 无效URL
         )
 
         self.assertFalse(manager.validate_config(invalid_config))
@@ -692,9 +669,7 @@ def run_all_tests():
             print(f"  - {test}: {traceback.split('\n')[-2]}")
 
     success_rate = (
-        (result.testsRun - len(result.failures) - len(result.errors))
-        / result.testsRun
-        * 100
+        (result.testsRun - len(result.failures) - len(result.errors)) / result.testsRun * 100
     )
     print(f"\n成功率: {success_rate:.1f}%")
 

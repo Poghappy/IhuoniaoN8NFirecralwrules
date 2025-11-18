@@ -46,4 +46,3 @@ class FlaskSessionStorage:
             key: The storage key to remove
         """
         session.pop(key, None)
-

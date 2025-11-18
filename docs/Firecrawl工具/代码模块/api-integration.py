@@ -186,9 +186,7 @@ class PublishResponse:
     data: Optional[Dict[str, Any]] = None
 
     @classmethod
-    def from_api_response(
-        cls, response_data: Dict[str, Any]
-    ) -> "PublishResponse":
+    def from_api_response(cls, response_data: Dict[str, Any]) -> "PublishResponse":
         """从API响应创建对象"""
         return cls(
             success=response_data.get("success", False),
@@ -214,9 +212,7 @@ class RateLimiter:
 
         # 清理过期的请求记录
         self.requests = [
-            req_time
-            for req_time in self.requests
-            if now - req_time < self.time_window
+            req_time for req_time in self.requests if now - req_time < self.time_window
         ]
 
         # 检查是否超过限制
@@ -308,9 +304,7 @@ class HuoNiaoAPIClient:
 
                 if attempt < self.config.max_retries:
                     # 指数退避
-                    delay = self.config.retry_delay * (
-                        self.config.backoff_factor**attempt
-                    )
+                    delay = self.config.retry_delay * (self.config.backoff_factor**attempt)
                     time.sleep(delay)
                 else:
                     raise
@@ -375,9 +369,7 @@ class HuoNiaoAPIClient:
                 error_code="PUBLISH_ERROR",
             )
 
-    def update_article(
-        self, article_id: int, request: PublishRequest
-    ) -> PublishResponse:
+    def update_article(self, article_id: int, request: PublishRequest) -> PublishResponse:
         """更新文章
 
         Args:
@@ -389,9 +381,7 @@ class HuoNiaoAPIClient:
         """
         try:
             data = request.to_api_data()
-            response = self._make_request(
-                "PUT", f"api/articles/{article_id}", data=data
-            )
+            response = self._make_request("PUT", f"api/articles/{article_id}", data=data)
             return PublishResponse.from_api_response(response)
         except Exception as e:
             self.logger.error(f"更新文章失败: {str(e)}")
@@ -411,9 +401,7 @@ class HuoNiaoAPIClient:
             PublishResponse: 删除响应
         """
         try:
-            response = self._make_request(
-                "DELETE", f"api/articles/{article_id}"
-            )
+            response = self._make_request("DELETE", f"api/articles/{article_id}")
             return PublishResponse.from_api_response(response)
         except Exception as e:
             self.logger.error(f"删除文章失败: {str(e)}")
@@ -439,9 +427,7 @@ class HuoNiaoAPIClient:
             self.logger.error(f"获取文章失败: {str(e)}")
             return None
 
-    def search_articles(
-        self, query: str, limit: int = 10
-    ) -> List[Dict[str, Any]]:
+    def search_articles(self, query: str, limit: int = 10) -> List[Dict[str, Any]]:
         """搜索文章
 
         Args:
@@ -453,17 +439,13 @@ class HuoNiaoAPIClient:
         """
         try:
             params = {"q": query, "limit": limit}
-            response = self._make_request(
-                "GET", "api/articles/search", params=params
-            )
+            response = self._make_request("GET", "api/articles/search", params=params)
             return response.get("data", [])
         except Exception as e:
             self.logger.error(f"搜索文章失败: {str(e)}")
             return []
 
-    def batch_publish(
-        self, requests: List[PublishRequest]
-    ) -> List[PublishResponse]:
+    def batch_publish(self, requests: List[PublishRequest]) -> List[PublishResponse]:
         """批量发布文章
 
         Args:
@@ -481,9 +463,7 @@ class HuoNiaoAPIClient:
 
             # 如果失败，记录错误但继续处理
             if not response.success:
-                self.logger.error(
-                    f"批量发布第 {i + 1} 项失败: {response.message}"
-                )
+                self.logger.error(f"批量发布第 {i + 1} 项失败: {response.message}")
 
         return responses
 
@@ -509,7 +489,6 @@ class DataMapper:
             or self._cache_time is None
             or now - self._cache_time > self._cache_ttl
         ):
-
             self._categories_cache = self.api_client.get_categories()
             self._cache_time = now
 
@@ -523,7 +502,6 @@ class DataMapper:
             or self._cache_time is None
             or now - self._cache_time > self._cache_ttl
         ):
-
             self._authors_cache = self.api_client.get_authors()
             self._cache_time = now
 
@@ -586,9 +564,7 @@ class DataMapper:
         )
 
         # SEO映射
-        request.seo_title = (
-            article.title[:60] if article.title else None
-        )  # 限制SEO标题长度
+        request.seo_title = article.title[:60] if article.title else None  # 限制SEO标题长度
         request.seo_description = (
             article.summary[:160] if article.summary else None
         )  # 限制SEO描述长度
@@ -642,9 +618,7 @@ class DataMapper:
 class APIIntegration:
     """API集成主类"""
 
-    def __init__(
-        self, config: APIConfig, data_processor: Optional[DataProcessor] = None
-    ):
+    def __init__(self, config: APIConfig, data_processor: Optional[DataProcessor] = None):
         self.config = config
         self.api_client = HuoNiaoAPIClient(config)
         self.data_mapper = DataMapper(self.api_client)
@@ -683,9 +657,7 @@ class APIIntegration:
             self.stats["total_processed"] += 1
 
             # 数据处理
-            processed_article = self.data_processor.process_firecrawl_data(
-                raw_data
-            )
+            processed_article = self.data_processor.process_firecrawl_data(raw_data)
 
             if not processed_article:
                 self.logger.warning("数据处理失败，跳过发布")
@@ -709,9 +681,7 @@ class APIIntegration:
                 )
 
             # 数据映射
-            publish_request = self.data_mapper.map_processed_article(
-                processed_article, self.config
-            )
+            publish_request = self.data_mapper.map_processed_article(processed_article, self.config)
 
             # 设置发布状态
             if auto_publish:
@@ -763,9 +733,7 @@ class APIIntegration:
 
         return responses
 
-    def sync_article_status(
-        self, external_id: str, new_status: PublishStatus
-    ) -> bool:
+    def sync_article_status(self, external_id: str, new_status: PublishStatus) -> bool:
         """同步文章状态
 
         Args:
@@ -797,14 +765,10 @@ class APIIntegration:
                 status=new_status,
             )
 
-            response = self.api_client.update_article(
-                article_id, update_request
-            )
+            response = self.api_client.update_article(article_id, update_request)
 
             if response.success:
-                self.logger.info(
-                    f"文章状态同步成功: {external_id} -> {new_status.value}"
-                )
+                self.logger.info(f"文章状态同步成功: {external_id} -> {new_status.value}")
                 return True
             else:
                 self.logger.error(f"文章状态同步失败: {response.message}")
@@ -823,15 +787,9 @@ class APIIntegration:
         stats = self.stats.copy()
 
         if stats["total_processed"] > 0:
-            stats["success_rate"] = (
-                stats["successful_publishes"] / stats["total_processed"]
-            )
-            stats["failure_rate"] = (
-                stats["failed_publishes"] / stats["total_processed"]
-            )
-            stats["skip_rate"] = (
-                stats["skipped_items"] / stats["total_processed"]
-            )
+            stats["success_rate"] = stats["successful_publishes"] / stats["total_processed"]
+            stats["failure_rate"] = stats["failed_publishes"] / stats["total_processed"]
+            stats["skip_rate"] = stats["skipped_items"] / stats["total_processed"]
         else:
             stats["success_rate"] = 0.0
             stats["failure_rate"] = 0.0
@@ -887,9 +845,7 @@ if __name__ == "__main__":
         }
 
         # 处理和发布
-        response = integration.process_and_publish(
-            mock_data, auto_publish=False
-        )
+        response = integration.process_and_publish(mock_data, auto_publish=False)
 
         if response.success:
             print(f"文章发布成功，ID: {response.article_id}")

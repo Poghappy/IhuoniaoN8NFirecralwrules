@@ -31,19 +31,23 @@ import time
 from typing import Any, Callable, Dict, List, Optional
 import uuid
 
+
 # 自定义异常类
 class TaskStorageError(Exception):
     """任务存储相关异常基类"""
+
     pass
 
 
 class TaskNotFoundError(TaskStorageError):
     """任务未找到异常"""
+
     pass
 
 
 class TaskValidationError(ValueError):
     """任务验证错误"""
+
     pass
 
 
@@ -1001,9 +1005,13 @@ class TaskScheduler:
                             self.logger.info("Cron任务已创建并加入队列: %s", new_task.id)
 
                     except (ValueError, TypeError) as e:
-                        self.logger.error("Cron表达式解析失败（格式错误）: %s, %s", task.cron_expression, e)
+                        self.logger.error(
+                            "Cron表达式解析失败（格式错误）: %s, %s", task.cron_expression, e
+                        )
                     except Exception as e:
-                        self.logger.error("Cron表达式解析失败（未知错误）: %s, %s", task.cron_expression, e)
+                        self.logger.error(
+                            "Cron表达式解析失败（未知错误）: %s, %s", task.cron_expression, e
+                        )
 
         except TaskStorageError as e:
             self.logger.error("检查定时任务失败（存储错误）: %s", e)

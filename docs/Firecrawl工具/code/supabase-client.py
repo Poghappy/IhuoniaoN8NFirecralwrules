@@ -30,10 +30,7 @@ def get_supabase() -> Client:
         g.supabase = Client(
             url,
             key,
-            options=ClientOptions(
-                storage=FlaskSessionStorage(),
-                flow_type="pkce"
-            ),
+            options=ClientOptions(storage=FlaskSessionStorage(), flow_type="pkce"),
         )
     return g.supabase
 

@@ -12,12 +12,7 @@ from pathlib import Path
 def check_github_auth() -> bool:
     """检查 GitHub 认证状态"""
     try:
-        result = subprocess.run(
-            ["gh", "auth", "status"],
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
+        result = subprocess.run(["gh", "auth", "status"], capture_output=True, text=True, timeout=5)
         if result.returncode == 0 and "Logged in" in result.stdout:
             print("✅ GitHub CLI 已认证")
             return True
@@ -36,7 +31,7 @@ def check_git_config() -> bool:
             ["git", "config", "--global", "credential.helper"],
             capture_output=True,
             text=True,
-            timeout=5
+            timeout=5,
         )
         if result.returncode == 0 and result.stdout.strip():
             print(f"✅ Git 凭据助手已配置: {result.stdout.strip()}")
@@ -104,4 +99,3 @@ def main() -> int:
 
 if __name__ == "__main__":
     sys.exit(main())
-
