@@ -2,14 +2,29 @@
 .env
 .env.local
 .env.*.local
+*.env
 
 # MCP 配置 (包含个人访问令牌)
 .cursor/mcp.json
+
+# 数据库文件
+*.sql
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+
+# 配置文件（包含敏感信息）
+config.json
+*_config.json
+*_credentials.json
+keys.json
 
 # macOS
 .DS_Store
 .AppleDouble
 .LSOverride
+._*
 
 # 编辑器
 .vscode/
@@ -17,12 +32,76 @@
 *.swp
 *.swo
 *~
+.project
+.classpath
+.settings/
 
 # 日志
 *.log
 logs/
+*.log.*
 
 # 临时文件
 tmp/
 temp/
 *.tmp
+*.cache
+.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+venv/
+ENV/
+env/
+.venv
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+.npm
+.yarn/
+
+# 测试覆盖率
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.hypothesis/
+
+# 备份文件
+*.bak
+*.backup
+*.old
+*~
+
+# 压缩文件（大文件）
+*.zip
+*.tar.gz
+*.rar
+*.7z
+
+# 系统文件
+Thumbs.db
+Desktop.ini

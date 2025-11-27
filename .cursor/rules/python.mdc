@@ -1,0 +1,193 @@
+# Python 开发规范
+
+## 📋 概述
+
+本文件定义了 HawaiiHub.net 项目中 Python 代码的开发规范，包括代码风格、类型注解、文档字符串等要求。
+
+## 🎯 核心原则
+
+1. **类型安全**: 所有函数和类必须使用类型注解
+2. **文档完整**: 所有公共 API 必须有完整的文档字符串
+3. **代码清晰**: 遵循 PEP 8 规范，使用有意义的命名
+4. **错误处理**: 使用适当的异常处理，避免裸异常
+5. **测试覆盖**: 关键功能必须有单元测试
+
+## 📝 代码风格
+
+### 命名规范
+
+```python
+# 变量和函数：snake_case
+user_name = "张三"
+def fetch_data():
+    pass
+
+# 类：PascalCase
+class DataCollector:
+    pass
+
+# 常量：UPPER_SNAKE_CASE
+API_BASE_URL = "https://api.example.com"
+MAX_RETRIES = 3
+
+# 私有方法/属性：单下划线前缀
+def _internal_method():
+    pass
+
+# 特殊方法：双下划线前缀和后缀
+def __init__(self):
+    pass
+```
+
+### 类型注解
+
+```python
+from typing import Dict, List, Optional, Any, Union
+
+# 函数参数和返回值
+def process_data(
+    items: List[str],
+    config: Optional[Dict[str, Any]] = None
+) -> Dict[str, int]:
+    """处理数据并返回统计结果"""
+    pass
+
+# 类属性
+class Article:
+    title: str
+    content: str
+    tags: List[str] = []
+    metadata: Optional[Dict[str, Any]] = None
+```
+
+### 文档字符串
+
+```python
+def collect_article(url: str, timeout: int = 30) -> Optional[Article]:
+    """采集指定 URL 的文章
+
+    Args:
+        url: 目标 URL 地址
+        timeout: 超时时间（秒），默认 30 秒
+
+    Returns:
+        Article: 采集的文章对象，失败时返回 None
+
+    Raises:
+        ValueError: 当 URL 格式无效时
+        TimeoutError: 当请求超时时
+        ConnectionError: 当连接失败时
+
+    Example:
+        >>> article = collect_article("https://example.com/article")
+        >>> if article:
+        ...     print(article.title)
+    """
+    pass
+```
+
+## 🔧 工具配置
+
+### Ruff
+
+项目使用 Ruff 进行代码检查和格式化，配置在 `pyproject.toml` 中：
+
+- 行长度: 100 字符
+- 目标版本: Python 3.9+
+- 启用规则: E, W, F, I, N, UP, B, C4, DTZ, T10, EM, ISC, ICN, PIE, PT, Q, RSE, RET, SIM, TID, TCH, ARG, PTH, ERA, PD, PGH, PL, TRY, NPY, RUF
+
+### mypy
+
+项目使用 mypy 进行类型检查：
+
+- Python 版本: 3.9+
+- 忽略缺失导入: 是（用于可选依赖）
+- 检查未类型化定义: 是
+
+## 📚 导入规范
+
+```python
+# 1. 标准库导入
+import os
+import sys
+from typing import Dict, List, Optional
+
+# 2. 第三方库导入
+import requests
+import pandas as pd
+from flask import Flask
+
+# 3. 本地模块导入
+from Firecrawl代码模块.火爬采集器 import FirecrawlCollector
+from Firecrawl代码模块.数据处理 import DataProcessor
+```
+
+## 🧪 测试规范
+
+### 测试文件命名
+
+- 测试文件: `test_*.py` 或 `*_test.py`
+- 测试类: `Test*`
+- 测试函数: `test_*`
+
+### 测试示例
+
+```python
+import unittest
+from unittest.mock import Mock, patch
+
+class TestDataProcessor(unittest.TestCase):
+    """数据处理器测试"""
+
+    def setUp(self):
+        """测试初始化"""
+        self.processor = DataProcessor()
+
+    def test_process_article(self):
+        """测试文章处理"""
+        # 测试代码
+        pass
+```
+
+## ⚠️ 常见错误避免
+
+1. **不要使用裸异常**
+   ```python
+   # ❌ 错误
+   try:
+       do_something()
+   except:
+       pass
+
+   # ✅ 正确
+   try:
+       do_something()
+   except ValueError as e:
+       logger.error(f"处理失败: {e}")
+   ```
+
+2. **不要使用 print 调试**
+   ```python
+   # ❌ 错误
+   print(f"调试信息: {value}")
+
+   # ✅ 正确
+   logger.debug(f"调试信息: {value}")
+   ```
+
+3. **不要硬编码配置**
+   ```python
+   # ❌ 错误
+   api_key = "hardcoded_key"
+
+   # ✅ 正确
+   api_key = os.getenv("FIRECRAWL_API_KEY")
+   ```
+
+## 📖 参考资源
+
+- [PEP 8](https://pep8.org/) - Python 代码风格指南
+- [PEP 484](https://peps.python.org/pep-0484/) - 类型提示规范
+- [PEP 257](https://peps.python.org/pep-0257/) - 文档字符串约定
+- [Ruff 文档](https://docs.astral.sh/ruff/)
+- [mypy 文档](https://mypy.readthedocs.io/)

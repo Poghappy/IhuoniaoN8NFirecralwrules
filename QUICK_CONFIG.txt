@@ -1,0 +1,29 @@
+═══════════════════════════════════════════════════════════
+  ChatGPT MCP 连接器配置 - 快速参考
+═══════════════════════════════════════════════════════════
+
+✅ 服务状态:
+   Gateway: 运行中 (端口 3000)
+   ngrok:   运行中
+   URL:     https://b31fa209c24a.ngrok-free.app
+
+📋 配置信息（复制使用）:
+
+连接器名称:
+HawaiiHub MCP Gateway
+
+连接器 URL:
+https://b31fa209c24a.ngrok-free.app/sse
+
+描述:
+本地 MCP 工具网关，提供 Firecrawl 网页抓取、GitHub 操作、文件系统访问等工具
+
+🚀 配置步骤:
+1. ChatGPT → Settings → Apps & Connectors
+2. 滚动到底部 → Advanced settings → 启用 Developer mode
+3. 点击 Create → 填写上述信息 → Create
+4. 验证：应显示 34 个工具
+
+⚠️  重要: URL 必须以 /sse 结尾（不是 /mcp）
+
+═══════════════════════════════════════════════════════════

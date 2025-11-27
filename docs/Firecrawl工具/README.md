@@ -53,7 +53,7 @@ Firecrawl工具/
 
 ### 🚀 快速开始
 
-- [快速入门指南](./官方资料/01-快速开始/快速入门.md)
+- [快速入门指南](./官方资料/01-快速开始/quick-start.md)
 - [安装与配置](./官方资料/01-快速开始/ai-platforms.md)
 - [第一个爬虫](./官方资料/01-快速开始/scrape.md)
 
@@ -76,6 +76,7 @@ Firecrawl工具/
 - [项目特定规则](./docs/project/project-specific-rules.md)
 - [资源索引](./docs/project/resource-index.md)
 - [文档合并方案](./docs/project/docs-merge-plan-and-best-practices.md)
+- [GitHub 配置清单](./docs/project/github-configuration-checklist.md)
 
 #### 项目报告
 - [项目改进完成报告](./docs/reports/项目改进完成报告.md)
@@ -170,10 +171,10 @@ Firecrawl工具/
 
 ### 按场景分类
 
-- **博客爬取**: [爬取规则特性 - 博客](./docs/features/crawl-rules-features.md#博客爬取场景)
-- **新闻网站**: [爬取规则特性 - 新闻](./docs/features/crawl-rules-features.md#新闻网站场景)
-- **电商产品**: [爬取规则特性 - 电商](./docs/features/crawl-rules-features.md#电商产品场景)
-- **文档站点**: [爬取规则特性 - 文档](./docs/features/crawl-rules-features.md#文档站点场景)
+- **博客爬取**: [爬取规则特性 - 博客](./docs/features/crawl-rules-features.md#博客爬取)
+- **新闻网站**: [爬取规则特性 - 新闻](./docs/features/crawl-rules-features.md#新闻网站)
+- **电商产品**: [爬取规则特性 - 电商](./docs/features/crawl-rules-features.md#电商产品)
+- **文档站点**: [爬取规则特性 - 文档](./docs/features/crawl-rules-features.md#文档站点)
 
 ## 🛠️ 工具和脚本
 

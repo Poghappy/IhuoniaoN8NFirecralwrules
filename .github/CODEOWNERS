@@ -1,0 +1,33 @@
+# 代码所有者配置
+# 每行定义了一个文件模式，后跟一个或多个所有者
+# 所有者可以是用户名或团队名称
+
+# 全局默认所有者
+* @Poghappy
+
+# 文档相关
+/docs/ @Poghappy
+*.md @Poghappy
+
+# Python 代码
+*.py @Poghappy
+requirements.txt @Poghappy
+pyproject.toml @Poghappy
+
+# GitHub 配置
+/.github/ @Poghappy
+
+# 配置文件
+*.yml @Poghappy
+*.yaml @Poghappy
+*.json @Poghappy
+
+# 脚本文件
+*.sh @Poghappy
+scripts/ @Poghappy
+
+# 测试文件
+tests/ @Poghappy
+*_test.py @Poghappy
+test_*.py @Poghappy
+

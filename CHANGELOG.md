@@ -1,0 +1,72 @@
+# 更新日志
+
+所有重要的项目变更都会记录在此文件中。
+
+格式基于 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0/)，
+项目遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
+
+## [未发布]
+
+### 新增
+- 完善项目 README.md，更新项目描述和结构说明
+- 完善 .gitignore，添加更多需要忽略的文件类型
+- 添加 CHANGELOG.md 记录项目变更
+- 添加 CONTRIBUTING.md 贡献指南
+- 添加配置验证脚本 (`scripts/verify_config.py`)
+- 添加项目状态报告和详细行动计划文档
+- 创建 GitHub 配置脚本和文档
+
+### 变更
+- 更新 README.md 以反映实际项目内容（Firecrawl × 火鸟门户 × n8n）
+- 优化项目文档结构
+- 优化终端配置（字体、环境变量、行为选项）
+- 更新集成测试以匹配新的 API
+
+### 修复
+- 修复 .gitignore 中遗漏的数据库文件类型
+- **修复 cron 表达式解析逻辑错误** (`Firecrawl代码模块/任务调度.py`)
+  - 修复 `cron.get_next()` 的返回值处理（正确使用 float timestamp）
+  - 修复时间比较逻辑（`next_run <= current_time + timedelta(minutes=1)`）
+  - 移除不必要的 `next_run_time` 变量
+- 修复 Python 语言服务器冲突（禁用 Cursor Pyright，使用 Pylance）
+- 修复 cSpell 配置格式问题
+
+### 改进
+- **代码质量改进** (`Firecrawl代码模块/任务调度.py`)
+  - 为关键函数添加类型注解（`__lt__`, `register_executor`, `add_task`, `start`, `stop`, `_scheduler_loop`, `_check_scheduled_tasks`, `_process_task_queue`, `_check_running_tasks`, `_cleanup_completed_tasks`, `_handle_task_completion`）
+  - 改进类型注解（使用更具体的泛型类型参数）
+  - 改进日志格式（使用 lazy % formatting 替代 f-string，提高性能）
+
+## [1.0.0] - 2025-01-XX
+
+### 新增
+- 初始项目提交
+- Firecrawl 数据采集器核心模块
+- 火鸟门户系统 API 集成模块
+- 数据处理和清洗模块
+- n8n 工作流配置文件
+- 完整的项目文档和 API 文档
+- Cursor AI 配置和规则文件
+
+### 功能
+- **Firecrawl 采集器**: 支持网页内容采集和处理
+- **数据处理管道**: 数据清洗、关键词提取、分类、评分
+- **API 集成**: 完整的火鸟门户系统 API 集成
+- **任务调度**: 支持定时任务和批量处理
+- **n8n 工作流**: 自动化工作流配置
+
+### 文档
+- Firecrawl 工具完整文档
+- 火鸟门户系统官方文档
+- API 接口文档
+- 采集插件使用指南
+- 开发指南和代码规范
+
+---
+
+## 版本说明
+
+- **主版本号**: 不兼容的 API 修改
+- **次版本号**: 向下兼容的功能性新增
+- **修订号**: 向下兼容的问题修正
+

@@ -28,6 +28,19 @@ Check out the following resources to get started:
 
 To use the API, you need to sign up on [Firecrawl](https://firecrawl.dev) and get an API key.
 
+**获取 API Key 步骤：**
+
+1. 访问 [Firecrawl 官网](https://firecrawl.dev)
+2. 注册账号并登录
+3. 在控制台中获取你的 API Key（格式：`fc-xxxxx`）
+4. 将 API Key 配置到环境变量或配置文件中
+
+**安全提示：**
+
+* 不要将 API Key 提交到代码仓库
+* 使用环境变量或配置文件管理 API Key
+* 定期轮换 API Key 以提高安全性
+
 ### Features
 
 * [**Scrape**](#scraping): scrapes a URL and get its content in LLM-ready format (markdown, summary, structured data via [json mode](#json-mode), screenshot, html)
@@ -567,19 +580,20 @@ It is important to almost always use the `wait` action before/after executing ot
 
   firecrawl = Firecrawl(api_key="fc-YOUR-API-KEY")
 
-  doc = firecrawl.scrape('https://example.com/login', {
-    formats=['markdown'],
-    actions=[
-      { type: 'write', text: 'john@example.com' },
-      { type: 'press', key: 'Tab' },
-      { type: 'write', text: 'secret' },
-      { type: 'click', selector: 'button[type="submit"]' },
-      { type: 'wait', milliseconds: 1500 },
-      { type: 'screenshot', fullPage: true },
-    ],
-  });
+  doc = firecrawl.scrape(
+      url="https://example.com/login",
+      formats=["markdown"],
+      actions=[
+          {"type": "write", "text": "john@example.com"},
+          {"type": "press", "key": "Tab"},
+          {"type": "write", "text": "secret"},
+          {"type": "click", "selector": 'button[type="submit"]'},
+          {"type": "wait", "milliseconds": 1500},
+          {"type": "screenshot", "fullPage": True},
+      ],
+  )
 
-  print(doc.markdown, doc.screenshot);
+  print(doc.markdown, doc.screenshot)
   ```
 
   ```js Node

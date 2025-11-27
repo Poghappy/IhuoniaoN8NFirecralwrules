@@ -1,0 +1,158 @@
+{
+  "task": "配置 ChatGPT 桌面版 MCP 连接器",
+  "objective": "在 ChatGPT 桌面版中创建连接器，连接到本地 Docker MCP Gateway",
+  "prerequisites": {
+    "gateway": {
+      "status": "必须运行",
+      "endpoint": "http://localhost:3000/sse",
+      "check_command": "curl http://localhost:3000/sse"
+    },
+    "ngrok": {
+      "status": "必须运行",
+      "command": "ngrok http 3000",
+      "url_format": "https://xxx.ngrok-free.app",
+      "endpoint_suffix": "/sse"
+    },
+    "chatgpt": {
+      "status": "桌面版必须打开",
+      "version_requirement": "支持 Apps & Connectors 功能"
+    }
+  },
+  "steps": [
+    {
+      "step": 1,
+      "action": "打开设置",
+      "methods": [
+        "点击左下角设置图标（⚙️）",
+        "使用快捷键：Cmd + , (macOS) 或 Ctrl + , (Windows)",
+        "点击用户头像/菜单 → Settings"
+      ],
+      "verification": "设置菜单/页面已打开"
+    },
+    {
+      "step": 2,
+      "action": "导航到 Apps & Connectors",
+      "target": "Apps & Connectors 或 应用与连接器",
+      "alternatives": ["Connectors", "Integrations", "Extensions"],
+      "verification": "看到 Apps & Connectors 页面"
+    },
+    {
+      "step": 3,
+      "action": "启用开发者模式",
+      "location": "页面底部 → Advanced settings → Developer mode",
+      "action_type": "切换开关",
+      "verification": "Developer mode 开关显示为已启用（蓝色/绿色）",
+      "troubleshooting": {
+        "not_found": "滚动到页面最底部，查找 Advanced 部分",
+        "no_permission": "确认已登录 Plus 账户",
+        "not_visible": "尝试刷新页面或重启 ChatGPT"
+      }
+    },
+    {
+      "step": 4,
+      "action": "创建新连接器",
+      "target": "Create 或 创建 按钮",
+      "verification": "连接器创建表单已打开"
+    },
+    {
+      "step": 5,
+      "action": "填写连接器信息",
+      "fields": [
+        {
+          "name": "Connector name",
+          "value": "HawaiiHub MCP Gateway",
+          "required": true
+        },
+        {
+          "name": "Description",
+          "value": "本地 MCP 工具网关，提供 Firecrawl 网页抓取、GitHub 操作、文件系统访问等工具",
+          "required": false
+        },
+        {
+          "name": "Connector URL",
+          "value_template": "https://{ngrok_url}/sse",
+          "required": true,
+          "format": "必须以 /sse 结尾",
+          "example": "https://abc123-xx-xx-xx-xx.ngrok-free.app/sse",
+          "warning": "不要使用 /mcp 端点，必须使用 /sse"
+        }
+      ],
+      "verification": "所有必填字段已填写，URL 格式正确"
+    },
+    {
+      "step": 6,
+      "action": "提交创建",
+      "target": "Create 或 创建 按钮",
+      "verification": {
+        "success": "显示工具列表（34 个工具：github: 26, firecrawl: 6, time: 2）",
+        "failure": "显示错误消息"
+      }
+    },
+    {
+      "step": 7,
+      "action": "验证连接",
+      "checks": [
+        "连接器出现在连接器列表中",
+        "连接器状态显示为已连接/活跃",
+        "工具列表显示 34 个工具"
+      ]
+    }
+  ],
+  "critical_information": {
+    "connector_name": "HawaiiHub MCP Gateway",
+    "url_endpoint": "/sse",
+    "url_format": "https://{ngrok_domain}/sse",
+    "expected_tools": 34,
+    "tool_breakdown": {
+      "github": 26,
+      "firecrawl": 6,
+      "time": 2
+    }
+  },
+  "troubleshooting": {
+    "connection_failed": {
+      "checks": [
+        "Gateway 是否运行（检查终端 1）",
+        "ngrok 是否运行（检查终端 2）",
+        "URL 格式是否正确（必须以 /sse 结尾）",
+        "是否可以访问 ngrok URL"
+      ],
+      "solutions": [
+        "重启 Gateway: cd chatgpt-mcp-server && ./start-gateway.sh",
+        "重启 ngrok: ngrok http 3000",
+        "验证 URL: https://xxx.ngrok-free.app/sse",
+        "检查防火墙设置"
+      ]
+    },
+    "url_format_error": {
+      "correct": "https://xxx.ngrok-free.app/sse",
+      "incorrect": "https://xxx.ngrok-free.app/mcp",
+      "note": "必须使用 /sse 端点，不是 /mcp"
+    },
+    "developer_mode_not_found": {
+      "solutions": [
+        "滚动到页面最底部",
+        "查找 Advanced 或 高级 部分",
+        "确认账户类型（需要 Plus）",
+        "刷新页面"
+      ]
+    }
+  },
+  "success_criteria": {
+    "connector_created": true,
+    "tools_displayed": 34,
+    "connection_status": "connected",
+    "tools_breakdown": {
+      "github": 26,
+      "firecrawl": 6,
+      "time": 2
+    }
+  },
+  "notes": {
+    "endpoint_important": "URL 必须使用 /sse 端点，不是 /mcp",
+    "ngrok_url_source": "从运行 ngrok http 3000 的终端获取",
+    "gateway_required": "Gateway 和 ngrok 必须持续运行",
+    "api_keys": "某些工具需要配置 API 密钥才能正常工作"
+  }
+}
+

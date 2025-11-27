@@ -1,0 +1,187 @@
+[project]
+name = "hawaiihub-firecrawl"
+version = "1.0.0"
+description = "HawaiiHub Firecrawl × 火鸟门户 × n8n 采集与自动化运营"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+authors = [
+    {name = "HawaiiHub Team", email = "team@hawaiihub.net"}
+]
+keywords = ["firecrawl", "web-scraping", "automation", "n8n", "huoniao"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+[project.dependencies]
+# 核心依赖
+firecrawl-py = ">=0.0.16"
+requests = ">=2.31.0"
+aiohttp = ">=3.9.0"
+
+# Web 框架
+flask = ">=3.0.0"
+flask-cors = ">=4.0.0"
+
+# 数据库
+supabase = ">=2.0.0"
+psycopg2-binary = ">=2.9.9"
+
+# 数据处理
+pandas = ">=2.1.0"
+beautifulsoup4 = ">=4.12.0"
+lxml = ">=4.9.0"
+
+# 文本处理
+jieba = ">=0.42.1"
+textstat = ">=0.7.3"
+
+# 任务调度
+croniter = ">=2.0.1"
+redis = ">=5.0.0"
+
+# 工具库
+python-dotenv = ">=1.0.0"
+pyyaml = ">=6.0.1"
+jsonschema = ">=4.20.0"
+
+# 日志
+loguru = ">=0.7.2"
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.0",
+    "mypy>=1.7.0",
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.1.0",
+    "types-requests>=2.31.0",
+    "types-pyyaml>=6.0.1",
+]
+
+[tool.ruff]
+# Ruff 配置 - 替代 Black/isort/flake8
+line-length = 100
+target-version = "py39"
+exclude = [
+    ".git",
+    "__pycache__",
+    ".venv",
+    "venv",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    "node_modules",
+    "dist",
+    "build",
+]
+
+[tool.ruff.lint]
+# 启用的规则集
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings
+    "F",   # pyflakes
+    "I",   # isort
+    "N",   # pep8-naming
+    "UP",  # pyupgrade
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
+    "DTZ", # flake8-datetimez
+    "T10", # flake8-debugger
+    "EM",  # flake8-errmsg
+    "ISC", # flake8-implicit-str-concat
+    "ICN", # flake8-import-conventions
+    "PIE", # flake8-pie
+    "PT",  # flake8-pytest-style
+    "Q",   # flake8-quotes
+    "RSE", # flake8-raise
+    "RET", # flake8-return
+    "SIM", # flake8-simplify
+    "TID", # flake8-tidy-imports
+    "TCH", # flake8-type-checking
+    "ARG", # flake8-unused-arguments
+    "PTH", # flake8-use-pathlib
+    "ERA", # eradicate
+    "PD",  # pandas-vet
+    "PGH", # pygrep-hooks
+    "PL",  # Pylint
+    "TRY", # tryceratops
+    "NPY", # NumPy-specific rules
+    "RUF", # Ruff-specific rules
+]
+
+# 忽略的规则
+ignore = [
+    "E501",  # 行长度（由 line-length 控制）
+    "PLR0913", # 参数过多（允许更多参数）
+    "PLR2004", # 魔法值比较
+    "TRY003", # 避免指定异常类型
+    "ISC001", # 隐式字符串连接
+]
+
+[tool.ruff.lint.isort]
+# isort 配置
+known-first-party = ["Firecrawl代码模块", "docs.Firecrawl工具.代码模块"]
+force-single-line = false
+force-sort-within-sections = true
+lines-after-imports = 2
+
+[tool.ruff.lint.mccabe]
+# 圈复杂度
+max-complexity = 10
+
+[tool.ruff.format]
+# 格式化配置
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+[tool.mypy]
+# mypy 类型检查配置
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = false
+ignore_missing_imports = true
+check_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "firecrawl.*",
+    "pandas.*",
+    "numpy.*",
+]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+# pytest 配置
+testpaths = ["tests", "Firecrawl代码模块", "docs/Firecrawl工具/tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = [
+    "-v",
+    "--tb=short",
+    "--strict-markers",
+    "--disable-warnings",
+]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+]
+

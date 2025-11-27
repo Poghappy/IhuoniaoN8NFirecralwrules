@@ -201,9 +201,7 @@ class FirecrawlCollectorConfig:
                 raise ValueError("必须提供Firecrawl API配置")
 
         if self.default_output_format not in self.supported_formats:
-            raise ValueError(
-                f"不支持的默认输出格式: {self.default_output_format}"
-            )
+            raise ValueError(f"不支持的默认输出格式: {self.default_output_format}")
 
     def validate(self) -> List[str]:
         """验证配置
@@ -223,9 +221,9 @@ class FirecrawlCollectorConfig:
 
         for i, source in enumerate(self.sources):
             if not source.url:
-                errors.append(f"数据源{i+1}的URL不能为空")
+                errors.append(f"数据源{i + 1}的URL不能为空")
             if not source.name:
-                errors.append(f"数据源{i+1}的名称不能为空")
+                errors.append(f"数据源{i + 1}的名称不能为空")
 
         # 验证并发配置
         if self.concurrency.max_concurrent > 20:
@@ -244,6 +242,7 @@ class FirecrawlCollectorConfig:
         Args:
             mask_sensitive: 是否对敏感字段进行脱敏处理
         """
+
         def mask(value: Optional[str]) -> Optional[str]:
             if not mask_sensitive:
                 return value
@@ -337,9 +336,7 @@ class ConfigManager:
         self.config_file = config_file or "firecrawl_config.yaml"
         self._config: Optional[FirecrawlCollectorConfig] = None
 
-    def load_config(
-        self, config_file: Optional[str] = None
-    ) -> FirecrawlCollectorConfig:
+    def load_config(self, config_file: Optional[str] = None) -> FirecrawlCollectorConfig:
         """加载配置文件
 
         Args:
@@ -364,9 +361,7 @@ class ConfigManager:
                 elif config_path.suffix.lower() == ".json":
                     data = json.load(f)
                 else:
-                    raise ValueError(
-                        f"不支持的配置文件格式: {config_path.suffix}"
-                    )
+                    raise ValueError(f"不支持的配置文件格式: {config_path.suffix}")
 
             self._config = self._dict_to_config(data)
             return self._config
@@ -402,15 +397,11 @@ class ConfigManager:
 
             with open(config_path, "w", encoding="utf-8") as f:
                 if config_path.suffix.lower() in [".yaml", ".yml"]:
-                    yaml.dump(
-                        data, f, default_flow_style=False, allow_unicode=True
-                    )
+                    yaml.dump(data, f, default_flow_style=False, allow_unicode=True)
                 elif config_path.suffix.lower() == ".json":
                     json.dump(data, f, ensure_ascii=False, indent=2)
                 else:
-                    raise ValueError(
-                        f"不支持的配置文件格式: {config_path.suffix}"
-                    )
+                    raise ValueError(f"不支持的配置文件格式: {config_path.suffix}")
 
             return True
 
@@ -466,16 +457,12 @@ class ConfigManager:
             ],
         )
 
-    def _dict_to_config(
-        self, data: Dict[str, Any]
-    ) -> FirecrawlCollectorConfig:
+    def _dict_to_config(self, data: Dict[str, Any]) -> FirecrawlCollectorConfig:
         """将字典转换为配置对象"""
         # 处理Firecrawl API配置
         api_data = data.get("firecrawl_api", {})
         firecrawl_api = FirecrawlAPIConfig(
-            api_key=api_data.get(
-                "api_key", os.getenv("FIRECRAWL_API_KEY", "")
-            ),
+            api_key=api_data.get("api_key", os.getenv("FIRECRAWL_API_KEY", "")),
             base_url=api_data.get("base_url", "https://api.firecrawl.dev"),
             timeout=api_data.get("timeout", 30),
             max_retries=api_data.get("max_retries", 3),
@@ -506,9 +493,7 @@ class ConfigManager:
             auto_category=processing_data.get("auto_category", True),
             content_filter=processing_data.get("content_filter", True),
             min_content_length=processing_data.get("min_content_length", 100),
-            max_content_length=processing_data.get(
-                "max_content_length", 50000
-            ),
+            max_content_length=processing_data.get("max_content_length", 50000),
             extract_summary=processing_data.get("extract_summary", True),
             extract_keywords=processing_data.get("extract_keywords", True),
             language_detection=processing_data.get("language_detection", True),
@@ -539,9 +524,7 @@ class ConfigManager:
             log_dir=storage_data.get("log_dir", "./logs"),
             temp_dir=storage_data.get("temp_dir", "./temp"),
             auto_backup=storage_data.get("auto_backup", True),
-            backup_retention_days=storage_data.get(
-                "backup_retention_days", 30
-            ),
+            backup_retention_days=storage_data.get("backup_retention_days", 30),
             compress_backups=storage_data.get("compress_backups", True),
         )
 
@@ -570,12 +553,8 @@ class ConfigManager:
             concurrency=concurrency,
             storage=storage,
             logging=logging_config,
-            default_output_format=data.get(
-                "default_output_format", "markdown"
-            ),
-            supported_formats=data.get(
-                "supported_formats", ["markdown", "html", "json", "csv"]
-            ),
+            default_output_format=data.get("default_output_format", "markdown"),
+            supported_formats=data.get("supported_formats", ["markdown", "html", "json", "csv"]),
             enable_monitoring=data.get("enable_monitoring", True),
             metrics_port=data.get("metrics_port", 9090),
             health_check_interval=data.get("health_check_interval", 60),
@@ -598,9 +577,7 @@ def load_config_from_file(config_file: str) -> FirecrawlCollectorConfig:
     return config_manager.load_config(config_file)
 
 
-def save_config_to_file(
-    config: FirecrawlCollectorConfig, config_file: str
-) -> bool:
+def save_config_to_file(config: FirecrawlCollectorConfig, config_file: str) -> bool:
     """保存配置到文件"""
     return config_manager.save_config(config_file, config)
 
