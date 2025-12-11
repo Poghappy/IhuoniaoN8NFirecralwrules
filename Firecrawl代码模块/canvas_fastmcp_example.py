@@ -66,7 +66,7 @@ def add(a: int, b: int) -> int:
 # 定义一个动态资源，通过 URL 模式生成个性化问候
 @mcp.resource("greeting://{name}")
 def get_greeting(name: str) -> str:
-    """返回个性化问候语，例如："Hello, 张三!""""""
+    """返回个性化问候语，例如："Hello, 张三!"。"""
     return f"Hello, {name}!"
 
 
