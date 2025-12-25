@@ -1,135 +1,33 @@
-# 火鸟门户系统 (HuoNiao Portal)
+# HawaiiHub Firecrawl × 火鸟门户 × n8n 自动化仓库
 
-## 📋 项目简介
+本仓库聚合了 Firecrawl 采集、数据处理、火鸟门户 API 发布和 n8n 自动化流程相关的代码与文档，用于支撑内容采集、治理与分发的一体化链路。
 
-火鸟门户系统是一个功能完整的PHP门户网站管理系统，提供内容管理、用户管理、支付集成等核心功能。
+## 项目概览
+- **采集与处理**：`Firecrawl代码模块/` 下提供采集器、数据处理与 API 集成模块，以及集成测试脚本，覆盖 ArticleData → ProcessedArticle → PublishRequest 的三段流。
+- **文档中心**：`docs/Firecrawl工具/` 为 Firecrawl 官方/自研文档中心，包含快速开始、配置、功能特性与项目报告等资料。
+- **门户与工作流资源**：根目录保留火鸟门户集成脚本（如 `火鸟门户_API集成模块.js`）、运营指南与 n8n 相关编排文件（如 `docker-compose-n8n.yml`），用于对接门户与自动化平台。
+- **工具与配置**：`chatgpt-mcp-server/`、`.cursor/` 等目录提供 MCP、Cursor 及开发工具链配置，可作为本地或云端开发环境的基础。
 
-## 🚀 主要功能
+## 目录速览
+- `Firecrawl代码模块/`：采集器、配置、数据处理、API 发布及 `集成测试.py` 集成验证脚本。
+- `docs/Firecrawl工具/`：Firecrawl 文档中心（含 `README.md`、`QUICKSTART.md`、官方资料、项目规则与报告等）。
+- `document-quality*.mdc` 系列：文档质量检查清单与规范。
+- `docker-compose-n8n.yml`：n8n/辅助服务的编排样例。
+- `火鸟门户_*` & `新闻模块API接口文档.md`：火鸟门户侧的集成脚本与接口说明。
+- `chatgpt-mcp-server/`：MCP Server 配置与脚本。
 
-- **内容管理**: 文章发布、分类管理、内容审核
-- **用户系统**: 用户注册、登录、权限管理
-- **支付集成**: 支持支付宝、微信支付、PayPal等多种支付方式
-- **API接口**: 完整的RESTful API支持
-- **管理后台**: 功能完善的后台管理系统
-- **移动端支持**: 响应式设计，支持移动设备访问
+## 快速上手
+1. **阅读规则**：在处理 Python 代码前先查看 `.cursor/rules/python.mdc`，遵循类型注解、日志与错误处理要求。
+2. **安装依赖**（示例）：`pip install -r docs/Firecrawl工具/requirements.txt`（或按需使用 `uv/poetry`）。
+3. **运行集成测试**：`python Firecrawl代码模块/集成测试.py`（验证采集→处理→发布链路）。
+4. **开发与自动化**：n8n/门户相关流程可参考 `docker-compose-n8n.yml` 和 `火鸟门户_*.js` 进行自定义。
 
-## 📁 目录结构
+## 协作与分支
+- 现以 `main` 为主分支，后续特性可在短分支开发后合并回主分支，保持仓库简洁。
+- 提交遵循约定式提交（feat/fix/docs/refactor/test/chore），并在合并前确保必要的测试与占位 lint/测试脚本已执行。
 
-```
-├── admin/              # 管理后台
-├── api/                # API接口
-├── include/            # 核心类库和配置
-├── static/             # 静态资源 (CSS, JS, 图片)
-├── templates/          # 前端模板
-├── log/                # 日志文件
-└── templates_c/        # 编译缓存
-```
+## 常用检查
+- Python：`uv run pytest` / `uv run python Firecrawl代码模块/集成测试.py`（如未安装 `uv`，可用 `poetry`/`pip` 替代）。
+- JS/TS（占位）：`npm run lint`、`npm test` 当前作为占位检查，后续可接入真实 lint/test 工具。
 
-## ⚙️ 系统要求
-
-- **PHP**: 7.0 或更高版本
-- **MySQL**: 5.6 或更高版本
-- **Web服务器**: Apache/Nginx
-- **扩展要求**: 
-  - GD库 (图片处理)
-  - cURL (API调用)
-  - JSON (数据处理)
-  - PDO (数据库连接)
-
-## 🔧 安装配置
-
-### 1. 环境准备
-
-确保服务器满足系统要求，并配置好PHP和MySQL环境。
-
-### 2. 数据库配置
-
-1. 创建数据库
-2. 配置数据库连接信息 (请参考 `include/dbinfo.inc.php.example`)
-3. 导入数据库结构
-
-### 3. 文件权限
-
-设置以下目录的写入权限：
-```bash
-chmod 755 log/
-chmod 755 templates_c/
-chmod 755 api/upload/
-```
-
-### 4. 配置文件
-
-复制并配置必要的配置文件：
-- `include/dbinfo.inc.php` (数据库配置)
-- `api/appConfig.json` (应用配置)
-
-## 🔐 安全配置
-
-### 重要安全提醒
-
-1. **修改默认密码**: 安装后立即修改管理员默认密码
-2. **配置文件保护**: 确保敏感配置文件不可直接访问
-3. **定期更新**: 保持系统和依赖库的最新版本
-4. **备份策略**: 建立定期备份机制
-
-### 文件权限建议
-
-```bash
-# 配置文件只读
-chmod 644 include/dbinfo.inc.php
-chmod 644 api/appConfig.json
-
-# 日志目录可写
-chmod 755 log/
-
-# 上传目录可写
-chmod 755 api/upload/
-```
-
-## 📚 API文档
-
-系统提供完整的RESTful API接口，支持：
-
-- 用户认证和授权
-- 内容管理操作
-- 文件上传处理
-- 支付接口集成
-
-详细API文档请参考 `api/` 目录下的相关文件。
-
-## 🛠️ 开发指南
-
-### 代码规范
-
-- 遵循PSR-4自动加载规范
-- 使用UTF-8编码
-- 代码注释使用中文
-- 变量和函数命名使用驼峰命名法
-
-### 调试模式
-
-开发环境下可以启用调试模式：
-```php
-// 在配置文件中设置
-define('DEBUG_MODE', true);
-```
-
-## 📞 技术支持
-
-- **问题反馈**: 请通过GitHub Issues提交问题
-- **功能建议**: 欢迎提交功能改进建议
-- **安全问题**: 请通过私有渠道报告安全漏洞
-
-## 📄 许可证
-
-本项目采用商业许可证，使用前请确保已获得合法授权。
-
-## 🔄 更新日志
-
-- **版本管理**: 采用语义化版本控制
-- **更新通知**: 重要更新会通过系统通知
-- **兼容性**: 向后兼容性保证
-
----
-
-**注意**: 本系统包含敏感配置和商业代码，请妥善保管源代码，避免泄露。
+更多细节请参考 `docs/Firecrawl工具/README.md` 与相关指南、报告文档。
