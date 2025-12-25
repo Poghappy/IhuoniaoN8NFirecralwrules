@@ -1,7 +1,7 @@
 {
   "name": "hawaiihub.net123",
   "version": "1.0.0",
-  "description": "HawaiiHub Firecrawl × 火鸟门户 × n8n 自动化运营仓库的元数据。",
+  "description": "HawaiiHub Firecrawl × 火鸟门户 × n8n 自动化运营仓库的元数据.",
   "main": "火鸟门户_API集成模块.js",
   "scripts": {
     "lint": "echo '尚未配置 JS/TS 代码的 lint，当前仅进行占位检查'",
