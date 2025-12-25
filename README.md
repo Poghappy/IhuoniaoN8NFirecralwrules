@@ -28,6 +28,6 @@
 
 ## 常用检查
 - Python：`uv run pytest` / `uv run python Firecrawl代码模块/集成测试.py`（如未安装 `uv`，可用 `poetry`/`pip` 替代）。
-- JS/TS（占位）：`npm run lint`、`npm test` 当前作为占位检查，后续可接入真实 lint/Test 工具。
+- JS/TS（占位）：`npm run lint`、`npm test` 当前作为占位检查，后续可接入真实 lint/test 工具。
 
 更多细节请参考 `docs/Firecrawl工具/README.md` 与相关指南、报告文档。
